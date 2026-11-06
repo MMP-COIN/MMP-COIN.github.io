@@ -3830,5 +3830,23 @@ body:before{opacity:.23;background-size:34px 34px}
 html:not(.mmp-native-app) #app-download{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;z-index:2!important;margin:24px auto 28px!important;scroll-margin-top:28px}
 html:not(.mmp-native-app) #app-download .btn{min-height:46px}
 </style>
-\n<script id="mmp-share-download-link">\nwindow.mmpShareDownloadLink=async function(){var url="https://github.com/MMP-COIN/MMP-COIN-AI/releases/latest/download/app-release.apk";var data={title:"MMP COIN AI · دانلود اپلیکیشن",text:"اپلیکیشن MMP COIN AI؛ برای دانلود آخرین نسخه اندروید از لینک زیر استفاده کنید:",url:url};try{if(navigator.share){await navigator.share(data);return;}if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(url);alert("لینک مستقیم دانلود کپی شد؛ حالا برای دوستانتان ارسال کنید.");return;}window.prompt("لینک مستقیم دانلود اپلیکیشن را کپی کنید:",url);}catch(error){if(error&&error.name!=="AbortError"){window.prompt("لینک دانلود را کپی و ارسال کنید:",url);}}};\n</script>\n</body>
+
+<script id="mmp-share-download-link">
+window.mmpShareDownloadLink = async function () {
+  var url = "https://github.com/MMP-COIN/MMP-COIN-AI/releases/latest/download/app-release.apk";
+  var data = {title:"MMP COIN AI · دانلود اپلیکیشن", text:"اپلیکیشن MMP COIN AI؛ برای دانلود آخرین نسخه اندروید از لینک زیر استفاده کنید:", url:url};
+  try {
+    if (navigator.share) { await navigator.share(data); return; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(url);
+      alert("لینک مستقیم دانلود کپی شد؛ حالا برای دوستانتان ارسال کنید.");
+      return;
+    }
+    window.prompt("لینک مستقیم دانلود اپلیکیشن را کپی کنید:", url);
+  } catch (error) {
+    if (error && error.name !== "AbortError") window.prompt("لینک دانلود را کپی و ارسال کنید:", url);
+  }
+};
+</script>
+</body>
 </html>
