@@ -1063,7 +1063,7 @@ body{background:
 <p class="sub radar-footnote">پیشنهادها بر اساس داده‌های واقعی بازار تهیه می‌شوند و تضمین سود نیستند. در نبود داده معتبر، پیشنهادی صادر نمی‌شود.</p></section></section>
 
 <section class="card market-hunter" id="market-hunter">
- <div class="hunter-topline"><div><div class="section-kicker">MMP · LIVE MOMENTUM HUNTER</div><h2>شکارچی بازار</h2><p class="sub">پایش نمادهای معتبر USDT در چند صرافی؛ شکار جهش‌ها و ریزش‌های تازه</p></div><div class="hunter-live-badge"><i></i><span>پایش زنده</span></div></div>
+ <div class="hunter-topline"><div><div class="section-kicker">MMP · LIVE MOMENTUM HUNTER</div><h2>شکارچی بازار</h2><p class="sub">پایش نمادهای معتبر USDT در چند صرافی؛ شکار جهش‌ها و ریزش‌های تازه</p></div><div class="hunter-head-actions"><button class="radar-refresh-btn hunter-refresh-btn" id="hunter-refresh-btn" type="button" aria-label="بروزرسانی شکارها و پایش دوباره بازار" title="دریافت دوباره داده‌ها و اجرای پایش شکارچی"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6.5L20 12M4 12l2 5.5A7 7 0 0 0 18.4 15"/></svg><span>بروزرسانی شکار</span></button><div class="hunter-live-badge"><i></i><span>پایش زنده</span></div></div></div>
  <div class="hunter-overview"><div class="hunter-stat"><small>فرصت‌های صعودی · حداکثر ۶</small><b id="hunter-bull-count">۰</b></div><div class="hunter-stat"><small>حرکت‌های نزولی · حداکثر ۶</small><b id="hunter-bear-count">۰</b></div><div class="hunter-stat"><small>آخرین پایش</small><b id="hunter-last-scan">در انتظار داده</b></div></div>
  <div class="hunter-early-panel"><div class="hunter-early-head"><b>رادار هشدار اولیه</b><span id="hunter-early-status">در انتظار اتصال جریان سریع قیمت</span></div><div id="hunter-early-feed" class="hunter-early-feed"><div class="hunter-early-empty">حرکت‌های سریع قیمت پیش از تأیید کندلی، اینجا به‌صورت هشدار اولیه نمایش داده می‌شوند.</div></div></div>
  <div class="hunter-feed-head"><b>حرکت‌های شناسایی‌شده</b><span id="hunter-feed-status">در حال آماده‌سازی پایش کندلی…</span></div>
@@ -2355,8 +2355,9 @@ function connectHunterEarlyStream(){
   ws.onclose=()=>{if(hunterEarlySocket===ws){hunterEarlySocket=null;hunterEarlyExchangeState.set("Binance","disconnected");updateHunterEarlyStatus();hunterEarlyRetryTimer=setTimeout(connectHunterEarlyStream,5000);}};
  }catch(error){hunterEarlyExchangeState.set("Binance","disconnected");updateHunterEarlyStatus();hunterEarlyRetryTimer=setTimeout(connectHunterEarlyStream,10000);}
 }
-async function runFastRadarScan(){
- if(fastRadarBusy||Date.now()-fastRadarLastRun<45000)return;
+async function runFastRadarScan(forceRefresh=false){
+ if(fastRadarBusy||(!forceRefresh&&Date.now()-fastRadarLastRun<45000))return;
+ if(forceRefresh){hunterUniverseCache.expires=0;hunterUniverseCache.coins=[];hunterExchangeCache.expires=0;hunterExchangeCache.sets=null;}
  fastRadarBusy=true;fastRadarLastRun=Date.now();
  const status=$("radar-updated"),hunterStatus=$("hunter-feed-status"),hunterLast=$("hunter-last-scan");
  let completed=0,failed=0,cursor=0,universe=[];
@@ -2615,6 +2616,15 @@ function renderOpportunities(){
 function calcRisk(){const capital=Number($("risk-capital").value),pct=Number($("risk-percent").value),entry=Number($("risk-entry").value),stop=Number($("risk-stop").value);const out=$("risk-result");if(!(capital>0&&pct>0&&pct<=100&&entry>0&&stop>0)){out.textContent="سرمایه، درصد ریسک، قیمت ورود و قیمت حد ضرر را کامل و معتبر وارد کنید.";return;}if(entry===stop){out.textContent="قیمت ورود و قیمت حد ضرر نباید برابر باشند.";return;}const risk=capital*pct/100,dist=Math.abs(entry-stop)/entry,notional=risk/dist,qty=notional/entry;out.innerHTML="<div><b>مبلغ ورود به معامله:</b> "+money(notional,2)+" USDT</div><div><b>ضرر احتمالی در صورت برخورد به حد ضرر:</b> "+money(risk,2)+" USDT</div><div><b>فاصله تا حد ضرر:</b> "+(dist*100).toFixed(2)+"%</div><div><b>مقدار دارایی:</b> "+money(qty,6)+"</div><small>مبلغ ورود، ارزش کل معامله است و با اهرم می‌تواند از مارجین پرداختی بیشتر باشد. کارمزد و لغزش قیمت محاسبه نشده‌اند.</small>";}
 $("market-refresh-btn")?.addEventListener("click",()=>refreshAll());
  $("radar-refresh-btn")?.addEventListener("click",()=>{refreshAll();checkConnections();});
+ $("hunter-refresh-btn")?.addEventListener("click",async()=>{
+  const button=$("hunter-refresh-btn"),label=button?.querySelector("span");
+  if(button){button.disabled=true;button.classList.add("is-refreshing");if(label)label.textContent="در حال شکار…";}
+  const status=$("hunter-feed-status"),last=$("hunter-last-scan");
+  if(status)status.textContent="در حال دریافت تازه‌ترین فهرست نمادها و اجرای شکار دوباره…";
+  if(last)last.textContent="در حال بروزرسانی";
+  try{await runFastRadarScan(true);}
+  finally{if(button){button.disabled=false;button.classList.remove("is-refreshing");if(label)label.textContent="بروزرسانی شکار";}}
+ });
  $("risk-calc")?.addEventListener("click",calcRisk);
 
 $("opportunities")?.addEventListener("click",e=>{const button=e.target.closest("[data-radar-filter]");if(!button)return;radarFilter=button.dataset.radarFilter;document.querySelectorAll("[data-radar-filter]").forEach(x=>x.classList.toggle("active",x===button));renderOpportunities()});
@@ -2713,6 +2723,7 @@ html.mmp-native-app .footer{padding-bottom:12px}
 html.mmp-native-app .native-refresh-btn{width:auto!important;min-width:82px!important;height:38px!important;padding:0 8px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;font-size:18px!important}
 html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!important;color:#f5dda2!important;white-space:nowrap!important}
 @media(max-width:390px){html.mmp-native-app .native-refresh-btn{min-width:72px!important;height:32px!important;padding:0 5px!important}html.mmp-native-app .native-refresh-label{font-size:8px!important}}
+.hunter-head-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}.hunter-refresh-btn{white-space:nowrap}.hunter-refresh-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.hunter-refresh-btn.is-refreshing svg{animation:radar-spin 1s linear infinite}@media(max-width:640px){.hunter-topline{align-items:flex-start}.hunter-head-actions{gap:6px}.hunter-refresh-btn{padding:7px 9px;font-size:11px}}
 </style>
 <script>
 (function(){
