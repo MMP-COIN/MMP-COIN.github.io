@@ -960,6 +960,17 @@ body{background:
 .boom-chart-modal{display:none;position:fixed;inset:0;z-index:100000;background:rgba(3,7,12,.97);padding:12px;overflow:auto}.boom-chart-modal.open{display:block}.boom-chart-modal-head{position:sticky;top:0;z-index:3;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;margin:-12px -12px 12px;background:#111a26;border-bottom:1px solid #79633c;color:#f1d596}.boom-chart-modal-head button{border:1px solid #59677a;background:#202b39;color:#fff;border-radius:9px;padding:7px 12px}.boom-chart-modal #boom-hunter-expanded{max-width:1100px;margin:0 auto}.boom-chart-modal #boom-hunter-expanded .boom-chart{min-height:260px}.boom-chart-modal #boom-hunter-expanded .boom-chart svg{width:100%;height:auto}.boom-modal-open{overflow:hidden}
 .boom-coin-picker{position:relative;display:block}.boom-coin-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.boom-coin-actions .btn{flex:1;min-width:120px}.boom-coin-select{position:relative}.boom-coin-menu{max-height:320px;overflow:auto}.boom-coin-option{width:100%;text-align:right}.boom-coin-option img{width:25px;height:25px;object-fit:contain}.boom-coin-picker #boom-add-coin{margin-top:7px;width:100%}
 .boom-coin-menu{position:absolute;z-index:10020;top:calc(100% + 5px);right:0;left:0;max-height: min(52vh,360px);overflow:auto;background:#101925;border:1px solid #927b4c;border-radius:12px;box-shadow:0 14px 36px #000b;padding:5px}.boom-coin-option{display:flex;align-items:center;gap:10px;width:100%;padding:8px;border:0;border-bottom:1px solid #ffffff12;background:transparent;color:#f4f0e6;text-align:right;cursor:pointer}.boom-coin-option:active,.boom-coin-option:hover{background:#c5a45b22}.boom-coin-option img{width:28px;height:28px;flex:0 0 28px;border-radius:50%;object-fit:contain;background:#fff;padding:2px}.boom-coin-option span{display:grid;gap:2px}.boom-coin-option b{font-size:12px}.boom-coin-option small{font-size:10px;color:#c6a968}.boom-coin-no-results{padding:14px;color:#aab5c3;text-align:center;font-size:12px}.boom-chart-modal #boom-hunter-expanded{max-width:1200px}.boom-chart-modal #boom-hunter-expanded .boom-chart{min-height:300px}.boom-chart-modal #boom-hunter-expanded .boom-chart svg{max-height:62vh}</style>
+<style id="boom-coin-menu-left-fix">
+/* Keep the Boom Hunter dropdown aligned to the left side of its picker */
+#boom-hunter .boom-coin-select-wrap{position:relative!important;}
+#boom-hunter .boom-coin-menu{
+  left:0!important;
+  right:auto!important;
+  width:min(100%,360px)!important;
+  max-width:calc(100vw - 28px)!important;
+  box-sizing:border-box!important;
+}
+</style>
 </head>
 <body class="mmp-app-mode">
 
