@@ -3030,7 +3030,7 @@ setInterval(()=>mmpSendEvent("heartbeat"),240000);
    else setTimeout(()=>run(),80);
   });
   (root===document?document:root).addEventListener("click",e=>{
-   if(e.target===input||input.closest(".boom-coin-select")?.contains(e.target)||menu.contains(e.target))return;
+   if(e.target===input||input.closest(".boom-coin-select")?.contains(e.target)||menu.contains(e.target)||e.target.closest("#"+prefix+"boom-show-coins"))return;
    if(menu.dataset.open==="1"&&input.dataset.previousValue)input.value=input.dataset.previousValue;
    menu.hidden=true;menu.dataset.open="0";
   });
