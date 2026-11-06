@@ -2122,7 +2122,7 @@ async function fetchHunterOrderFlow(symbol){
  const prev3=closed.slice(-23,-3),prevAvg=prev3.length?sum(prev3,1)/prev3.length:0,ratio3=prevAvg>0?quote3/(prevAvg*3):0;
  const netPct1=last[1]>0?last[4]/last[1]*100:0;
  const chartRows=closed.slice(-30).map((x,i,arr)=>{const prior=arr.slice(Math.max(0,i-20),i).map(v=>v[1]).filter(v=>v>0),mean=prior.length?prior.reduce((a,b)=>a+b,0)/prior.length:avg;return [...x,mean>0?x[1]/mean:0];});
- return {source:"Binance Spot · خرید/فروش تهاجمی",quote1m:last[1],buy1m:last[2],sell1m:last[3],net1m:last[4],netPct1m,ratio1m,quote3m,buy3m,sell3m,net3m,netPct3m,volumeRatio3m:ratio3,rows:chartRows,updatedAt:Date.now(),unusual:ratio1>=1.8||ratio3>=2};
+ return {source:"Binance Spot · خرید/فروش تهاجمی",quote1m:last[1],buy1m:last[2],sell1m:last[3],net1m:last[4],netPct1m:netPct1,ratio1m:ratio1,quote3m:quote3,buy3m:buy3,sell3m:sell3,net3m:net3,netPct3m:netPct3,volumeRatio3m:ratio3,rows:chartRows,updatedAt:Date.now(),unusual:ratio1>=1.8||ratio3>=2};
 }
 async function scanFastCoin(coin){
  const symbol=String(coin?.symbol||"").toUpperCase();
