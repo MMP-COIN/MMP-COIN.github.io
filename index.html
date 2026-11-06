@@ -3016,19 +3016,22 @@ setInterval(()=>mmpSendEvent("heartbeat"),240000);
   menu.dataset.bound="1";
   menu.addEventListener("error",e=>{const img=e.target;if(img?.tagName!=="IMG"||!img.dataset.symbol)return;const fallback=document.createElement("span");fallback.className="boom-coin-icon-fallback";fallback.textContent=img.dataset.symbol.slice(0,5);img.replaceWith(fallback);},true);
   const selectedIcon=get("boom-coin-icon");if(selectedIcon)selectedIcon.addEventListener("error",()=>{selectedIcon.style.display="none";},{once:true});
-  input.addEventListener("focus",()=>renderBoomCoins(root,true));
-  input.addEventListener("click",()=>renderBoomCoins(root,true));
+  const openMenu=()=>{if(menu.dataset.open!=="1"){input.dataset.previousValue=input.value;input.value="";}renderBoomCoins(root,true);};
+  const field=input.closest(".boom-coin-select");field?.addEventListener("click",()=>{if(document.activeElement!==input)input.focus();openMenu();});
+  input.addEventListener("focus",openMenu);
+  input.addEventListener("click",openMenu);
   input.addEventListener("input",()=>renderBoomCoins(root,true));
-  input.addEventListener("keydown",e=>{if(e.key==="Escape"){menu.hidden=true;menu.dataset.open="0";}});
+  input.addEventListener("keydown",e=>{if(e.key==="Escape"){input.value=input.dataset.previousValue||input.value;menu.hidden=true;menu.dataset.open="0";}});
   menu.addEventListener("click",e=>{
    const option=e.target.closest("[data-symbol]");if(!option)return;
-   input.value=option.dataset.symbol;
+   input.value=option.dataset.symbol;input.dataset.previousValue=input.value;
    renderBoomCoins(root,false);menu.hidden=true;menu.dataset.open="0";
    if(root!==document){const main=document.getElementById("boom-symbol");if(main){main.value=input.value;renderBoomCoins(document,false);setTimeout(()=>run(),80);}}
    else setTimeout(()=>run(),80);
   });
   (root===document?document:root).addEventListener("click",e=>{
-   if(e.target===input||menu.contains(e.target))return;
+   if(e.target===input||input.closest(".boom-coin-select")?.contains(e.target)||menu.contains(e.target))return;
+   if(menu.dataset.open==="1"&&input.dataset.previousValue)input.value=input.dataset.previousValue;
    menu.hidden=true;menu.dataset.open="0";
   });
  }
@@ -3045,7 +3048,7 @@ setInterval(()=>mmpSendEvent("heartbeat"),240000);
  }
  setupBoomCoinMenu();
  const showCoinsButton=$("boom-show-coins");
- if(showCoinsButton)showCoinsButton.addEventListener("click",()=>{const menu=$("boom-coin-menu");if(!menu)return;const opening=menu.hidden||menu.dataset.open!=="1";if(opening){renderBoomCoins(document,true);menu.hidden=false;menu.dataset.open="1";showCoinsButton.textContent="بستن فهرست ارزها";}else{menu.hidden=true;menu.dataset.open="0";showCoinsButton.textContent="نمایش فهرست ارزها";}});
+ if(showCoinsButton)showCoinsButton.addEventListener("click",()=>{const menu=$("boom-coin-menu");if(!menu)return;const opening=menu.hidden||menu.dataset.open!=="1";if(opening){const input=$("boom-symbol");if(input){input.dataset.previousValue=input.value;input.value="";}renderBoomCoins(document,true);menu.hidden=false;menu.dataset.open="1";showCoinsButton.textContent="بستن فهرست ارزها";}else{const input=$("boom-symbol");if(input?.dataset.previousValue)input.value=input.dataset.previousValue;menu.hidden=true;menu.dataset.open="0";showCoinsButton.textContent="نمایش فهرست ارزها";}});
  const addCustomButton=$("boom-add-coin");
  const customPanel=$("boom-custom-coin-panel"),customInput=$("boom-custom-coin-input"),customCheck=$("boom-custom-coin-check"),customResult=$("boom-custom-coin-result");
  if(addCustomButton)addCustomButton.addEventListener("click",()=>{
