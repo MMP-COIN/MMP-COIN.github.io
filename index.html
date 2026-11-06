@@ -2180,20 +2180,53 @@ async function scanFastCoin(coin){
 }
 async function fetchHunterUniverse(){
  if(Date.now()<hunterUniverseCache.expires&&hunterUniverseCache.coins.length)return hunterUniverseCache.coins;
- // دریافت متمرکز فهرست مشترک Binance و CoinMarketCap از Worker
- const payload=await hunterFetchJson(AI_ANALYSIS_ENDPOINT+"/hunter-universe",20000);
- if(!Array.isArray(payload.assets)||!payload.assets.length)throw new Error(payload.detail||payload.error||"فهرست مشترک Binance و CoinMarketCap دریافت نشد");
- const allUniverse=payload.assets.map(c=>({
-  id:String(c.id||("cmc:"+c.cmcId)),cmcId:Number(c.cmcId)||null,symbol:String(c.symbol||"").toUpperCase(),name:c.name||c.symbol,
-  image:c.image||"",current_price:Number(c.current_price)||0,total_volume:Number(c.total_volume)||0,market_cap:Number(c.market_cap)||null,
-  market_cap_rank:Number(c.market_cap_rank)||null,hunterExchange:c.hunterExchange||"Binance",hunterPriceExchange:c.hunterPriceExchange||"CoinMarketCap",
-  hunterChange24h:Number(c.hunterChange24h)||0,hunterVenueVolume:c.hunterVenueVolume||{},cmcDuplicateCount:Number(c.cmcDuplicateCount)||1
- })).filter(c=>c.symbol&&c.current_price>0&&/^[A-Z0-9]{2,20}$/.test(c.symbol));
- if(!allUniverse.length)throw new Error("هیچ دارایی مشترک با قیمت معتبر دریافت نشد");
+ let payload=null,workerError=null;
+ try{
+  payload=await hunterFetchJson(AI_ANALYSIS_ENDPOINT+"/hunter-universe",20000);
+  if(!Array.isArray(payload.assets)||!payload.assets.length)throw new Error(payload.detail||payload.error||"فهرست بازارها خالی است");
+ }catch(error){workerError=error;console.warn("Hunter Worker universe unavailable; using verified exchange-list fallback:",error?.message||error);}
+ let allUniverse=[];
+ if(Array.isArray(payload?.assets)&&payload.assets.length){
+  allUniverse=payload.assets.map(c=>({
+   id:String(c.id||("cmc:"+c.cmcId)),cmcId:Number(c.cmcId)||null,symbol:String(c.symbol||"").toUpperCase(),name:c.name||c.symbol,
+   image:c.image||"",current_price:Number(c.current_price)||0,total_volume:Number(c.total_volume)||0,market_cap:Number(c.market_cap)||null,
+   market_cap_rank:Number(c.market_cap_rank)||null,hunterExchange:c.hunterExchange||"Binance",hunterPriceExchange:c.hunterPriceExchange||"CoinMarketCap",
+   hunterChange24h:Number(c.hunterChange24h)||0,hunterVenueVolume:c.hunterVenueVolume||{},cmcDuplicateCount:Number(c.cmcDuplicateCount)||1
+  })).filter(c=>c.symbol&&c.current_price>0&&/^[A-Z0-9]{2,20}$/.test(c.symbol));
+ }
+ if(!allUniverse.length){
+  // پشتیبان مستقل: داده قیمت موجود سایت + فهرست واقعی جفت‌های USDT صرافی‌ها؛ خرابی مسیر تجمیع Worker نباید کل شکارچی را متوقف کند.
+  const exchangeSets=await getHunterExchangeMarkets().catch(error=>{console.warn("Hunter exchange fallback unavailable:",error?.message||error);return new Map();});
+  const candidates=Array.isArray(cachedCoinsData)?cachedCoinsData:[];
+  const bestBySymbol=new Map();
+  for(const c of candidates){
+   const symbol=String(c?.symbol||"").toUpperCase(),price=Number(c?.current_price)||0;
+   if(!/^[A-Z0-9]{2,20}$/.test(symbol)||price<=0||(typeof NON_TRADABLE_SYMBOLS!=="undefined"&&NON_TRADABLE_SYMBOLS.has(symbol)))continue;
+   const pair=symbol+"USDT";
+   const venues=[...exchangeSets.entries()].filter(([,symbols])=>symbols instanceof Set&&symbols.has(pair)).map(([name])=>name);
+   if(exchangeSets.size&&!venues.length)continue;
+   if(!venues.length)continue;
+   const coin={
+    id:String(c.id||("fallback:"+symbol)),symbol,name:c.name||symbol,image:c.image||"",
+    current_price:price,total_volume:Number(c.total_volume)||0,market_cap:Number(c.market_cap)||null,
+    market_cap_rank:Number(c.market_cap_rank)||null,hunterExchange:venues.join(", "),
+    hunterPriceExchange:c.price_source||"CoinGecko · پشتیبان",
+    hunterChange24h:Number(c.price_change_percentage_24h_in_currency??c.price_change_percentage_24h)||0,
+    hunterVenueVolume:{},cmcDuplicateCount:1
+   };
+   const previous=bestBySymbol.get(symbol);
+   if(!previous||(coin.market_cap_rank||Infinity)<(previous.market_cap_rank||Infinity))bestBySymbol.set(symbol,coin);
+  }
+  allUniverse=[...bestBySymbol.values()];
+  if(!allUniverse.length)throw new Error("فهرست Worker و مسیر پشتیبان صرافی‌ها در دسترس نیست"+(workerError?": "+String(workerError.message||workerError).slice(0,150):""));
+  allUniverse.sort((a,b)=>(b.total_volume||0)-(a.total_volume||0)||(a.market_cap_rank||Infinity)-(b.market_cap_rank||Infinity));
+  console.info("Hunter running on verified exchange-list fallback:",allUniverse.length,"symbols");
+ }
+ if(!allUniverse.length)throw new Error("هیچ دارایی USDT با قیمت معتبر دریافت نشد");
  hunterStreamMarkets=allUniverse;
  hunterCoinIndex.clear();hunterSymbolIndex.clear();
  allUniverse.forEach(c=>{hunterCoinIndex.set(c.id,c);hunterSymbolIndex.set(c.symbol,c);});
- hunterUniverseCache={expires:Date.now()+60000,coins:allUniverse,sources:payload.sources||{},checkedAt:payload.checked_at||new Date().toISOString()};
+ hunterUniverseCache={expires:Date.now()+30000,coins:allUniverse,sources:payload?.sources||{fallback:true},checkedAt:payload?.checked_at||new Date().toISOString()};
  connectHunterEarlyStream();connectHunterEarlyExchangeStreams();
  return allUniverse;
 }
