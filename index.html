@@ -1117,6 +1117,25 @@ body{background:
 .radar-expanded-reasons p{font-size:10px;line-height:1.9;color:var(--muted);margin:5px 0 0;overflow-wrap:anywhere}
 @media(max-width:560px){.radar-card-details>summary{flex-wrap:wrap}.radar-card-details>summary small{margin-inline-start:0}.radar-expanded-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
+<style id="mmp-independent-radar-live-progress-20261107">
+.radar-live-progress{margin:9px 0 12px;padding:10px 11px;border:1px solid #3b3528;border-radius:12px;background:linear-gradient(110deg,#151a23,#10151d);min-width:0;max-width:100%;overflow:hidden}
+.radar-progress-head,.radar-progress-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.radar-progress-head{font-size:11px;color:#c7ced9}.radar-progress-head b{color:var(--gold2);font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.radar-progress-track{height:7px;margin:8px 0 6px;border-radius:20px;background:#293241;overflow:hidden}
+.radar-progress-track i{display:block;height:100%;border-radius:20px;background:linear-gradient(90deg,#a77c35,#f2d99b);box-shadow:0 0 12px #d9b66d55;transition:width .32s ease}
+.radar-progress-foot{font-size:9px;color:var(--muted);font-variant-numeric:tabular-nums;flex-wrap:wrap}
+.radar-progress-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:9px}
+.radar-progress-metrics>div{min-width:0;padding:6px 4px;border:1px solid #293444;border-radius:8px;background:#0d131c;text-align:center}
+.radar-progress-metrics b{display:block;font-size:15px;line-height:1.35;color:var(--gold2);font-variant-numeric:tabular-nums}
+.radar-progress-metrics b.bull{color:var(--green)}.radar-progress-metrics b.bear,.radar-progress-metrics b.errors{color:var(--red)}
+.radar-progress-metrics small{display:block;margin-top:2px;color:var(--muted);font-size:9px;white-space:nowrap}
+.radar-item{min-width:0;max-width:100%;cursor:pointer}
+.radar-card-details>summary{cursor:pointer}
+.radar-card-close{display:block;width:100%;margin:0 0 9px;padding:7px 10px;border:1px solid #4b5362;border-radius:8px;background:#171e2a;color:var(--gold2);font:inherit;font-size:10px;font-weight:800}
+.radar-card-expanded,.radar-plan-body,.radar-expanded-stats,.radar-plan-grid{min-width:0;max-width:100%}
+.radar-expanded-stats>div,.radar-plan-grid>div{min-width:0;overflow-wrap:anywhere}
+@media(max-width:560px){.radar-live-progress{padding:9px}.radar-progress-metrics{gap:5px}.radar-progress-metrics>div{padding:6px 2px}.radar-progress-metrics b{font-size:14px}.radar-progress-metrics small{font-size:8px}}
+</style>
 </head>
 <body class="mmp-app-mode">
 
@@ -1201,7 +1220,7 @@ body{background:
 
 
 <section class="terminal-grid" id="opportunities">
-<section class="card radar-card"><div class="section-head"><div><div class="section-kicker">MMP MARKET SCANNER</div><h2>رادار هوشمند بازار</h2><p class="sub">خلاصه وضعیت بازار و پیشنهاد ورود و خروج بر پایه داده‌های زنده</p></div><button class="radar-refresh-btn" id="radar-refresh-btn" type="button" aria-label="بروزرسانی رادار و داده‌های بازار" title="بروزرسانی رادار و داده‌های بازار"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2v2.1M12 18.7v2.1M3.2 12h2.1m13.4 0h2.1M5.8 5.8l1.5 1.5m9.4 9.4 1.5 1.5m0-12.4-1.5 1.5m-9.4 9.4-1.5 1.5"/><circle cx="12" cy="12" r="6.1"/><path d="M12 8.7v3.6l2.3 1.4"/></svg><span>بروزرسانی</span></button></div><div class="radar-live-note"><span class="radar-live-dot"></span><span>رصد مستقل فرصت‌ها با تحلیل کندل‌های ۱، ۳ و ۵ دقیقه‌ای</span><span id="radar-updated" class="sub">در انتظار داده بازار…</span></div>
+<section class="card radar-card"><div class="section-head"><div><div class="section-kicker">MMP MARKET SCANNER</div><h2>رادار هوشمند بازار</h2><p class="sub">خلاصه وضعیت بازار و پیشنهاد ورود و خروج بر پایه داده‌های زنده</p></div><button class="radar-refresh-btn" id="radar-refresh-btn" type="button" aria-label="بروزرسانی رادار و داده‌های بازار" title="بروزرسانی رادار و داده‌های بازار"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2v2.1M12 18.7v2.1M3.2 12h2.1m13.4 0h2.1M5.8 5.8l1.5 1.5m9.4 9.4 1.5 1.5m0-12.4-1.5 1.5m-9.4 9.4-1.5 1.5"/><circle cx="12" cy="12" r="6.1"/><path d="M12 8.7v3.6l2.3 1.4"/></svg><span>بروزرسانی</span></button></div><div class="radar-live-note"><span class="radar-live-dot"></span><span>رصد مستقل فرصت‌ها با تحلیل کندل‌های ۱، ۳ و ۵ دقیقه‌ای</span><span id="radar-updated" class="sub">در انتظار داده بازار…</span></div><div id="radar-live-progress" class="radar-live-progress" aria-live="polite"><div class="radar-progress-head"><span>آماده شروع اسکن</span><b>۰٪</b></div><div class="radar-progress-track"><i style="width:0%"></i></div><div class="radar-progress-foot"><span>۰ از ۰ نماد بررسی‌شده</span><span>در انتظار فهرست بازار</span></div><div class="radar-progress-metrics"><div><b class="bull">۰</b><small>نامزد صعودی</small></div><div><b class="bear">۰</b><small>نامزد نزولی</small></div><div><b>۰</b><small>مجموع نامزدها</small></div><div><b class="errors">۰</b><small>تعداد خطا</small></div></div></div>
 <details class="radar-footnote" id="radar-diagnostics-wrap" style="margin:8px 0"><summary style="cursor:pointer">جزئیات سلامت داده‌های رادار</summary><div id="radar-diagnostics" class="sub" style="margin-top:8px">پس از اسکن، گزارش منابع و نمادهای ناموفق نمایش داده می‌شود.</div></details>
 <div id="opportunity-list" class="radar-groups"><div class="ai-empty">پس از دریافت قیمت‌ها، رادار بازار را بررسی می‌کند.</div></div>
 <p class="sub radar-footnote">امتیاز مستقل رادار از ۱۰۰ محاسبه می‌شود: مومنتوم ۳۰، حجم غیرعادی ۲۵، شکست محدوده ۲۰، هم‌جهتی تایم‌فریم‌ها ۱۵ و نقدشوندگی ۱۰. این تحلیل مستقل از منطق شکارچی بازار است.</p><p class="sub radar-footnote">رادار فرصت‌یاب است، نه دستور معامله؛ شکارچی بازار هر موقعیت را مستقل تأیید می‌کند.</p>
@@ -2708,13 +2727,39 @@ function independentRadarIsRetryable(error){
  const message=String(error?.message||error||"");
  return /HTTP\s*(408|425|429|5\d\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar|unavailable/i.test(message);
 }
+function independentRadarProgressCounts(state){
+ const rows=Object.values(state?.candidates||{}).filter(signal=>signal&&Number(signal.score)>=55&&(signal.trend==="bull"||signal.trend==="bear"));
+ const bullish=rows.filter(signal=>signal.trend==="bull").length,bearish=rows.filter(signal=>signal.trend==="bear").length;
+ return {bullish,bearish,total:bullish+bearish};
+}
+function renderIndependentRadarProgress(state,total){
+ const host=$("radar-live-progress");if(!host)return;
+ const progress=state?.progress||{},done=Math.max(0,Math.min(total,Number(progress.completed)||0)),percent=total?Math.max(0,Math.min(100,done/total*100)):0;
+ const counts=independentRadarProgressCounts(state),errors=Math.max(0,Number(progress.errors)||0),cycle=Math.max(1,Number(progress.cycle)||Number(state?.cycle)||1);
+ const fmt=value=>Number(value||0).toLocaleString("fa-IR");
+ const headline=progress.finished?"این دور اسکن کامل شد": "اسکن زنده · دور "+fmt(cycle);
+ const foot=progress.finished?"آماده‌سازی دور بعدی":"بررسی‌شده "+fmt(done)+" از "+fmt(total)+" نماد";
+ host.innerHTML='<div class="radar-progress-head"><span>'+headline+'</span><b>'+fmt(Math.round(percent))+'٪</b></div><div class="radar-progress-track" role="progressbar" aria-label="پیشرفت واقعی اسکن رادار" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'"><i style="width:'+percent.toFixed(2)+'%"></i></div><div class="radar-progress-foot"><span>'+foot+'</span><span>'+(progress.finished?"تکمیل شد":"اسکن نمادهای بعدی ادامه دارد")+'</span></div><div class="radar-progress-metrics"><div><b class="bull">'+fmt(counts.bullish)+'</b><small>نامزد صعودی</small></div><div><b class="bear">'+fmt(counts.bearish)+'</b><small>نامزد نزولی</small></div><div><b>'+fmt(counts.total)+'</b><small>مجموع نامزدها</small></div><div><b class="errors">'+fmt(errors)+'</b><small>تعداد خطا</small></div></div>';
+}
+function independentRadarPrepareProgress(state,total){
+ if(!state.progress||typeof state.progress!=="object")state.progress={completed:0,errors:0,finished:false,cycle:Number(state.cycle)||1};
+ if(state.progress.finished&&Number(state.cursor)===0){
+  state.progress={completed:0,errors:0,finished:false,cycle:Number(state.cycle)||1};
+ }
+ state.progress.completed=Math.max(0,Math.min(total,Number(state.progress.completed)||0));
+ state.progress.errors=Math.max(0,Number(state.progress.errors)||0);
+ state.progress.cycle=Number(state.progress.cycle)||Number(state.cycle)||1;
+ renderIndependentRadarProgress(state,total);
+}
 async function runIndependentRadarScan(force=false){
  if(independentRadarBusy||(!force&&Date.now()-independentRadarLastRun<12000))return;
  const coins=Array.isArray(cachedCoinsData)?cachedCoinsData.slice().sort((a,b)=>String(a?.symbol||"").localeCompare(String(b?.symbol||""))||String(a?.id||"").localeCompare(String(b?.id||""))):[];
  const status=$("radar-updated");
  if(!coins.length){if(status)status.textContent="در انتظار دریافت فهرست ارزها…";return;}
  const state=independentRadarLoadState(coins);
+ independentRadarPrepareProgress(state,coins.length);
  independentRadarRefreshSignals(state);
+ renderIndependentRadarProgress(state,coins.length);
  // نتایج معتبرِ ذخیره‌شده همان لحظه ورود دوباره نمایش داده می‌شوند؛ منتظر پایان بسته اسکن نمی‌مانیم.
  renderOpportunities();
  if(!independentRadarClaimLock()){
@@ -2741,9 +2786,9 @@ async function runIndependentRadarScan(force=false){
    const index=state.cursor++;examined++;
    const coin=coins[index],symbol=String(coin?.symbol||"").toUpperCase();
    const cached=state.cache[symbol];
-   if(isFresh(cached)){completed++;continue;}
+   if(isFresh(cached)){completed++;state.progress.completed=Math.min(coins.length,(Number(state.progress.completed)||0)+1);if(cached.status!=="ok")state.progress.errors=(Number(state.progress.errors)||0)+1;renderIndependentRadarProgress(state,coins.length);continue;}
    if(!/^[A-Z0-9]{2,20}$/.test(symbol)||NON_TRADABLE_SYMBOLS.has(symbol)){
-    state.cache[symbol]={status:"failed",at:now,error:"نماد غیرقابل معامله"};completed++;continue;
+    state.cache[symbol]={status:"failed",at:now,error:"نماد غیرقابل معامله"};completed++;state.progress.completed=Math.min(coins.length,(Number(state.progress.completed)||0)+1);state.progress.errors=(Number(state.progress.errors)||0)+1;renderIndependentRadarProgress(state,coins.length);continue;
    }
    tasks.push(index);
   }
@@ -2794,21 +2839,23 @@ async function runIndependentRadarScan(force=false){
       radarOpportunitySignals.set(symbol,signal);
       // هر نامزد واجد شرایط بلافاصله روی رادار ظاهر می‌شود؛ بقیه ارزها هم‌زمان اسکن می‌شوند.
       independentRadarSaveState(state);
-      renderOpportunities();
+      renderOpportunities();renderIndependentRadarProgress(state,coins.length);
      }else{
       delete state.candidates[symbol];
       radarOpportunitySignals.delete(symbol);
      }
     }catch(error){
      const message=String(error?.message||"خطای نامشخص"),transient=independentRadarIsRetryable(error);
+     state.progress.errors=(Number(state.progress.errors)||0)+1;
      state.cache[symbol]={status:transient?"retry":"failed",at:Date.now(),retryAt:Date.now()+(transient?INDEPENDENT_RADAR_RETRY_TTL:INDEPENDENT_RADAR_FAIL_TTL),error:message};
      if(transient)retryable++;else{failed++;if(failedSamples.length<8)failedSamples.push({symbol,message});}
      message.split(" · ").forEach(part=>{const match=part.match(/^([^:]{2,32}):/);if(match){const provider=match[1].trim();providerFailures.set(provider,(providerFailures.get(provider)||0)+1);}});
      if(failed+retryable<=3)console.debug("Independent radar "+symbol,message);
     }finally{
      state.pending=state.pending.filter(i=>i!==index);
+     state.progress.completed=Math.min(coins.length,(Number(state.progress.completed)||0)+1);
      independentRadarSaveState(state);
-     completed++;
+     completed++;renderIndependentRadarProgress(state,coins.length);
     }
     if(status)status.textContent="رادار مستقل · "+Math.min(state.cursor,coins.length)+" از "+coins.length+" در صف پیمایش · بسته انجام‌شده: "+completed+"/"+tasks.length+" · خطای موقت: "+retryable+" · خطای داده: "+failed+" · نامزدهای معتبر: "+Object.keys(state.candidates).length;
    }
@@ -2818,6 +2865,8 @@ async function runIndependentRadarScan(force=false){
   qualified=radarOpportunitySignals.size;
   // پایان دور: نشانگر به ابتدا برمی‌گردد، اما داده‌های تازه و خطاهای موقت تا زمان انقضا cache می‌مانند.
   if(state.cursor>=coins.length&&state.pending.length===0){
+   state.progress.completed=coins.length;state.progress.finished=true;
+   renderIndependentRadarProgress(state,coins.length);
    state.cursor=0;state.cycle=(Number(state.cycle)||1)+1;state.startedAt=Date.now();
   }
   independentRadarSaveState(state);
@@ -2842,7 +2891,7 @@ async function runIndependentRadarScan(force=false){
   // بسته بعدی بدون انتظار برای بازشدن مجدد سایت آغاز می‌شود؛ وقتی cache تازه است،
   // فاصله بیشتر می‌شود تا درخواست تکراری و فشار بیهوده به API ایجاد نشود.
   if(document.visibilityState!=="hidden"){
-   const wait=tasks.length?900:20000;
+   const wait=state?.progress?.finished?2500:(tasks.length?900:20000);
    setTimeout(()=>runIndependentRadarScan(true),wait);
   }
  }
@@ -3283,10 +3332,10 @@ function renderOpportunities(){
   const p=m.components||{},why=m.fast?("مومنتوم "+Math.round(p.momentum||0)+"/۳۰ · حجم "+Math.round(p.volume||0)+"/۲۵ · شکست "+Math.round(p.breakout||0)+"/۲۰ · هم‌جهتی "+Math.round(p.multi||0)+"/۱۵ · نقدشوندگی "+Math.round(p.liquidity||0)+"/۱۰"):m.dataQuality;
   const planHtml=plan?'<div class="radar-trade-strip"><span><small>ورود پیشنهادی</small><b>$'+price(plan.entry)+'</b></span><span><small>حد ضرر</small><b class="negative">$'+price(plan.stop)+'</b></span><span><small>هدف اول</small><b class="positive">$'+price(plan.target1)+'</b></span><span><small>هدف دوم</small><b class="positive">$'+price(plan.target2)+'</b></span></div>':'<div class="radar-plan-unavailable">سطوح ورود و خروج: داده کافی برای محاسبه ATR وجود ندارد.</div>';
   const detail=plan?'<details class="radar-plan"><summary>جزئیات کامل معامله و مدیریت ریسک</summary><div class="radar-plan-body"><div class="radar-plan-grid"><div><small>جهت موقعیت</small><b>'+plan.side+'</b></div><div><small>ریسک تا حد ضرر</small><b>'+plan.riskPct.toFixed(2)+'٪</b></div><div><small>نسبت سود به زیان هدف اول</small><b>۱ : '+plan.rr1.toFixed(1)+'</b></div><div><small>نسبت سود به زیان هدف دوم</small><b>۱ : '+plan.rr2.toFixed(1)+'</b></div><div><small>ATR نوسان</small><b>'+plan.atrPct.toFixed(3)+'٪</b></div><div><small>حجم معاملات ۲۴ساعته</small><b>'+money(c.total_volume)+'</b></div><div><small>ارزش بازار</small><b>'+money(c.market_cap)+'</b></div></div><p class="radar-plan-note">قیمت ورود بر اساس آخرین کندل بسته‌شده است. حد ضرر با ۱٫۴ برابر ATR و اهداف با نسبت ریسک به بازده ۱٫۵ و ۲٫۵ محاسبه شده‌اند. این سطوح تخمینی‌اند؛ پیش از ورود، اسپرد، کارمزد، عمق دفتر سفارش و قیمت لحظه‌ای صرافی خود را بررسی کن. امتیاز رادار تضمین سود نیست.</p></div></details>':'';
-  return '<article class="radar-item '+(up?"radar-item-bullish":down?"radar-item-bearish":"radar-item-neutral")+'"><div class="radar-asset"><img src="'+aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"))+'" alt="" loading="lazy"><span><b>'+aiEscape(c.name)+'</b><small>'+aiEscape(String(c.symbol).toUpperCase())+' · '+(m.fast?aiEscape(m.fast.provider):"منبع داده")+'</small><strong class="radar-direction-label">'+direction+'</strong></span></div><div class="radar-score"><b>'+m.score.toLocaleString("fa-IR")+'</b><small>امتیاز از ۱۰۰</small></div><div class="radar-stats">'+(m.fast?'<span>تغییر ۱ دقیقه<b class="'+(m.fast.change1m>=0?"positive":"negative")+'">'+change(m.fast.change1m)+'</b></span><span>تغییر ۳ دقیقه<b class="'+(m.fast.change3m>=0?"positive":"negative")+'">'+change(m.fast.change3m)+'</b></span><span>تأیید ۵ دقیقه<b class="'+(m.fast.change5m>=0?"positive":"negative")+'">'+change(m.fast.change5m)+'</b></span>':'<span>تغییر ۱ ساعت<b>'+change(m.h1)+'</b></span><span>تغییر ۲۴ ساعت<b>'+change(c.price_change_percentage_24h)+'</b></span>')+'</div><div class="radar-action"><span class="radar-trend">'+aiEscape(m.fast?"تحلیل کندل و حجم · "+m.fast.provider:(why||"در انتظار تأیید"))+'</span></div><details class="radar-card-details"><summary><span>مشاهده اطلاعات کامل و برنامه معامله</span><small>ورود · حد ضرر · اهداف · ریسک</small></summary><div class="radar-card-expanded">'+planHtml+'<div class="radar-expanded-stats"><div><small>تغییر ۲۴ ساعت</small><b class="'+(Number(c.price_change_percentage_24h)>=0?"positive":"negative")+'">'+change(c.price_change_percentage_24h)+'</b></div><div><small>حجم نسبی</small><b>'+(m.fast?Number(m.fast.volumeRatio||0).toFixed(1)+'×':"—")+'</b></div><div><small>حجم معاملات ۲۴ ساعته</small><b>'+money(c.total_volume)+'</b></div><div><small>ارزش بازار</small><b>'+money(c.market_cap)+'</b></div><div><small>منبع داده</small><b>'+aiEscape(m.fast?.provider||"نامشخص")+'</b></div><div><small>زمان آخرین تحلیل</small><b>'+new Date(m.updatedAt||Date.now()).toLocaleTimeString("fa-IR")+'</b></div></div><div class="radar-expanded-reasons"><b>دلایل امتیاز رادار</b><p>'+aiEscape(why||"داده تحلیلی تکمیلی موجود نیست.")+'</p></div>'+detail+'</div></details></article>';
+  return '<article class="radar-item '+(up?"radar-item-bullish":down?"radar-item-bearish":"radar-item-neutral")+'"><div class="radar-asset"><img src="'+aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"))+'" alt="" loading="lazy"><span><b>'+aiEscape(c.name)+'</b><small>'+aiEscape(String(c.symbol).toUpperCase())+' · '+(m.fast?aiEscape(m.fast.provider):"منبع داده")+'</small><strong class="radar-direction-label">'+direction+'</strong></span></div><div class="radar-score"><b>'+m.score.toLocaleString("fa-IR")+'</b><small>امتیاز از ۱۰۰</small></div><div class="radar-stats">'+(m.fast?'<span>تغییر ۱ دقیقه<b class="'+(m.fast.change1m>=0?"positive":"negative")+'">'+change(m.fast.change1m)+'</b></span><span>تغییر ۳ دقیقه<b class="'+(m.fast.change3m>=0?"positive":"negative")+'">'+change(m.fast.change3m)+'</b></span><span>تأیید ۵ دقیقه<b class="'+(m.fast.change5m>=0?"positive":"negative")+'">'+change(m.fast.change5m)+'</b></span>':'<span>تغییر ۱ ساعت<b>'+change(m.h1)+'</b></span><span>تغییر ۲۴ ساعت<b>'+change(c.price_change_percentage_24h)+'</b></span>')+'</div><div class="radar-action"><span class="radar-trend">'+aiEscape(m.fast?"تحلیل کندل و حجم · "+m.fast.provider:(why||"در انتظار تأیید"))+'</span></div><details class="radar-card-details"><summary><span>مشاهده اطلاعات کامل و برنامه معامله</span><small>ورود · حد ضرر · اهداف · ریسک</small></summary><div class="radar-card-expanded"><button type="button" class="radar-card-close">بستن جزئیات ×</button>'+planHtml+'<div class="radar-expanded-stats"><div><small>تغییر ۲۴ ساعت</small><b class="'+(Number(c.price_change_percentage_24h)>=0?"positive":"negative")+'">'+change(c.price_change_percentage_24h)+'</b></div><div><small>حجم نسبی</small><b>'+(m.fast?Number(m.fast.volumeRatio||0).toFixed(1)+'×':"—")+'</b></div><div><small>حجم معاملات ۲۴ ساعته</small><b>'+money(c.total_volume)+'</b></div><div><small>ارزش بازار</small><b>'+money(c.market_cap)+'</b></div><div><small>منبع داده</small><b>'+aiEscape(m.fast?.provider||"نامشخص")+'</b></div><div><small>زمان آخرین تحلیل</small><b>'+new Date(m.updatedAt||Date.now()).toLocaleTimeString("fa-IR")+'</b></div></div><div class="radar-expanded-reasons"><b>دلایل امتیاز رادار</b><p>'+aiEscape(why||"داده تحلیلی تکمیلی موجود نیست.")+'</p></div>'+detail+'</div></details></article>';
  }; const list=(title,items,lower,cls)=>{
-  const top=items.slice(0,6),extra=items.slice(6);
-  return '<section class="radar-side '+cls+'"><div class="section-head radar-group-head"><div><b class="radar-large-heading">'+title+'</b></div><span class="badge">'+items.length.toLocaleString("fa-IR")+' فرصت قوی</span></div><div class="radar-list">'+top.map(card).join("")+'</div>'+(extra.length?'<details class="radar-more"><summary><span class="radar-toggle-copy"><b>'+extra.length.toLocaleString("fa-IR")+' فرصت قوی دیگر</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+extra.map(card).join("")+'</div></details>':"")+(lower.length?'<details class="radar-more radar-below-threshold"><summary><span class="radar-toggle-copy"><b>'+lower.length.toLocaleString("fa-IR")+' نامزد اولیه با امتیاز ۵۵ تا ۷۹</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+lower.map(card).join("")+'</div></details>':"")+'</section>';
+  const all=[...items,...lower];
+  return '<section class="radar-side '+cls+'"><div class="section-head radar-group-head"><div><b class="radar-large-heading">'+title+'</b></div><span class="badge">'+all.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list">'+all.map(card).join("")+'</div></section>';
  };
  el.innerHTML=list("فرصت‌های صعودی",bullish,bullish70,"bull")+list("فرصت‌های نزولی",bearish,bearish70,"bear");
  // Fast radar runs independently from the manual AI analysis quota.
@@ -3306,6 +3355,7 @@ $("market-refresh-btn")?.addEventListener("click",()=>refreshAll());
  $("risk-calc")?.addEventListener("click",calcRisk);
 
 $("opportunities")?.addEventListener("click",e=>{const button=e.target.closest("[data-radar-filter]");if(!button)return;radarFilter=button.dataset.radarFilter;document.querySelectorAll("[data-radar-filter]").forEach(x=>x.classList.toggle("active",x===button));renderOpportunities()});
+$("opportunity-list")?.addEventListener("click",e=>{const close=e.target.closest(".radar-card-close");if(close){const details=close.closest(".radar-card-details");if(details)details.open=false;e.stopPropagation();return;}const card=e.target.closest(".radar-item");if(!card||e.target.closest("button,a,summary,input,select,textarea,details"))return;const details=card.querySelector(".radar-card-details");if(details)details.open=!details.open;});
 $("risk-calc")?.addEventListener("click",calcRisk);
 // شروع دریافت قیمت‌ها را به راه‌اندازی اجزای غیرضروری رابط وابسته نکن.
 // حتی اگر منوی انتخاب ارز یا ساعت بازار خطا بدهد، دریافت قیمت باید آغاز شود.
