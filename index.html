@@ -2644,7 +2644,7 @@ async function hunterConfirmTf(symbol,market,interval){
  let last;for(const load of urls){try{const rows=await load();if(rows.length>=25)return rows;}catch(e){last=e;}}throw last||new Error("تأیید تایم‌فریم "+interval+" دریافت نشد");
 }
 function hunterTfBias(rows,interval){
- const duration=(interval==="60"?60:15)*60*1000,closed=(rows||[]).filter(x=>x.t+duration<=Date.now());
+ const duration=(interval==="240"?240:interval==="60"?60:15)*60*1000,closed=(rows||[]).filter(x=>x.t+duration<=Date.now());
  if(closed.length<22)return null;
  const closes=closed.map(x=>x.c),ema=(a,p)=>{const k=2/(p+1);let v=a[0];for(let i=1;i<a.length;i++)v=a[i]*k+v*(1-k);return v;};
  const last=closed[closed.length-1],e20=ema(closes.slice(-Math.min(60,closes.length)),20),e50=ema(closes.slice(-Math.min(80,closes.length)),50);
