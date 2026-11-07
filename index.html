@@ -2624,18 +2624,27 @@ function independentRadarClaimLock(){
  try{
   const now=Date.now(),old=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null");
   if(old&&old.owner!==independentRadarTabId&&Number(old.expires)>now)return false;
-  const lock={owner:independentRadarTabId,expires:now+150000};
+  const lock={owner:independentRadarTabId,expires:now+300000,heartbeat:now};
   localStorage.setItem(INDEPENDENT_RADAR_LOCK_KEY,JSON.stringify(lock));
   const check=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null");
   return check?.owner===independentRadarTabId;
  }catch(error){return true;}
+}
+function independentRadarRenewLock(){
+ try{
+  const lock=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null");
+  if(lock?.owner!==independentRadarTabId)return false;
+  const now=Date.now();lock.heartbeat=now;lock.expires=now+300000;
+  localStorage.setItem(INDEPENDENT_RADAR_LOCK_KEY,JSON.stringify(lock));
+  return JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null")?.owner===independentRadarTabId;
+ }catch(error){return false;}
 }
 function independentRadarReleaseLock(){
  try{const lock=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null");if(lock?.owner===independentRadarTabId)localStorage.removeItem(INDEPENDENT_RADAR_LOCK_KEY);}catch(error){}
 }
 function independentRadarIsRetryable(error){
  const message=String(error?.message||error||"");
- return /HTTP\s*(408|425|429|5\d\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar|unavailable/i.test(message);
+ return /HTTP\s*(408|425|429|5\d\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar|unavailable|پیوسته نیستند|ناپیوستگی کندل/i.test(message);
 }
 async function runIndependentRadarScan(force=false){
  if(independentRadarBusy||(!force&&Date.now()-independentRadarLastRun<12000))return;
@@ -2651,6 +2660,7 @@ async function runIndependentRadarScan(force=false){
   return;
  }
  independentRadarBusy=true;independentRadarLastRun=Date.now();
+ const radarLockHeartbeat=setInterval(()=>{if(!independentRadarRenewLock())console.warn("Independent radar lock ownership was lost; this batch will finish without claiming a new lease.");},30000);
  let completed=0,failed=0,retryable=0,qualified=radarOpportunitySignals.size;
  const providerFailures=new Map(),failedSamples=[];
  const now=Date.now(),tasks=[];
@@ -2687,6 +2697,9 @@ async function runIndependentRadarScan(force=false){
      if(!Array.isArray(rows)||rows.length<25)throw new Error("کندل کافی نیست");
      const indexClosed=rows.length-2,last=rows[indexClosed],close=Number(last[4]),open=Number(last[1]),volume=Number(last[5]),age=Date.now()-Number(last[0]);
      if(!(close>0&&open>0&&volume>0&&age>=0&&age<=4*60*1000))throw new Error("کندل بسته‌شده معتبر نیست");
+     // محاسبه ۱/۳/۵ دقیقه فقط وقتی مجاز است که پنج کندل بسته‌شده واقعاً یک‌دقیقه‌ای و پیوسته باشند.
+     const recentBars=rows.slice(indexClosed-4,indexClosed+1);
+     if(recentBars.length!==5||recentBars.some((bar,i)=>!Number.isFinite(Number(bar[0]))||!(Number(bar[4])>0)||!(Number(bar[1])>0)||(i>0&&Math.abs((Number(bar[0])-Number(recentBars[i-1][0]))-60000)>3000)))throw new Error("کندل‌های یک‌دقیقه‌ای پیوسته نیستند؛ تلاش مجدد لازم است");
      const baseline=rows.slice(Math.max(0,indexClosed-20),indexClosed).map(x=>Number(x[5])).filter(v=>v>0);
      if(baseline.length<16)throw new Error("حجم پایه کافی نیست");
      const avg=baseline.reduce((a,b)=>a+b,0)/baseline.length,volumeRatio=avg>0?volume/avg:0;
@@ -2759,7 +2772,7 @@ async function runIndependentRadarScan(force=false){
   if(status)status.textContent="اسکن مستقل رادار متوقف شد؛ پیشرفت قبلی محفوظ است: "+(error?.message||"خطای نامشخص");
   console.warn("Independent radar scan:",error);
  }finally{
-  independentRadarBusy=false;independentRadarReleaseLock();
+  independentRadarBusy=false;clearInterval(radarLockHeartbeat);independentRadarReleaseLock();
   // بسته بعدی بدون انتظار برای بازشدن مجدد سایت آغاز می‌شود؛ وقتی cache تازه است،
   // فاصله بیشتر می‌شود تا درخواست تکراری و فشار بیهوده به API ایجاد نشود.
   if(document.visibilityState!=="hidden"){
