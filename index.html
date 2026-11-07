@@ -2755,7 +2755,11 @@ function connectHunterStreams(){
   try{
    const ws=new WebSocket("wss://stream.binance.com:9443/ws/"+String(coin.symbol||"").toLowerCase()+"usdt@kline_1m");hunterSockets.set(id,ws);
    ws.onmessage=event=>{try{const payload=JSON.parse(event.data),k=payload.k;if(!k)return;const current=fastRadarSignals.get(id);if(!current)return;const row=[Number(k.t),Number(k.o),Number(k.h),Number(k.l),Number(k.c),Number(k.v)],rows=current.rows||[],last=rows[rows.length-1];if(last&&Number(last[0])===row[0])rows[rows.length-1]=row;else rows.push(row);current.rows=rows.slice(-30);current.price=row[4];current.change1m=(row[4]/row[1]-1)*100;current.change3m=(row[4]/Number(current.rows[Math.max(0,current.rows.length-3)][1])-1)*100;current.updatedAt=Date.now();const mini=document.querySelector('[data-hunter-mini="'+id+'"]');if(mini)mini.innerHTML='<span>'+(current.trend==="bull"?"پرواز قیمت ↑":"سقوط قیمت ↓")+'</span>'+hunterMiniCandles(current.rows,current.trend);const card=document.querySelector('[data-hunter-card="'+id+'"]');if(card){const price=card.querySelector(".hunter-live-price");if(price)price.textContent=hunterPrice(current.price);}}catch(error){console.debug("Hunter stream parse:",error);}};
-   ws.onerror=()=>{function renderOpportunities(){
+   ws.onerror=()=>{try{ws.close();}catch(e){}};ws.onclose=()=>{if(hunterSockets.get(id)===ws)hunterSockets.delete(id);};
+  }catch(error){console.debug("Hunter websocket unavailable:",error);}
+ });
+}
+function renderOpportunities(){
  const el=$("opportunity-list");
  if(!el)return;
  if(!cachedCoinsData.length){el.innerHTML='<div class="ai-empty">داده بازار هنوز دریافت نشده است.</div>';return;}
