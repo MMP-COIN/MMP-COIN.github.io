@@ -3717,27 +3717,27 @@ setInterval(()=>mmpSendEvent("heartbeat"),240000);
  const merge=(coin)=>{
   const symbol=String(coin?.symbol||"").toUpperCase();
   if(!/^[A-Z0-9]{2,20}$/.test(symbol))return;
+  if(typeof NON_TRADABLE_SYMBOLS!=="undefined"&&NON_TRADABLE_SYMBOLS.has(symbol))return;
   const previous=source.get(symbol)||{};
-  source.set(symbol,{...previous,...coin,symbol});
+  const merged={...previous,...coin,symbol};
+  if(!merged.name)merged.name=symbol;
+  source.set(symbol,merged);
  };
- (Array.isArray(cachedCoinsData)?cachedCoinsData:[]).forEach(merge);
+ // فهرست مرجع آزمایشگاه، همان کاتالوگ کامل دارایی‌های سایت است؛ نه فقط ۱۰۰ ارز برتر.
+ if(typeof unifiedAssetCatalogCache!=="undefined"&&Array.isArray(unifiedAssetCatalogCache))unifiedAssetCatalogCache.forEach(merge);
  if(typeof hunterUniverseCache!=="undefined"&&Array.isArray(hunterUniverseCache?.coins))hunterUniverseCache.coins.forEach(merge);
- const qualified=[...source.values()].filter(c=>{
-  const cap=Number(c.market_cap||c.marketCap||0),vol=Number(c.total_volume||c.volume_24h||c.volume24h||0),rank=Number(c.market_cap_rank||c.marketCapRank||0);
-  return cap>=MIN_COIN_MARKET_CAP_USD&&vol>=MIN_COIN_VOLUME_24H_USD&&(!rank||rank<=MAX_COIN_MARKET_CAP_RANK);
- }).sort((a,b)=>{
-  const ar=Number(a.market_cap_rank||a.marketCapRank||999999),br=Number(b.market_cap_rank||b.marketCapRank||999999);
-  return ar-br||Number(b.market_cap||b.marketCap||0)-Number(a.market_cap||a.marketCap||0);
- }).slice(0,100);
- const keep=new Map(qualified.map(c=>[c.symbol,c]));
- // ارزهایی که کاربر خودش اضافه کرده، حتی اگر کوچک باشند، حذف نمی‌شوند.
+ (Array.isArray(cachedCoinsData)?cachedCoinsData:[]).forEach(merge);
+ // ارزهای دستی کاربر نیز در کنار فهرست اصلی باقی می‌مانند.
  try{
   const custom=JSON.parse(localStorage.getItem("mmp_boom_custom_coins")||"[]");
-  custom.forEach(c=>{const symbol=String(c?.symbol||"").toUpperCase();if(symbol)keep.set(symbol,{...c,symbol});});
+  custom.forEach(merge);
   const shared=JSON.parse(localStorage.getItem("mmp_manual_coin_symbols_v1")||"[]");
-  shared.forEach(symbol=>{const key=String(symbol||"").toUpperCase();if(key&&!keep.has(key))keep.set(key,{symbol:key,name:key});});
+  shared.forEach(symbol=>merge({symbol,name:String(symbol||"").toUpperCase()}));
  }catch(e){}
- return [...keep.values()];
+ return [...source.values()].sort((a,b)=>{
+  const ar=Number(a.market_cap_rank||a.marketCapRank||999999),br=Number(b.market_cap_rank||b.marketCapRank||999999);
+  return ar-br||Number(b.total_volume||b.volume_24h||b.volume24h||0)-Number(a.total_volume||a.volume_24h||a.volume24h||0)||a.symbol.localeCompare(b.symbol);
+ });
 }
 function renderBoomCoins(root=document,showMenu=false){
  const qualified=boomHunterQualifiedCoins();
@@ -3748,7 +3748,7 @@ function renderBoomCoins(root=document,showMenu=false){
  if(list)list.innerHTML="";
  const selected=boomCoins.get(String(input?.value||"").trim().toUpperCase());
  if(selected){if(icon){icon.src=selected.image;icon.style.display="";}if(name)name.textContent=selected.name+" · "+selected.symbol;}
- else if(name)name.textContent=input?.value?"نماد واردشده: "+input.value.toUpperCase():"۱۰۰ ارز برترِ دارای ارزش بازار و حجم معاملات معتبر";
+ else if(name)name.textContent=input?.value?"نماد واردشده: "+input.value.toUpperCase():coins.length.toLocaleString("fa-IR")+" ارز از فهرست کامل سایت";
  if(menu&&(showMenu||menu.dataset.open==="1")){
   const query=String(input?.value||"").trim().toLowerCase();
   const filtered=query?coins.filter(c=>c.symbol.toLowerCase().includes(query)||c.name.toLowerCase().includes(query)):coins;
@@ -3768,7 +3768,7 @@ function renderBoomCoins(root=document,showMenu=false){
   input.addEventListener("focus",openMenu);
   input.addEventListener("click",openMenu);
   input.addEventListener("input",()=>renderBoomCoins(root,true));
-  input.addEventListener("keydown",e=>{if(e.key==="Escape"){input.value=input.dataset.previousValue||input.value;menu.hidden=true;menu.dataset.open="0";}});
+  input.addEventListener("keydown",e=>{if(e.key==="Escape"){input.value=input.dataset.previousValue||input.value;menu.hidden=true;menu.dataset.open="0";const showButton=get("boom-show-coins");if(showButton)showButton.textContent="نمایش فهرست ارزها";}});
   menu.addEventListener("click",e=>{
    const option=e.target.closest("[data-symbol]");if(!option)return;
    input.value=option.dataset.symbol;input.dataset.previousValue=input.value;
@@ -3786,7 +3786,7 @@ function renderBoomCoins(root=document,showMenu=false){
   try{await fetchHunterUniverse();}catch(e){console.debug("Boom quality universe unavailable",e?.message||e);}
   try{const saved=JSON.parse(localStorage.getItem("mmp_boom_custom_coins")||"[]");saved.forEach(c=>addBoomCoin(c));const shared=JSON.parse(localStorage.getItem("mmp_manual_coin_symbols_v1")||"[]");shared.forEach(symbol=>addBoomCoin({symbol,name:symbol}));}catch(e){}
   renderBoomCoins();if(expandedBoomClone)renderBoomCoins(expandedBoomClone);
-  const label=$("boom-coin-name");if(label)label.textContent=boomHunterQualifiedCoins().length.toLocaleString("fa-IR")+" ارز منتخب · فقط بازارهای معتبر و پرمعامله";
+  const label=$("boom-coin-name");if(label)label.textContent=boomHunterQualifiedCoins().length.toLocaleString("fa-IR")+" ارز از کاتالوگ کامل سایت · جستجو با نام یا نماد";
  }
  setupBoomCoinMenu();
  const showCoinsButton=$("boom-show-coins");
@@ -4332,9 +4332,12 @@ body:before{opacity:.23;background-size:34px 34px}
 
 <style id="mmp-selector-layout-and-intelligence-fix-20261106">
 /* Boom Hunter picker: anchor the menu to its own field, centered and compact */
-.boom-coin-picker{position:relative!important;min-width:0}
-.boom-coin-picker .boom-coin-menu{top:calc(100% + 7px)!important;left:50%!important;right:auto!important;transform:translateX(-50%);width:min(340px,calc(100vw - 34px));max-height:min(56vh,390px);overflow:auto}
-.boom-coin-option{min-height:43px}
+.boom-coin-picker{position:relative!important;min-width:0;z-index:30}
+.boom-coin-picker .boom-coin-select-wrap{position:relative!important;min-width:0}
+.boom-coin-picker .boom-coin-menu{top:calc(100% + 7px)!important;right:0!important;left:auto!important;transform:none!important;width:min(380px,calc(100vw - 34px))!important;max-width:calc(100vw - 28px)!important;max-height:min(62vh,440px)!important;overflow:auto;overscroll-behavior:contain;box-sizing:border-box}
+.boom-coin-option{min-height:46px}
+.boom-coin-option:focus-visible{outline:2px solid #d9b66d;outline-offset:-2px}
+@media(max-width:720px){.boom-toolbar{grid-template-columns:minmax(0,1fr)!important;align-items:stretch!important}.boom-toolbar>label,.boom-toolbar>.btn{width:100%;min-width:0}.boom-coin-actions .btn{min-width:0}.boom-coin-picker .boom-coin-menu{width:100%!important;max-width:100%!important;right:0!important;left:0!important}}
 .boom-coin-option img{width:25px;height:25px;flex-basis:25px}
 .boom-coin-select{display:flex;align-items:center;gap:7px;min-width:0}
 .boom-coin-select input{flex:1;min-width:0}
