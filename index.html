@@ -3009,7 +3009,7 @@ html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!i
       if(previous!==hash){
        try{localStorage.setItem(pendingKey,hash);}catch(e){}
        showNativeUpdateMessage("نسخه جدید دریافت شد؛ تغییرات در حال اعمال خودکار هستند…");
-       setTimeout(function(){location.reload();},800);
+       setTimeout(function(){var applyUrl=new URL(location.href);applyUrl.searchParams.set("mmp_live_refresh",String(Date.now()));applyUrl.searchParams.delete("mmp_live_check");location.replace(applyUrl.toString());},800);
        return;
       }
       if(manual)showNativeUpdateMessage("تغییر جدیدی وجود ندارد؛ اپ به‌روز است.");
@@ -3067,7 +3067,8 @@ html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!i
    if(updateCheckButton)updateCheckButton.addEventListener("click",function(){checkNativeUpdate(true);});
    document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")checkNativeUpdate(false);});
    window.addEventListener("focus",function(){checkNativeUpdate(false);});
-   setInterval(function(){if(document.visibilityState==="visible")checkNativeUpdate(false);},30*60*1000);
+   setInterval(function(){if(document.visibilityState==="visible")checkLivePageUpdate(false);},5*60*1000);
+   setInterval(function(){if(document.visibilityState==="visible")checkNativeApkUpdate(false);},6*60*60*1000);
    checkNativeUpdate(false);
    var wrap=document.querySelector(".wrap");
    if(wrap){
@@ -4102,6 +4103,66 @@ window.mmpShareDownloadLink = async function () {
 };
 </script>
 <!-- mmp-pages-redeploy-20261107-market-hunter -->
+<script id="mmp-web-auto-update">
+(function(){
+ try{
+  var native=!!(window.Capacitor&&(window.Capacitor.isNativePlatform?.()||window.Capacitor.getPlatform?.()==="android"))||location.protocol==="capacitor:";
+  if(native)return;
+  var HASH_KEY="mmp-web-page-hash-v1",PENDING_KEY="mmp-web-page-pending-v1";
+  var checking=false,lastCheck=0,reloadQueued=false,banner=null;
+  function digest(value){
+   if(window.crypto&&crypto.subtle&&window.TextEncoder)return crypto.subtle.digest("SHA-256",new TextEncoder().encode(value)).then(function(buf){return Array.from(new Uint8Array(buf)).map(function(x){return x.toString(16).padStart(2,"0")}).join("");});
+   var h=2166136261;for(var i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619);}return Promise.resolve(String(h>>>0));
+  }
+  function safeToReload(){
+   var el=document.activeElement;
+   if(el&&(el.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)))return false;
+   if(window.aiBusy===true||window.liveAnalysisBusy===true)return false;
+   return true;
+  }
+  function showNotice(message){
+   if(!document.body)return;
+   if(!banner){
+    banner=document.createElement("div");
+    banner.id="mmp-auto-update-notice";
+    banner.style.cssText="position:fixed;z-index:99999;bottom:16px;left:12px;right:12px;max-width:520px;margin:auto;padding:12px 15px;border:1px solid #b99554;border-radius:13px;background:#111923;color:#f5dda2;box-shadow:0 8px 28px #0008;font:12px Tahoma,Arial,sans-serif;text-align:center;direction:rtl";
+    document.body.appendChild(banner);
+   }
+   banner.textContent=message;
+  }
+  function applyUpdate(){
+   if(!reloadQueued||!safeToReload()||document.visibilityState==="hidden")return;
+   reloadQueued=false;
+   var u=new URL(location.href);u.searchParams.set("mmp_site_refresh",String(Date.now()));
+   showNotice("به‌روزرسانی جدید آماده شد؛ سایت در حال تازه‌سازی امن است…");
+   setTimeout(function(){location.replace(u.toString());},900);
+  }
+  function check(){
+   if(checking||Date.now()-lastCheck<60000)return;
+   checking=true;lastCheck=Date.now();
+   var u=new URL(location.href);u.searchParams.set("mmp_site_update_check",String(Date.now()));u.hash="";
+   var controller=new AbortController(),timer=setTimeout(function(){controller.abort();},15000);
+   fetch(u.toString(),{method:"GET",cache:"no-store",credentials:"same-origin",signal:controller.signal,headers:{"Cache-Control":"no-cache","Pragma":"no-cache"}})
+    .then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.text();})
+    .then(digest)
+    .then(function(hash){
+     var pending="";try{pending=localStorage.getItem(PENDING_KEY)||"";}catch(e){}
+     if(pending&&pending===hash){try{localStorage.removeItem(PENDING_KEY);localStorage.setItem(HASH_KEY,hash);}catch(e){}return;}
+     var previous="";try{previous=localStorage.getItem(HASH_KEY)||"";}catch(e){}
+     if(!previous){try{localStorage.setItem(HASH_KEY,hash);}catch(e){}return;}
+     if(previous!==hash){try{localStorage.setItem(PENDING_KEY,hash);}catch(e){}reloadQueued=true;showNotice("نسخه جدید سایت آماده است؛ پس از پایان کار جاری، خودکار اعمال می‌شود.");applyUpdate();}
+    })
+    .catch(function(){})
+    .finally(function(){clearTimeout(timer);checking=false;});
+  }
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"){if(reloadQueued)applyUpdate();else check();}});
+  window.addEventListener("focus",function(){if(reloadQueued)applyUpdate();else check();});
+  document.addEventListener("focusout",function(){if(reloadQueued)setTimeout(applyUpdate,250);});
+  setInterval(function(){if(document.visibilityState==="visible"){if(reloadQueued)applyUpdate();else check();}},5*60*1000);
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",check,{once:true});else check();
+ }catch(e){}
+})();
+</script>
 </body>
 
 <!-- mmp-deploy-retry-20261107: trigger GitHub Pages deployment -->
