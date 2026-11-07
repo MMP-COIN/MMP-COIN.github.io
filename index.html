@@ -1004,6 +1004,15 @@ body{background:
 </style>
 
 <style>
+.hunter-more-queue{grid-column:1/-1;min-width:0;border:1px solid #9d855255;border-radius:12px;background:linear-gradient(145deg,#171f2a,#0d141d);overflow:hidden}
+.hunter-more-queue>summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;padding:12px 14px;color:#f0d28e;font-size:11px;font-weight:900}
+.hunter-more-queue>summary::-webkit-details-marker{display:none}
+.hunter-more-queue>summary span{flex:1}
+.hunter-more-queue>summary b{color:#b9c5d2;font-size:10px}
+.hunter-more-queue>summary i{font-style:normal;font-size:17px;transition:transform .2s}
+.hunter-more-queue[open]>summary i{transform:rotate(180deg)}
+.hunter-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:0 10px 10px}
+@media(max-width:650px){.hunter-more-grid{grid-template-columns:1fr}}
 .hunter-detail-open{display:block;width:100%;margin-top:10px;padding:11px 12px;border:1px solid #b99b5c;border-radius:10px;background:linear-gradient(110deg,#b99b5c25,#b99b5c08);color:#f3d995;font:inherit;font-size:11px;font-weight:900;cursor:pointer}
 .hunter-detail-dialog{width:min(1080px,100%);max-height:94dvh}
 .hunter-detail-summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0;padding:11px;border:1px solid #b99b5c44;border-radius:12px;background:#ffffff08}
@@ -1130,7 +1139,7 @@ body{background:
 
 <section class="card market-hunter" id="market-hunter">
  <div class="hunter-topline"><div><div class="section-kicker">MMP · DUAL MARKET HUNTER</div><h2>شکارچی بازار</h2><p class="sub">شکار فرصت‌های اسپات و فیوچرز با محوریت روند ۱ ساعته، ماشه ۱۵ دقیقه‌ای و تأیید کمکی ۴ ساعته</p></div><div class="hunter-head-actions"><button class="radar-refresh-btn hunter-refresh-btn" id="hunter-refresh-btn" type="button" aria-label="بروزرسانی شکار اسپات و فیوچرز" title="دریافت دوباره داده‌ها و اجرای شکار"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6.5L20 12M4 12l2 5.5A7 7 0 0 0 18.4 15"/></svg><span>بروزرسانی شکار</span></button><div class="hunter-live-badge"><i></i><span>پایش خودکار</span></div></div></div>
- <div class="hunter-overview"><div class="hunter-stat"><small>شکارهای اسپات · حداکثر ۶</small><b id="hunter-spot-count">۰</b></div><div class="hunter-stat"><small>شکارهای فیوچرز · حداکثر ۶</small><b id="hunter-futures-count">۰</b></div><div class="hunter-stat"><small>آخرین پایش بازار</small><b id="hunter-last-scan">در انتظار داده</b></div></div>
+ <div class="hunter-overview"><div class="hunter-stat"><small>کل فرصت‌های اسپات در صف</small><b id="hunter-spot-count">۰</b></div><div class="hunter-stat"><small>کل فرصت‌های فیوچرز در صف</small><b id="hunter-futures-count">۰</b></div><div class="hunter-stat"><small>آخرین پایش بازار</small><b id="hunter-last-scan">در انتظار داده</b></div></div>
  <div class="hunter-mode-panel hunter-spot-panel"><div class="hunter-mode-head"><div><b>🟢 شکار اسپات | SPOT</b><small>فقط موقعیت‌های خرید؛ محور تحلیل ۱ ساعته؛ تأیید ورود با ۱۵ دقیقه</small></div><span class="hunter-timeframe">1H CORE · 15M TRIGGER</span></div><div id="hunter-spot-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار اسپات</b><small>ورود پس از تأیید ساختار ۱ ساعته و ماشه ۱۵ دقیقه‌ای ارزیابی می‌شود.</small></div></div></div>
  <div class="hunter-mode-panel hunter-futures-panel"><div class="hunter-mode-head"><div><b>🟠 شکار فیوچرز | FUTURES</b><small>فرصت‌های مستقل LONG و SHORT بر اساس بازار قراردادهای دائمی</small></div><span class="hunter-timeframe">1H CORE · 15M TRIGGER</span></div><div id="hunter-futures-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار فیوچرز</b><small>سیگنال‌های لانگ و شورت جداگانه ارزیابی می‌شوند.</small></div></div></div>
  <p id="hunter-feed-status" class="sub hunter-footnote">در انتظار دریافت کندل‌های ۱ ساعته، ۱۵ دقیقه‌ای و تأیید کمکی ۴ ساعته…</p>
@@ -2719,7 +2728,7 @@ function renderMarketHunter(){
 
 
 // MMP Dual Hunter · closed 4H spot and independent USDT perpetual futures
-const dualHunterState={spot:[],futures:[],busy:false,lastScan:0,cache:new Map()};
+const dualHunterState={spot:[],futures:[],busy:false,lastScan:0,cache:new Map(),visibleLimit:6};
 function hunter4hParse(rows){return (rows||[]).map(k=>{const t=Number(k[0]),o=Number(k[1]),h=Number(k[2]),l=Number(k[3]),c=Number(k[4]),v=Number(k[5]);let quoteVol=0,takerBuyQuote=null;if(k.length>=11){quoteVol=Number(k[7])||0;takerBuyQuote=Number(k[10]);}else if(k.length===9){quoteVol=Number(k[7])||0;}else if(k.length>=7){quoteVol=Number(k[6])||0;}return {t,o,h,l,c,v,quoteVol,takerBuyQuote};}).filter(x=>[x.t,x.o,x.h,x.l,x.c,x.v].every(Number.isFinite)&&x.c>0&&x.h>=x.l);}
 async function hunter4hSpot(symbol){
  const pair=symbol.toUpperCase()+"USDT",urls=[
@@ -2821,7 +2830,13 @@ function hunter4hCard(coin,signal,market){
 }
 function renderMarketHunter(){
  const spot=$("hunter-spot-feed"),fut=$("hunter-futures-feed");if(!spot||!fut)return;
- const render=(items,market)=>items.length?items.map(x=>hunter4hCard(x.coin,x.signal,market)).join(""):'<div class="hunter-4h-empty">در این نوبت شکار معتبر با شرایط سخت‌گیرانه پیدا نشد؛ تا تأیید کندل بعدی، فرصت‌های کم‌اعتبار نمایش داده نمی‌شوند.</div>';
+ const render=(items,market)=>{
+  if(!items.length)return '<div class="hunter-4h-empty">در این نوبت فرصت واجد شرایط پیدا نشد؛ پایش ادامه دارد و با شناسایی فرصت تازه، این صف به‌روزرسانی می‌شود.</div>';
+  const limit=dualHunterState.visibleLimit||6,top=items.slice(0,limit),rest=items.slice(limit);
+  const main=top.map(x=>hunter4hCard(x.coin,x.signal,market)).join("");
+  const more=rest.length?'<details class="hunter-more-queue"><summary><span>مشاهده سایر فرصت‌های زنده</span><b>'+rest.length.toLocaleString("fa-IR")+' فرصت دیگر</b><i aria-hidden="true">⌄</i></summary><div class="hunter-more-grid">'+rest.map(x=>hunter4hCard(x.coin,x.signal,market)).join("")+'</div></details>':"";
+  return main+more;
+ };
  spot.innerHTML=render(dualHunterState.spot,"spot");fut.innerHTML=render(dualHunterState.futures,"futures");
  if($("hunter-spot-count"))$("hunter-spot-count").textContent=dualHunterState.spot.length.toLocaleString("fa-IR");
  if($("hunter-futures-count"))$("hunter-futures-count").textContent=dualHunterState.futures.length.toLocaleString("fa-IR");
@@ -2861,8 +2876,8 @@ async function runDedicatedHunterScan(force=false){
    }
   });
   await Promise.all(workers);
-  dualHunterState.spot=spot.sort((a,b)=>b.signal.score-a.signal.score).slice(0,6);
-  dualHunterState.futures=futures.sort((a,b)=>b.signal.score-a.signal.score).slice(0,6);
+  dualHunterState.spot=spot.sort((a,b)=>b.signal.score-a.signal.score);
+  dualHunterState.futures=futures.sort((a,b)=>b.signal.score-a.signal.score);
   dualHunterState.lastScan=Date.now();renderMarketHunter();
   const summary="پایش "+selected.length.toLocaleString("fa-IR")+" نماد تمام شد · داده کامل اسپات: "+spotReady.toLocaleString("fa-IR")+" · داده کامل فیوچرز: "+futuresReady.toLocaleString("fa-IR")+" · خطای دریافت داده: "+dataIssues.toLocaleString("fa-IR")+" · شکار اسپات: "+dualHunterState.spot.length.toLocaleString("fa-IR")+" · شکار فیوچرز: "+dualHunterState.futures.length.toLocaleString("fa-IR");
   if(status)status.textContent=summary+(spotReady+futuresReady===0?" · منبع داده پاسخگو نیست؛ اتصال صرافی‌ها را بررسی کنید.":(spot.length+futures.length===0?" · داده دریافت شده اما فعلاً هیچ سیگنالی از فیلتر اعتبار عبور نکرده است.":" · فقط سیگنال‌های تأییدشده نمایش داده می‌شوند."))+" · اسکن خودکار هر ۵ دقیقه";
