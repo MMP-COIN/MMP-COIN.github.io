@@ -1067,6 +1067,37 @@ body{background:
 @media(max-width:650px){.hunter-detail-indicators{grid-template-columns:repeat(2,minmax(0,1fr))}.hunter-detail-plan{grid-template-columns:repeat(2,minmax(0,1fr))}.hunter-detail-dialog{max-height:96dvh}.hunter-detail-candle{grid-template-columns:repeat(2,minmax(0,1fr))}.hunter-detail-summary{gap:7px}.hunter-detail-summary strong{margin-inline-start:0}}
 </style>
 
+
+<style id="radar-card-fit-fix">
+/* Keep every radar-card element inside its own frame */
+.radar-item,.radar-item *{box-sizing:border-box}
+.radar-item{width:100%;max-width:100%;min-width:0;overflow:hidden;grid-template-columns:minmax(0,1.05fr) 58px minmax(0,1.2fr) minmax(0,.8fr)}
+.radar-asset,.radar-asset>span,.radar-score,.radar-stats,.radar-action,.radar-trade-strip,.radar-trade-strip>span,.radar-plan,.radar-plan-body,.radar-plan-grid,.radar-plan-grid>div{min-width:0;max-width:100%}
+.radar-asset b,.radar-asset small,.radar-trend{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.radar-trend{white-space:normal;overflow-wrap:anywhere;text-align:right}
+.radar-stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.radar-stats span{min-width:0;overflow-wrap:anywhere}
+.radar-stats b{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.radar-trade-strip{width:100%;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.radar-trade-strip>span{min-width:0;overflow:hidden}
+.radar-trade-strip b{max-width:100%;font-size:clamp(10px,1.5vw,12px)}
+.radar-plan-grid{width:100%;grid-template-columns:repeat(4,minmax(0,1fr))}
+.radar-plan-grid>div{overflow:hidden}
+.radar-plan-grid b{max-width:100%;overflow-wrap:anywhere;word-break:break-word}
+.radar-plan-note{overflow-wrap:anywhere}
+@media(max-width:760px){
+ .radar-item{grid-template-columns:minmax(0,1fr) 54px}
+ .radar-trade-strip{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .radar-plan-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:380px){
+ .radar-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .radar-trade-strip>span{padding:7px 6px}
+ .radar-trade-strip small{font-size:9px}
+ .radar-trade-strip b{font-size:10px}
+ .radar-plan-grid>div{padding:7px}
+}
+</style>
 </head>
 <body class="mmp-app-mode">
 
