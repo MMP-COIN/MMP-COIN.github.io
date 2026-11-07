@@ -1178,6 +1178,27 @@ body{background:
 @media(max-width:560px){.radar-core-console{grid-template-columns:100px minmax(0,1fr);gap:10px;padding:11px}.radar-core-visual{width:98px;height:98px}.radar-core-center{width:56px;height:56px}.radar-core-center strong{font-size:15px}.radar-core-lanes{gap:5px}.radar-core-lane{padding:7px 5px}.radar-core-lane b{font-size:10px}.radar-core-lane small{font-size:8px}}
 
 </style>
+
+<style id="mmp-radar-independent-scroll-20261107">
+/* صعودی و نزولی در دو قاب مستقل؛ اسکرول فقط داخل فهرست هر قاب */
+#opportunity-list.radar-groups{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start;gap:14px!important;max-height:none!important;height:auto!important;overflow:visible!important;overscroll-behavior:auto!important;scrollbar-gutter:auto!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;}
+#opportunity-list .radar-side{display:flex;flex-direction:column;min-width:0;min-height:0;padding:14px;border:1px solid #344153;border-radius:16px;background:linear-gradient(145deg,#121b27,#0b111a);box-shadow:0 10px 26px #0004;}
+#opportunity-list .radar-side.radar-group-bull{border-top:3px solid #25d695;}
+#opportunity-list .radar-side.radar-group-bear{border-top:3px solid #ff6576;}
+#opportunity-list .radar-side .radar-group-head{flex:0 0 auto;margin-bottom:10px;}
+#opportunity-list .radar-side .radar-group-title b{font-size:16px;}
+#opportunity-list .radar-side .radar-list{display:grid;gap:8px;max-height:390px;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#a98b50 #111a25;padding:3px 5px 5px 2px;}
+#opportunity-list .radar-side .radar-list::-webkit-scrollbar{width:7px;}
+#opportunity-list .radar-side .radar-list::-webkit-scrollbar-track{background:#111a25;border-radius:8px;}
+#opportunity-list .radar-side .radar-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#d9b66d,#806337);border-radius:8px;}
+#opportunity-list .radar-side .radar-item{grid-template-columns:minmax(0,1fr) 52px;gap:8px;padding:10px;}
+#opportunity-list .radar-side .radar-asset{grid-column:1;}
+#opportunity-list .radar-side .radar-score{grid-column:2;grid-row:1;}
+#opportunity-list .radar-side .radar-stats{grid-column:1/-1;}
+#opportunity-list .radar-side .radar-action{grid-column:1/-1;justify-content:space-between;border-top:1px solid #ffffff12;padding-top:7px;flex-wrap:wrap;}
+@media(max-width:760px){#opportunity-list.radar-groups{grid-template-columns:minmax(0,1fr)!important;gap:12px!important;}#opportunity-list .radar-side .radar-list{max-height:360px;}}
+@media(max-width:420px){#opportunity-list .radar-side{padding:10px;}#opportunity-list .radar-side .radar-list{max-height:330px;}}
+</style>
 </head>
 <body class="mmp-app-mode">
 
@@ -3175,7 +3196,7 @@ function renderOpportunities(){
  };
  const group=(items,type)=>{
   const up=type==="bull",title=up?"فرصت‌های صعودی":"فرصت‌های نزولی",symbol=up?"↗":"↘";
-  return '<section class="radar-side '+type+'"><div class="section-head radar-group-head"><div class="radar-group-title"><span class="radar-group-icon">'+symbol+'</span><span><b>'+title+'</b><small>قوی‌ترین امتیاز در ابتدا</small></span></div><span class="badge">'+items.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list">'+(items.length?items.map(card).join(""):'<div class="ai-empty">هنوز سیگنال معتبر در این جهت تأیید نشده است.</div>')+'</div></section>';
+  return '<section class="radar-group radar-side '+(up?"radar-group-bull":"radar-group-bear")+'"><div class="section-head radar-group-head"><div class="radar-group-title"><span class="radar-group-icon">'+symbol+'</span><span><b>'+title+'</b><small>قوی‌ترین امتیاز در ابتدا · ۳ نامزد نخست همیشه نمایان</small></span></div><span class="radar-group-count">'+items.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list">'+(items.length?items.map(card).join(""):'<div class="ai-empty">هنوز سیگنال معتبر در این جهت تأیید نشده است.</div>')+'</div></section>';
  };
  if(!active.length){
   el.innerHTML='<div class="ai-empty">موتور هوشمند مرکزی فعال است؛ در انتظار ارزیابی معتبر نمادها. سیگنال‌های قبلی تا اعلام افت تأییدشده حفظ می‌شوند.</div>';
