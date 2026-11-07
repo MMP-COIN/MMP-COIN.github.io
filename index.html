@@ -2441,6 +2441,7 @@ function radarScore(c){
   const flowConfirmed=alignedFlow&&flowRatio>=1.3&&Math.abs(flowPct)>=4.5;
   const priceConfirmed=fast.trend==="bull"?fast.change3m>=-0.25:fast.change3m<=0.25;
   return {score,components,trend:fast.trend,h1:fast.change1m,h:fast.change3m,d:null,directional:fast.change3m,liquidity,range:null,dataQuality:flowConfirmed&&priceConfirmed?"جریان پول هم‌جهت و تأییدشده":"نیازمند تأیید بیشتر جریان پول یا حرکت قیمت",fast};
+ }
  const raw1h=c.price_change_percentage_1h_in_currency??c.price_change_percentage_1h,raw24=c.price_change_percentage_24h,raw7=c.price_change_percentage_7d_in_currency;
  const h1=raw1h==null?null:Number(raw1h),h=raw24==null?null:Number(raw24),d=raw7==null?null:Number(raw7);
  const has1h=h1!=null&&Number.isFinite(h1),has24=h!=null&&Number.isFinite(h)&&Math.abs(h)<250,has7=d!=null&&Number.isFinite(d)&&Math.abs(d)<500;
@@ -2760,7 +2761,8 @@ function connectHunterStreams(){
  const bullish70=scored.filter(x=>x.metrics.trend==="bull"&&x.metrics.score>=70&&x.metrics.score<80).sort(rankRadar);
  const bearish70=scored.filter(x=>x.metrics.trend==="bear"&&x.metrics.score>=70&&x.metrics.score<80).sort(rankRadar);
  const updated=$("radar-updated");
- if(updated)updated.textContent="غربالگری خودکار "+cachedCoinsData.length+" ارز · صعودی: "+bullish.length+" قوی + "+bullish70.length+" در انتظار · نزولی: "+bearish.length+" قوی + "+bearish70.length+" در انتظار · "+new Date().toLocaleTimeString("fa-IR"); const chartSelect=$("tv-symbol");
+ if(updated)updated.textContent="غربالگری خودکار "+cachedCoinsData.length+" ارز · صعودی: "+bullish.length+" قوی + "+bullish70.length+" در انتظار · نزولی: "+bearish.length+" قوی + "+bearish70.length+" در انتظار · "+new Date().toLocaleTimeString("fa-IR");
+ const chartSelect=$("tv-symbol");
  if(chartSelect){
   const previous=chartSelect.value||"BINANCE:BTCUSDT";
   const options=['<option value="BINANCE:BTCUSDT">Bitcoin (BTC)</option>'];
@@ -2771,20 +2773,19 @@ function connectHunterStreams(){
   chartSelect.innerHTML=options.join("");
   if([...chartSelect.options].some(o=>o.value===previous))chartSelect.value=previous;
  }
- const group=(title,count,trend)=>'<section class="radar-count-card '+trend+'"><span>'+title+'</span><b>'+count.toLocaleString("fa-IR")+'</b><small>ارز</small></section>';
  const card=x=>{
   const c=x.coin,m=x.metrics,up=m.trend==="bull",down=m.trend==="bear";
   const direction=up?"تمایل صعودی":down?"تمایل نزولی":m.trend==="neutral"?"خنثی / در انتظار":"داده ناکافی";
   const change=v=>v==null?"ناموجود":(v>0?"+":"")+v.toFixed(2)+"٪";
   const change1h=m.h1==null?"ناموجود":(m.h1>0?"+":"")+m.h1.toFixed(2)+"٪";
-
   const p=m.components||{},why=m.fast?("جریان پول "+Math.round(p.flow||0)+"/۳۰ · حجم "+Math.round(p.volume||0)+"/۲۵ · شکست "+Math.round(p.breakout||0)+"/۲۰ · هم‌جهتی "+Math.round(p.multi||0)+"/۱۵ · نقدشوندگی "+Math.round(p.liquidity||0)+"/۱۰"):m.dataQuality;
   return '<article class="radar-item '+(up?"radar-item-bullish":down?"radar-item-bearish":"radar-item-neutral")+'"><div class="radar-asset"><img src="'+aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"))+'" alt="" loading="lazy"><span><b>'+aiEscape(c.name)+'</b><small>'+aiEscape(String(c.symbol).toUpperCase())+'</small><strong class="radar-direction-label">'+direction+'</strong></span></div><div class="radar-score"><b>'+m.score.toLocaleString("fa-IR")+'</b><small>امتیاز فرصت</small></div><div class="radar-stats">'+(m.fast?'<span>تغییر ۱دقیقه<b class="'+(m.fast.change1m>=0?"positive":"negative")+'">'+change(m.fast.change1m)+'</b></span><span>تغییر ۳دقیقه<b class="'+(m.fast.change3m>=0?"positive":"negative")+'">'+change(m.fast.change3m)+'</b></span><span>حجم نسبی<b>'+m.fast.volumeRatio.toFixed(1)+'×</b></span>':'<span>تغییر ۱ساعته<b>'+change1h+'</b></span><span>تغییر ۲۴ساعته<b>'+change(m.h)+'</b></span><span>نقدشوندگی نسبی<b>'+(m.liquidity==null?"ناموجود":m.liquidity.toFixed(2)+"٪")+'</b></span>')+'</div><div class="radar-action"><span class="radar-trend">'+aiEscape(why||"در انتظار تأیید")+'</span></div></article>';
  };
- const list=(title,items,lower,cls)=>{const top=items.slice(0,6),extra=items.slice(6);return '<section class="radar-side '+cls+'"><div class="section-head radar-group-head"><div><b class="radar-large-heading">'+title+'</b></div><span class="badge">'+items.length.toLocaleString("fa-IR")+' فرصت قوی</span></div><div class="radar-list">'+top.map(card).join("")+'</div>'+(extra.length?'<details class="radar-more"><summary><span class="radar-toggle-copy"><b>'+extra.length.toLocaleString("fa-IR")+' فرصت قوی دیگر</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+extra.map(card).join("")+'</div></details>':"")+(lower.length?'<details class="radar-more radar-below-threshold"><summary><span class="radar-toggle-copy"><b>'+lower.length.toLocaleString("fa-IR")+' نامزد با امتیاز ۷۰ تا ۷۹</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+lower.map(card).join("")+'</div></details>':"")+'</section>';};
+ const list=(title,items,lower,cls)=>{
+  const top=items.slice(0,6),extra=items.slice(6);
+  return '<section class="radar-side '+cls+'"><div class="section-head radar-group-head"><div><b class="radar-large-heading">'+title+'</b></div><span class="badge">'+items.length.toLocaleString("fa-IR")+' فرصت قوی</span></div><div class="radar-list">'+top.map(card).join("")+'</div>'+(extra.length?'<details class="radar-more"><summary><span class="radar-toggle-copy"><b>'+extra.length.toLocaleString("fa-IR")+' فرصت قوی دیگر</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+extra.map(card).join("")+'</div></details>':"")+(lower.length?'<details class="radar-more radar-below-threshold"><summary><span class="radar-toggle-copy"><b>'+lower.length.toLocaleString("fa-IR")+' نامزد با امتیاز ۷۰ تا ۷۹</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+lower.map(card).join("")+'</div></details>':"")+'</section>';
+ };
  el.innerHTML=list("فرصت‌های صعودی",bullish,bullish70,"bull")+list("فرصت‌های نزولی",bearish,bearish70,"bear");
- // AI radar scan is manual to prevent background requests exhausting the analysis quota.
-}صت‌های صعودی",bullish,bullish70,"bull")+list("فرصت‌های نزولی",bearish,bearish70,"bear");
  // AI radar scan is manual to prevent background requests exhausting the analysis quota.
 }
 function calcRisk(){const capital=Number($("risk-capital").value),pct=Number($("risk-percent").value),entry=Number($("risk-entry").value),stop=Number($("risk-stop").value);const out=$("risk-result");if(!(capital>0&&pct>0&&pct<=100&&entry>0&&stop>0)){out.textContent="سرمایه، درصد ریسک، قیمت ورود و قیمت حد ضرر را کامل و معتبر وارد کنید.";return;}if(entry===stop){out.textContent="قیمت ورود و قیمت حد ضرر نباید برابر باشند.";return;}const risk=capital*pct/100,dist=Math.abs(entry-stop)/entry,notional=risk/dist,qty=notional/entry;out.innerHTML="<div><b>مبلغ ورود به معامله:</b> "+money(notional,2)+" USDT</div><div><b>ضرر احتمالی در صورت برخورد به حد ضرر:</b> "+money(risk,2)+" USDT</div><div><b>فاصله تا حد ضرر:</b> "+(dist*100).toFixed(2)+"%</div><div><b>مقدار دارایی:</b> "+money(qty,6)+"</div><small>مبلغ ورود، ارزش کل معامله است و با اهرم می‌تواند از مارجین پرداختی بیشتر باشد. کارمزد و لغزش قیمت محاسبه نشده‌اند.</small>";}
