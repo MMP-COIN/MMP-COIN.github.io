@@ -2575,7 +2575,7 @@ async function runFastRadarScan(forceRefresh=false){
 function radarScore(c){
  const symbol=String(c?.symbol||"").toUpperCase(),signal=radarOpportunitySignals.get(symbol);
  if(!signal)return {score:0,trend:"unknown",h1:null,h:null,d:null,directional:null,liquidity:null,range:null,dataQuality:"در انتظار اسکن مستقل رادار"};
- if(Date.now()-signal.updatedAt>150000)return {score:0,trend:"unknown",h1:null,h:null,d:null,directional:null,liquidity:null,range:null,dataQuality:"داده رادار نیازمند بروزرسانی است"};
+ if(Date.now()-signal.updatedAt>8*60*1000)return {score:0,trend:"unknown",h1:null,h:null,d:null,directional:null,liquidity:null,range:null,dataQuality:"داده رادار نیازمند بروزرسانی است"};
  return {...signal};
 }
 const INDEPENDENT_RADAR_STATE_KEY="mmp-independent-radar-state-v3";
@@ -2644,6 +2644,8 @@ async function runIndependentRadarScan(force=false){
  if(!coins.length){if(status)status.textContent="در انتظار دریافت فهرست ارزها…";return;}
  const state=independentRadarLoadState(coins);
  independentRadarRefreshSignals(state);
+ // نتایج معتبرِ ذخیره‌شده همان لحظه ورود دوباره نمایش داده می‌شوند؛ منتظر پایان بسته اسکن نمی‌مانیم.
+ renderOpportunities();
  if(!independentRadarClaimLock()){
   if(status)status.textContent="رادار مستقل · اسکن در برگه دیگری در حال اجراست؛ پیشرفت مشترک ذخیره می‌شود.";
   return;
@@ -2708,7 +2710,16 @@ async function runIndependentRadarScan(force=false){
       if(score>=55)signal={score,trend,h1:change1m,h:change3m,d:change5m,directional:change3m,liquidity:dollarVolume>0?dollarVolume:null,range:null,components,dataQuality:"تحلیل مستقل کندل و حجم · "+result.provider,fast:{change1m,change3m,change5m,volumeRatio,provider:result.provider},updatedAt:Date.now()};
      }
      state.cache[symbol]={status:"ok",at:Date.now(),signal:signal||null,provider:result.provider};
-     if(signal)state.candidates[symbol]=signal;else delete state.candidates[symbol];
+     if(signal){
+      state.candidates[symbol]=signal;
+      radarOpportunitySignals.set(symbol,signal);
+      // هر نامزد واجد شرایط بلافاصله روی رادار ظاهر می‌شود؛ بقیه ارزها هم‌زمان اسکن می‌شوند.
+      independentRadarSaveState(state);
+      renderOpportunities();
+     }else{
+      delete state.candidates[symbol];
+      radarOpportunitySignals.delete(symbol);
+     }
     }catch(error){
      const message=String(error?.message||"خطای نامشخص"),transient=independentRadarIsRetryable(error);
      state.cache[symbol]={status:transient?"retry":"failed",at:Date.now(),retryAt:Date.now()+(transient?INDEPENDENT_RADAR_RETRY_TTL:INDEPENDENT_RADAR_FAIL_TTL),error:message};
@@ -2749,6 +2760,12 @@ async function runIndependentRadarScan(force=false){
   console.warn("Independent radar scan:",error);
  }finally{
   independentRadarBusy=false;independentRadarReleaseLock();
+  // بسته بعدی بدون انتظار برای بازشدن مجدد سایت آغاز می‌شود؛ وقتی cache تازه است،
+  // فاصله بیشتر می‌شود تا درخواست تکراری و فشار بیهوده به API ایجاد نشود.
+  if(document.visibilityState!=="hidden"){
+   const wait=tasks.length?900:20000;
+   setTimeout(()=>runIndependentRadarScan(true),wait);
+  }
  }
 }
 const hunterExchangeCache={expires:0,sets:null,loading:null};
@@ -3214,7 +3231,7 @@ $("risk-calc")?.addEventListener("click",calcRisk);
 refreshAll();
 try{setupAiCoinPicker();}catch(error){console.error("AI coin picker initialization failed:",error);}
 try{renderMarketHours();setInterval(renderMarketHours,15000);}catch(error){console.error("Market hours initialization failed:",error);}
-checkConnections();setInterval(()=>{if(document.visibilityState!=="hidden")checkConnections();},60000);window.addEventListener("online",()=>checkConnections());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkConnections();});
+checkConnections();setInterval(()=>{if(document.visibilityState!=="hidden")checkConnections();},60000);window.addEventListener("online",()=>checkConnections());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){checkConnections();runIndependentRadarScan(true);}});
 try{initTradingView("BINANCE:BTCUSDT");}catch(error){console.error("TradingView initialization failed:",error);}
 setInterval(refreshAll, 60000);
 setTimeout(()=>runIndependentRadarScan(true),12000);
