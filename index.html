@@ -498,6 +498,12 @@ body:after{content:"";position:fixed;width:42vw;height:42vw;max-width:620px;max-
 .radar-live-note .sub{margin-right:auto;font-size:10px}
 .radar-live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);flex:none}
 .radar-groups{display:grid;gap:16px}
+/* Keep all radar candidates inside one bounded, internally scrollable frame */
+#opportunity-list.radar-groups{max-height:560px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:8px;border:1px solid #8b714255;border-radius:16px;background:linear-gradient(145deg,#101925,#0a111a)}
+#opportunity-list.radar-groups::-webkit-scrollbar{width:7px}
+#opportunity-list.radar-groups::-webkit-scrollbar-thumb{background:linear-gradient(#d9b66d,#8b7142);border-radius:10px}
+#opportunity-list.radar-groups{scrollbar-width:thin;scrollbar-color:#9b804d #111a25}
+@media(max-width:650px){#opportunity-list.radar-groups{max-height:460px;padding:6px;gap:10px}}
 .radar-group{padding:13px;border:1px solid #303b4b;border-radius:16px;background:linear-gradient(145deg,#121a25,#0d121a);min-width:0}
 .radar-group-bull{border-top:3px solid #25d695}
 .radar-group-bear{border-top:3px solid #ff6576}
