@@ -2244,7 +2244,10 @@ async function fetchFastCandles(symbol,coin){
   if(domestic)throw new Error("کندل یک‌دقیقه‌ای بازار داخلی کافی نیست");
  }catch(error){
   if(domestic)throw error;
-  console.debug("MMP candle aggregator unavailable for "+base+"; using exchange fallbacks:",error?.message||error);
+  const message=String(error?.message||error);
+  // خطای سهمیه/شبکه را با شش درخواست مستقیم دیگر تشدید نکن؛ در صف بعدی دوباره تلاش می‌شود.
+  if(/HTTP\\s*(408|425|429|5\\d\\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar/i.test(message))throw error;
+  console.debug("MMP candle aggregator unavailable for "+base+"; using exchange fallbacks:",message);
  }
  if(domestic)throw new Error("داده معتبر بازار داخلی دریافت نشد");
  const attempts=[
@@ -2572,75 +2575,176 @@ function radarScore(c){
  if(Date.now()-signal.updatedAt>150000)return {score:0,trend:"unknown",h1:null,h:null,d:null,directional:null,liquidity:null,range:null,dataQuality:"داده رادار نیازمند بروزرسانی است"};
  return {...signal};
 }
+const INDEPENDENT_RADAR_STATE_KEY="mmp-independent-radar-state-v3";
+const INDEPENDENT_RADAR_LOCK_KEY="mmp-independent-radar-lock-v3";
+const INDEPENDENT_RADAR_BATCH_SIZE=45;
+const INDEPENDENT_RADAR_CONCURRENCY=6;
+const INDEPENDENT_RADAR_CACHE_TTL=3*60*1000;
+const INDEPENDENT_RADAR_RETRY_TTL=90*1000;
+const INDEPENDENT_RADAR_FAIL_TTL=10*60*1000;
+const independentRadarTabId="radar-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,9);
+let independentRadarState=null;
+function independentRadarUniverseKey(coins){
+ let hash=2166136261;
+ for(const coin of coins){const value=String(coin?.id||coin?.symbol||"")+"|"+String(coin?.symbol||"")+";";for(let i=0;i<value.length;i++){hash^=value.charCodeAt(i);hash=Math.imul(hash,16777619);}}
+ return coins.length+":"+((hash>>>0).toString(36));
+}
+function independentRadarLoadState(coins){
+ const key=independentRadarUniverseKey(coins);
+ if(independentRadarState&&independentRadarState.universeKey===key)return independentRadarState;
+ let saved=null;
+ try{saved=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_STATE_KEY)||"null");}catch(error){}
+ if(!saved||saved.version!==3||saved.universeKey!==key||!saved.cache||typeof saved.cache!=="object"){
+  saved={version:3,universeKey:key,cursor:0,cycle:1,cache:{},candidates:{},pending:[],startedAt:Date.now(),updatedAt:Date.now()};
+ }
+ saved.cursor=Math.max(0,Math.min(coins.length,Number(saved.cursor)||0));
+ saved.pending=Array.isArray(saved.pending)?saved.pending.filter(i=>Number.isInteger(i)&&i>=0&&i<coins.length):[];
+ saved.cache=saved.cache||{};saved.candidates=saved.candidates||{};
+ independentRadarState=saved;
+ return saved;
+}
+function independentRadarSaveState(state){
+ state.updatedAt=Date.now();
+ try{localStorage.setItem(INDEPENDENT_RADAR_STATE_KEY,JSON.stringify(state));}catch(error){console.warn("Radar progress could not be persisted:",error?.message||error);}
+}
+function independentRadarRefreshSignals(state){
+ radarOpportunitySignals.clear();
+ const now=Date.now();
+ for(const [symbol,signal] of Object.entries(state.candidates||{})){
+  if(signal&&Number(signal.updatedAt)>now-8*60*1000)radarOpportunitySignals.set(symbol,signal);
+  else delete state.candidates[symbol];
+ }
+}
+function independentRadarClaimLock(){
+ try{
+  const now=Date.now(),old=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null");
+  if(old&&old.owner!==independentRadarTabId&&Number(old.expires)>now)return false;
+  const lock={owner:independentRadarTabId,expires:now+150000};
+  localStorage.setItem(INDEPENDENT_RADAR_LOCK_KEY,JSON.stringify(lock));
+  const check=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null");
+  return check?.owner===independentRadarTabId;
+ }catch(error){return true;}
+}
+function independentRadarReleaseLock(){
+ try{const lock=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_LOCK_KEY)||"null");if(lock?.owner===independentRadarTabId)localStorage.removeItem(INDEPENDENT_RADAR_LOCK_KEY);}catch(error){}
+}
+function independentRadarIsRetryable(error){
+ const message=String(error?.message||error||"");
+ return /HTTP\\s*(408|425|429|5\\d\\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar|unavailable/i.test(message);
+}
 async function runIndependentRadarScan(force=false){
- if(independentRadarBusy||(!force&&Date.now()-independentRadarLastRun<45000))return;
+ if(independentRadarBusy||(!force&&Date.now()-independentRadarLastRun<12000))return;
  const coins=Array.isArray(cachedCoinsData)?cachedCoinsData.slice():[];
  const status=$("radar-updated");
  if(!coins.length){if(status)status.textContent="در انتظار دریافت فهرست ارزها…";return;}
+ const state=independentRadarLoadState(coins);
+ independentRadarRefreshSignals(state);
+ if(!independentRadarClaimLock()){
+  if(status)status.textContent="رادار مستقل · اسکن در برگه دیگری در حال اجراست؛ پیشرفت مشترک ذخیره می‌شود.";
+  return;
+ }
  independentRadarBusy=true;independentRadarLastRun=Date.now();
- let cursor=0,completed=0,failed=0,qualified=0;
- const found=new Map(),providerFailures=new Map(),failedSamples=[];
- if(status)status.textContent="رادار مستقل · آماده‌سازی "+coins.length+" ارز…";
+ let completed=0,failed=0,retryable=0,qualified=radarOpportunitySignals.size;
+ const providerFailures=new Map(),failedSamples=[];
+ const now=Date.now(),tasks=[];
+ const isFresh=entry=>entry&&now-Number(entry.at||0)<(entry.status==="ok"?INDEPENDENT_RADAR_CACHE_TTL:entry.status==="retry"?INDEPENDENT_RADAR_RETRY_TTL:INDEPENDENT_RADAR_FAIL_TTL);
  try{
-  const workers=Array.from({length:4},async()=>{
-   while(cursor<coins.length){
-    const coin=coins[cursor++],symbol=String(coin?.symbol||"").toUpperCase();
+  // درخواست‌های نیمه‌تمامِ اجرای قبلی ابتدا دوباره به صف برمی‌گردند.
+  const pending=[...new Set(state.pending)];
+  state.pending=[];
+  for(const index of pending){
+   if(tasks.length>=INDEPENDENT_RADAR_BATCH_SIZE){state.pending.push(index);continue;}
+   tasks.push(index);
+  }
+  // فقط یک بسته محدود در هر نوبت انتخاب می‌شود؛ پیشرفت هر بسته پایدار ذخیره می‌شود.
+  let examined=0;
+  while(state.cursor<coins.length&&tasks.length<INDEPENDENT_RADAR_BATCH_SIZE&&examined<coins.length){
+   const index=state.cursor++;examined++;
+   const coin=coins[index],symbol=String(coin?.symbol||"").toUpperCase();
+   const cached=state.cache[symbol];
+   if(isFresh(cached)){completed++;continue;}
+   if(!/^[A-Z0-9]{2,20}$/.test(symbol)||NON_TRADABLE_SYMBOLS.has(symbol)){
+    state.cache[symbol]={status:"failed",at:now,error:"نماد غیرقابل معامله"};completed++;continue;
+   }
+   tasks.push(index);
+  }
+  state.pending=[...new Set([...state.pending,...tasks])];
+  independentRadarSaveState(state);
+  if(status)status.textContent="رادار مستقل · ادامه اسکن ذخیره‌شده · "+Math.min(state.cursor,coins.length)+" از "+coins.length+" · بسته جاری: "+tasks.length+" ارز · نامزدهای معتبر: "+radarOpportunitySignals.size;
+  let next=0;
+  const worker=async()=>{
+   while(next<tasks.length){
+    const index=tasks[next++],coin=coins[index],symbol=String(coin?.symbol||"").toUpperCase();
     try{
-     if(!/^[A-Z0-9]{2,20}$/.test(symbol)||NON_TRADABLE_SYMBOLS.has(symbol)){completed++;continue;}
      const result=await fetchFastCandles(symbol,coin),rows=result?.rows;
      if(!Array.isArray(rows)||rows.length<25)throw new Error("کندل کافی نیست");
-     const index=rows.length-2,last=rows[index],close=Number(last[4]),open=Number(last[1]),volume=Number(last[5]),age=Date.now()-Number(last[0]);
+     const indexClosed=rows.length-2,last=rows[indexClosed],close=Number(last[4]),open=Number(last[1]),volume=Number(last[5]),age=Date.now()-Number(last[0]);
      if(!(close>0&&open>0&&volume>0&&age>=0&&age<=4*60*1000))throw new Error("کندل بسته‌شده معتبر نیست");
-     const baseline=rows.slice(Math.max(0,index-20),index).map(x=>Number(x[5])).filter(v=>v>0);
+     const baseline=rows.slice(Math.max(0,indexClosed-20),indexClosed).map(x=>Number(x[5])).filter(v=>v>0);
      if(baseline.length<16)throw new Error("حجم پایه کافی نیست");
      const avg=baseline.reduce((a,b)=>a+b,0)/baseline.length,volumeRatio=avg>0?volume/avg:0;
-     const change1m=(close/open-1)*100,start3=Number(rows[index-2]?.[1]),start5=Number(rows[index-4]?.[1]);
+     const change1m=(close/open-1)*100,start3=Number(rows[indexClosed-2]?.[1]),start5=Number(rows[indexClosed-4]?.[1]);
      if(!(start3>0&&start5>0))throw new Error("سابقه کندلی ناقص است");
      const change3m=(close/start3-1)*100,change5m=(close/start5-1)*100;
-     const prior=rows.slice(Math.max(0,index-7),index),priorHigh=Math.max(...prior.map(x=>Number(x[2]))),priorLow=Math.min(...prior.map(x=>Number(x[3])));
+     const prior=rows.slice(Math.max(0,indexClosed-7),indexClosed),priorHigh=Math.max(...prior.map(x=>Number(x[2]))),priorLow=Math.min(...prior.map(x=>Number(x[3])));
      const breakoutUp=close>priorHigh,breakoutDown=close<priorLow;
      let trend="neutral";
-     if((change3m>=0.04&&change1m>=-0.03)|| (breakoutUp&&change3m>0))trend="bull";
+     if((change3m>=0.04&&change1m>=-0.03)||(breakoutUp&&change3m>0))trend="bull";
      else if((change3m<=-0.04&&change1m<=0.03)||(breakoutDown&&change3m<0))trend="bear";
-     if(trend==="neutral"){completed++;continue;}
-     const sign=trend==="bull"?1:-1;
-     const momentum=Math.min(30,Math.abs(change1m)*7+Math.abs(change3m)*5);
-     const volumePoints=Math.min(25,Math.max(0,volumeRatio-0.8)*12.5);
-     const breakout=trend==="bull"?breakoutUp:breakoutDown;
-     const breakoutPoints=breakout?20:(trend==="bull"?close>=priorHigh*0.998:close<=priorLow*1.002)?8:0;
-     const multi=(change1m*sign>0?5:0)+(change3m*sign>0?5:0)+(change5m*sign>0?5:0);
-     const dollarVolume=Number(coin.total_volume)||0;
-     const liquidity=Math.min(10,Math.max(0,(Math.log10(Math.max(1,dollarVolume))-4)*2));
-     const components={flow:0,volume:volumePoints,breakout:breakoutPoints,multi,liquidity,momentum};
-     const score=Math.round(momentum+volumePoints+breakoutPoints+multi+liquidity);
-     if(score>=55){
-      found.set(symbol,{score,trend,h1:change1m,h:change3m,d:change5m,directional:change3m,liquidity:dollarVolume>0?dollarVolume:null,range:null,components,dataQuality:"تحلیل مستقل کندل و حجم · "+result.provider,fast:{change1m,change3m,change5m,volumeRatio,provider:result.provider},updatedAt:Date.now()});
+     let signal=null;
+     if(trend!=="neutral"){
+      const sign=trend==="bull"?1:-1,momentum=Math.min(30,Math.abs(change1m)*7+Math.abs(change3m)*5);
+      const volumePoints=Math.min(25,Math.max(0,volumeRatio-0.8)*12.5),breakout=trend==="bull"?breakoutUp:breakoutDown;
+      const breakoutPoints=breakout?20:(trend==="bull"?close>=priorHigh*0.998:close<=priorLow*1.002)?8:0;
+      const multi=(change1m*sign>0?5:0)+(change3m*sign>0?5:0)+(change5m*sign>0?5:0);
+      const dollarVolume=Number(coin.total_volume)||0,liquidity=Math.min(10,Math.max(0,(Math.log10(Math.max(1,dollarVolume))-4)*2));
+      const components={flow:0,volume:volumePoints,breakout:breakoutPoints,multi,liquidity,momentum};
+      const score=Math.round(momentum+volumePoints+breakoutPoints+multi+liquidity);
+      if(score>=55)signal={score,trend,h1:change1m,h:change3m,d:change5m,directional:change3m,liquidity:dollarVolume>0?dollarVolume:null,range:null,components,dataQuality:"تحلیل مستقل کندل و حجم · "+result.provider,fast:{change1m,change3m,change5m,volumeRatio,provider:result.provider},updatedAt:Date.now()};
      }
-     completed++;
+     state.cache[symbol]={status:"ok",at:Date.now(),signal:signal||null,provider:result.provider};
+     if(signal)state.candidates[symbol]=signal;else delete state.candidates[symbol];
     }catch(error){
-     failed++;completed++;
-     const message=String(error?.message||"خطای نامشخص");
-     if(failedSamples.length<8)failedSamples.push({symbol,message});
+     const message=String(error?.message||"خطای نامشخص"),transient=independentRadarIsRetryable(error);
+     state.cache[symbol]={status:transient?"retry":"failed",at:Date.now(),retryAt:Date.now()+(transient?INDEPENDENT_RADAR_RETRY_TTL:INDEPENDENT_RADAR_FAIL_TTL),error:message};
+     if(transient)retryable++;else{failed++;if(failedSamples.length<8)failedSamples.push({symbol,message});}
      message.split(" · ").forEach(part=>{const match=part.match(/^([^:]{2,32}):/);if(match){const provider=match[1].trim();providerFailures.set(provider,(providerFailures.get(provider)||0)+1);}});
-     if(failed<=3)console.debug("Independent radar "+symbol,message);
+     if(failed+retryable<=3)console.debug("Independent radar "+symbol,message);
+    }finally{
+     state.pending=state.pending.filter(i=>i!==index);
+     independentRadarSaveState(state);
+     completed++;
     }
-    if(status&&(completed%6===0||completed===coins.length))status.textContent="رادار مستقل · "+completed+" از "+coins.length+" ارز بررسی شد · نامزدها: "+found.size+" · خطا: "+failed;
+    if(status)status.textContent="رادار مستقل · "+Math.min(state.cursor,coins.length)+" از "+coins.length+" در صف پیمایش · بسته انجام‌شده: "+completed+"/"+tasks.length+" · خطای موقت: "+retryable+" · خطای داده: "+failed+" · نامزدهای معتبر: "+Object.keys(state.candidates).length;
    }
-  });
-  await Promise.all(workers);
-  found.forEach((signal,symbol)=>radarOpportunitySignals.set(symbol,signal));
-  for(const [symbol,signal] of radarOpportunitySignals)if(Date.now()-signal.updatedAt>8*60*1000)radarOpportunitySignals.delete(symbol);
-  qualified=found.size;
+  };
+  await Promise.all(Array.from({length:Math.min(INDEPENDENT_RADAR_CONCURRENCY,tasks.length)},worker));
+  independentRadarRefreshSignals(state);
+  qualified=radarOpportunitySignals.size;
+  // پایان دور: نشانگر به ابتدا برمی‌گردد، اما داده‌های تازه و خطاهای موقت تا زمان انقضا cache می‌مانند.
+  if(state.cursor>=coins.length&&state.pending.length===0){
+   state.cursor=0;state.cycle=(Number(state.cycle)||1)+1;state.startedAt=Date.now();
+  }
+  independentRadarSaveState(state);
   renderOpportunities();
   const diagnostics=$("radar-diagnostics");
   if(diagnostics){
-   const providers=[...providerFailures.entries()].sort((a,b)=>b[1]-a[1]).map(([name,count])=>aiEscape(name)+" ("+count+")").join("، ")||"هیچ خطای منبعی ثبت نشد";
+   const providers=[...providerFailures.entries()].sort((a,b)=>b[1]-a[1]).map(([name,count])=>aiEscape(name)+" ("+count+")").join("، ")||"خطای منبعی در این بسته ثبت نشد";
    const samples=failedSamples.map(item=>"<li><b>"+aiEscape(item.symbol)+"</b>: "+aiEscape(item.message)+"</li>").join("");
-   diagnostics.innerHTML="<div>نمادهای ناموفق: <b>"+failed+"</b> از "+coins.length+"</div><div>تعداد خطاهای ثبت‌شده به تفکیک منبع (ممکن است یک نماد چند منبع ناموفق داشته باشد): "+providers+"</div>"+(samples?"<details style=\"margin-top:6px\"><summary>نمونه خطاها (حداکثر ۸ نماد)</summary><ul style=\"padding-inline-start:20px\">"+samples+"</ul></details>":"");
+   diagnostics.innerHTML="<div>پیشرفت ذخیره‌شده: "+Math.min(state.cursor||coins.length,coins.length)+" از "+coins.length+" · دور "+Number(state.cycle||1)+"</div><div>خطای موقتِ قابل‌تلاش‌مجدد: <b>"+retryable+"</b> · خطای داده/نماد: <b>"+failed+"</b></div><div>خطاهای ثبت‌شده به تفکیک منبع در این بسته: "+providers+"</div>"+(samples?"<details style=\"margin-top:6px\"><summary>نمونه خطاهای واقعی (حداکثر ۸ نماد)</summary><ul style=\"padding-inline-start:20px\">"+samples+"</ul></details>":"");
   }
-  if(status)status.textContent="رادار مستقل · "+completed+" از "+coins.length+" ارز بررسی شد · نامزدها: "+qualified+" · خطاهای داده: "+failed+" · "+new Date().toLocaleTimeString("fa-IR");
- }catch(error){if(status)status.textContent="اسکن مستقل رادار کامل نشد: "+(error?.message||"خطای نامشخص");console.warn("Independent radar scan:",error);}
- finally{independentRadarBusy=false;}
+  if(status){
+   const finished=state.cursor===0&&state.pending.length===0;
+   status.textContent=finished
+    ?"رادار مستقل · دور "+(Number(state.cycle)-1)+" کامل شد · "+coins.length+" ارز · نامزدهای معتبر: "+qualified+" · نتایج ذخیره شد · "+new Date().toLocaleTimeString("fa-IR")
+    :"رادار مستقل · پیشرفت ذخیره شد · "+Math.min(state.cursor,coins.length)+" از "+coins.length+" ارز · نامزدهای معتبر: "+qualified+" · خطای موقت: "+retryable+" · خطای داده: "+failed;
+  }
+ }catch(error){
+  if(status)status.textContent="اسکن مستقل رادار متوقف شد؛ پیشرفت قبلی محفوظ است: "+(error?.message||"خطای نامشخص");
+  console.warn("Independent radar scan:",error);
+ }finally{
+  independentRadarBusy=false;independentRadarReleaseLock();
+ }
 }
 const hunterExchangeCache={expires:0,sets:null,loading:null};
 function hunterSafeSymbol(value){const symbol=String(value||"").toUpperCase();return /^[A-Z0-9]{2,24}$/.test(symbol)?symbol:"";}
@@ -3109,7 +3213,7 @@ checkConnections();setInterval(()=>{if(document.visibilityState!=="hidden")check
 try{initTradingView("BINANCE:BTCUSDT");}catch(error){console.error("TradingView initialization failed:",error);}
 setInterval(refreshAll, 60000);
 setTimeout(()=>runIndependentRadarScan(true),12000);
-setInterval(()=>{if(document.visibilityState!=="hidden")runIndependentRadarScan();},60000);
+setInterval(()=>{if(document.visibilityState!=="hidden")runIndependentRadarScan();},20000);
 setTimeout(()=>runFastRadarScan(),12000);
 setTimeout(()=>runDedicatedHunterScan(),18000);
 setInterval(()=>{if(document.visibilityState!=="hidden")runDedicatedHunterScan();},5*60*1000);
