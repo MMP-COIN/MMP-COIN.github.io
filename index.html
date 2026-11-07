@@ -2249,7 +2249,7 @@ async function fetchFastCandles(symbol,coin){
   if(domestic)throw error;
   const message=String(error?.message||error);
   // خطای سهمیه/شبکه را با شش درخواست مستقیم دیگر تشدید نکن؛ در صف بعدی دوباره تلاش می‌شود.
-  if(/HTTP\\s*(408|425|429|5\\d\\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar/i.test(message))throw error;
+  if(/HTTP\s*(408|425|429|5\d\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar/i.test(message))throw error;
   console.debug("MMP candle aggregator unavailable for "+base+"; using exchange fallbacks:",message);
  }
  if(domestic)throw new Error("داده معتبر بازار داخلی دریافت نشد");
@@ -2635,7 +2635,7 @@ function independentRadarReleaseLock(){
 }
 function independentRadarIsRetryable(error){
  const message=String(error?.message||error||"");
- return /HTTP\\s*(408|425|429|5\\d\\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar|unavailable/i.test(message);
+ return /HTTP\s*(408|425|429|5\d\d)|rate.?limit|too many requests|timeout|timed out|abort|network|failed to fetch|load failed|temporar|unavailable/i.test(message);
 }
 async function runIndependentRadarScan(force=false){
  if(independentRadarBusy||(!force&&Date.now()-independentRadarLastRun<12000))return;
