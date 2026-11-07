@@ -2609,6 +2609,14 @@ function independentRadarLoadState(coins){
  saved.cursor=Math.max(0,Math.min(coins.length,Number(saved.cursor)||0));
  saved.pending=Array.isArray(saved.pending)?saved.pending.filter(i=>Number.isInteger(i)&&i>=0&&i<coins.length):[];
  saved.cache=saved.cache||{};saved.candidates=saved.candidates||{};
+ // فقط نامزدهای ذخیره‌شده قدیمی که هنوز فیلد برنامه معامله ندارند، برای محاسبه مجدد صف می‌شوند.
+ for(const [symbol,signal] of Object.entries(saved.candidates)){
+  if(signal&&!("tradePlan" in signal)){
+   const index=coins.findIndex(coin=>String(coin?.symbol||"").toUpperCase()===symbol);
+   if(index>=0){delete saved.cache[symbol];saved.pending.push(index);}
+  }
+ }
+ saved.pending=[...new Set(saved.pending)];
  independentRadarState=saved;
  return saved;
 }
