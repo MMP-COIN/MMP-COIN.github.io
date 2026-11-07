@@ -1133,6 +1133,7 @@ body{background:
 
 <section class="terminal-grid" id="opportunities">
 <section class="card radar-card"><div class="section-head"><div><div class="section-kicker">MMP MARKET SCANNER</div><h2>رادار هوشمند بازار</h2><p class="sub">خلاصه وضعیت بازار و پیشنهاد ورود و خروج بر پایه داده‌های زنده</p></div><button class="radar-refresh-btn" id="radar-refresh-btn" type="button" aria-label="بروزرسانی رادار و داده‌های بازار" title="بروزرسانی رادار و داده‌های بازار"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2v2.1M12 18.7v2.1M3.2 12h2.1m13.4 0h2.1M5.8 5.8l1.5 1.5m9.4 9.4 1.5 1.5m0-12.4-1.5 1.5m-9.4 9.4-1.5 1.5"/><circle cx="12" cy="12" r="6.1"/><path d="M12 8.7v3.6l2.3 1.4"/></svg><span>بروزرسانی</span></button></div><div class="radar-live-note"><span class="radar-live-dot"></span><span>رصد مستقل فرصت‌ها با تحلیل کندل‌های ۱، ۳ و ۵ دقیقه‌ای</span><span id="radar-updated" class="sub">در انتظار داده بازار…</span></div>
+<details class="radar-footnote" id="radar-diagnostics-wrap" style="margin:8px 0"><summary style="cursor:pointer">جزئیات سلامت داده‌های رادار</summary><div id="radar-diagnostics" class="sub" style="margin-top:8px">پس از اسکن، گزارش منابع و نمادهای ناموفق نمایش داده می‌شود.</div></details>
 <div id="opportunity-list" class="radar-groups"><div class="ai-empty">پس از دریافت قیمت‌ها، رادار بازار را بررسی می‌کند.</div></div>
 <p class="sub radar-footnote">امتیاز مستقل رادار از ۱۰۰ محاسبه می‌شود: مومنتوم ۳۰، حجم غیرعادی ۲۵، شکست محدوده ۲۰، هم‌جهتی تایم‌فریم‌ها ۱۵ و نقدشوندگی ۱۰. این تحلیل مستقل از منطق شکارچی بازار است.</p><p class="sub radar-footnote">رادار فرصت‌یاب است، نه دستور معامله؛ شکارچی بازار هر موقعیت را مستقل تأیید می‌کند.</p>
 <p class="sub radar-footnote">پیشنهادها بر اساس داده‌های واقعی بازار تهیه می‌شوند و تضمین سود نیستند. در نبود داده معتبر، پیشنهادی صادر نمی‌شود.</p></section></section>
@@ -2502,7 +2503,7 @@ async function runIndependentRadarScan(force=false){
  if(!coins.length){if(status)status.textContent="در انتظار دریافت فهرست ارزها…";return;}
  independentRadarBusy=true;independentRadarLastRun=Date.now();
  let cursor=0,completed=0,failed=0,qualified=0;
- const found=new Map();
+ const found=new Map(),providerFailures=new Map(),failedSamples=[];
  if(status)status.textContent="رادار مستقل · آماده‌سازی "+coins.length+" ارز…";
  try{
   const workers=Array.from({length:6},async()=>{
@@ -2540,7 +2541,13 @@ async function runIndependentRadarScan(force=false){
       found.set(symbol,{score,trend,h1:change1m,h:change3m,d:change5m,directional:change3m,liquidity:dollarVolume>0?dollarVolume:null,range:null,components,dataQuality:"تحلیل مستقل کندل و حجم · "+result.provider,fast:{change1m,change3m,change5m,volumeRatio,provider:result.provider},updatedAt:Date.now()});
      }
      completed++;
-    }catch(error){failed++;completed++;if(failed<=3)console.debug("Independent radar "+symbol,error?.message||error);}
+    }catch(error){
+     failed++;completed++;
+     const message=String(error?.message||"خطای نامشخص");
+     if(failedSamples.length<8)failedSamples.push({symbol,message});
+     message.split(" · ").forEach(part=>{const match=part.match(/^([^:]{2,32}):/);if(match){const provider=match[1].trim();providerFailures.set(provider,(providerFailures.get(provider)||0)+1);}});
+     if(failed<=3)console.debug("Independent radar "+symbol,message);
+    }
     if(status&&(completed%6===0||completed===coins.length))status.textContent="رادار مستقل · "+completed+" از "+coins.length+" ارز بررسی شد · نامزدها: "+found.size+" · خطا: "+failed;
    }
   });
@@ -2549,6 +2556,12 @@ async function runIndependentRadarScan(force=false){
   for(const [symbol,signal] of radarOpportunitySignals)if(Date.now()-signal.updatedAt>8*60*1000)radarOpportunitySignals.delete(symbol);
   qualified=found.size;
   renderOpportunities();
+  const diagnostics=$("radar-diagnostics");
+  if(diagnostics){
+   const providers=[...providerFailures.entries()].sort((a,b)=>b[1]-a[1]).map(([name,count])=>aiEscape(name)+" ("+count+")").join("، ")||"هیچ خطای منبعی ثبت نشد";
+   const samples=failedSamples.map(item=>"<li><b>"+aiEscape(item.symbol)+"</b>: "+aiEscape(item.message)+"</li>").join("");
+   diagnostics.innerHTML="<div>نمادهای ناموفق: <b>"+failed+"</b> از "+coins.length+"</div><div>تعداد خطاهای ثبت‌شده به تفکیک منبع (ممکن است یک نماد چند منبع ناموفق داشته باشد): "+providers+"</div>"+(samples?"<details style=\\"margin-top:6px\\"><summary>نمونه خطاها (حداکثر ۸ نماد)</summary><ul style=\\"padding-inline-start:20px\\">"+samples+"</ul></details>":"");
+  }
   if(status)status.textContent="رادار مستقل · "+completed+" از "+coins.length+" ارز بررسی شد · نامزدها: "+qualified+" · خطاهای داده: "+failed+" · "+new Date().toLocaleTimeString("fa-IR");
  }catch(error){if(status)status.textContent="اسکن مستقل رادار کامل نشد: "+(error?.message||"خطای نامشخص");console.warn("Independent radar scan:",error);}
  finally{independentRadarBusy=false;}
