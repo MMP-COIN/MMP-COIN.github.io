@@ -2728,7 +2728,7 @@ function renderMarketHunter(){
 
 
 // MMP Dual Hunter · closed 4H spot and independent USDT perpetual futures
-const dualHunterState={spot:[],futures:[],busy:false,lastScan:0,cache:new Map(),visibleLimit:6};
+const dualHunterState={spot:[],futures:[],busy:false,lastScan:0,cache:new Map(),visibleLimit:6,universeCursor:0};
 function hunter4hParse(rows){return (rows||[]).map(k=>{const t=Number(k[0]),o=Number(k[1]),h=Number(k[2]),l=Number(k[3]),c=Number(k[4]),v=Number(k[5]);let quoteVol=0,takerBuyQuote=null;if(k.length>=11){quoteVol=Number(k[7])||0;takerBuyQuote=Number(k[10]);}else if(k.length===9){quoteVol=Number(k[7])||0;}else if(k.length>=7){quoteVol=Number(k[6])||0;}return {t,o,h,l,c,v,quoteVol,takerBuyQuote};}).filter(x=>[x.t,x.o,x.h,x.l,x.c,x.v].every(Number.isFinite)&&x.c>0&&x.h>=x.l);}
 async function hunter4hSpot(symbol){
  const pair=symbol.toUpperCase()+"USDT",urls=[
@@ -2849,7 +2849,14 @@ async function runDedicatedHunterScan(force=false){
  if(button)button.disabled=true;
  try{
   const universe=await fetchHunterUniverse();if(!universe.length)throw new Error("فهرست نمادهای معتبر دریافت نشد");
-  const selected=universe.slice().sort((a,b)=>(Number(b.total_volume)||0)-(Number(a.total_volume)||0)).slice(0,100);
+  const ranked=universe.slice().sort((a,b)=>(Number(b.total_volume)||0)-(Number(a.total_volume)||0));
+  const selected=[],selectedSymbols=new Set(),addCoin=coin=>{const key=String(coin?.symbol||"").toUpperCase();if(coin&&key&&!selectedSymbols.has(key)&&selected.length<100){selected.push(coin);selectedSymbols.add(key);}};
+  // اولویت اول: هشدارهای زنده و شکارهای فعال؛ سپس بازارهای پرحجم و در نهایت چرخش در کل فهرست.
+  [...hunterEarlyAlerts.values()].filter(x=>Date.now()-x.updatedAt<4*60*1000).sort((a,b)=>b.updatedAt-a.updatedAt).forEach(x=>addCoin(hunterSymbolIndex.get(x.symbol)));
+  for(const item of [...dualHunterState.spot,...dualHunterState.futures].sort((a,b)=>b.signal.score-a.signal.score).slice(0,25))addCoin(item.coin);
+  ranked.slice(0,35).forEach(addCoin);
+  let walked=0;while(selected.length<Math.min(100,universe.length)&&walked<universe.length){const coin=universe[(dualHunterState.universeCursor+walked)%universe.length];addCoin(coin);walked++;}
+  dualHunterState.universeCursor=(dualHunterState.universeCursor+Math.max(1,walked))%universe.length;
   let cursor=0,spot=[],futures=[],spotReady=0,futuresReady=0,dataIssues=0;
   const workers=Array.from({length:8},async()=>{
    while(cursor<selected.length){
@@ -2876,8 +2883,17 @@ async function runDedicatedHunterScan(force=false){
    }
   });
   await Promise.all(workers);
-  dualHunterState.spot=spot.sort((a,b)=>b.signal.score-a.signal.score);
-  dualHunterState.futures=futures.sort((a,b)=>b.signal.score-a.signal.score);
+  // سیگنال‌های نمادهای خارج از دسته این نوبت، تا وقتی داده‌شان تازه است در صف زنده می‌مانند.
+  const currentSymbols=new Set(selected.map(c=>String(c.symbol||"").toUpperCase()));
+  const freshSpot=[],freshFutures=[],universeBySymbol=new Map(universe.map(c=>[String(c.symbol||"").toUpperCase(),c]));
+  for(const [symbol,cached] of dualHunterState.cache){
+   if(currentSymbols.has(symbol)||Date.now()-cached.checkedAt>12*60*1000)continue;
+   const coin=universeBySymbol.get(symbol);if(!coin)continue;
+   if(cached.spot&&Date.now()-Number(cached.spot.candleTime||0)<12*60*60*1000)freshSpot.push({coin,signal:cached.spot});
+   if(cached.futures&&Date.now()-Number(cached.futures.candleTime||0)<12*60*60*1000)freshFutures.push({coin,signal:cached.futures});
+  }
+  dualHunterState.spot=[...spot,...freshSpot].sort((a,b)=>b.signal.score-a.signal.score);
+  dualHunterState.futures=[...futures,...freshFutures].sort((a,b)=>b.signal.score-a.signal.score);
   dualHunterState.lastScan=Date.now();renderMarketHunter();
   const summary="پایش "+selected.length.toLocaleString("fa-IR")+" نماد تمام شد · داده کامل اسپات: "+spotReady.toLocaleString("fa-IR")+" · داده کامل فیوچرز: "+futuresReady.toLocaleString("fa-IR")+" · خطای دریافت داده: "+dataIssues.toLocaleString("fa-IR")+" · شکار اسپات: "+dualHunterState.spot.length.toLocaleString("fa-IR")+" · شکار فیوچرز: "+dualHunterState.futures.length.toLocaleString("fa-IR");
   if(status)status.textContent=summary+(spotReady+futuresReady===0?" · منبع داده پاسخگو نیست؛ اتصال صرافی‌ها را بررسی کنید.":(spot.length+futures.length===0?" · داده دریافت شده اما فعلاً هیچ سیگنالی از فیلتر اعتبار عبور نکرده است.":" · فقط سیگنال‌های تأییدشده نمایش داده می‌شوند."))+" · اسکن خودکار هر ۵ دقیقه";
