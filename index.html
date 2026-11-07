@@ -3732,7 +3732,7 @@ setInterval(()=>mmpSendEvent("heartbeat"),240000);
   const custom=JSON.parse(localStorage.getItem("mmp_boom_custom_coins")||"[]");
   custom.forEach(merge);
   const shared=JSON.parse(localStorage.getItem("mmp_manual_coin_symbols_v1")||"[]");
-  shared.forEach(symbol=>merge({symbol,name:String(symbol||"").toUpperCase()}));
+  shared.forEach(symbol=>{const key=String(symbol||"").toUpperCase();if(key&&!source.has(key))merge({symbol:key,name:key});});
  }catch(e){}
  return [...source.values()].sort((a,b)=>{
   const ar=Number(a.market_cap_rank||a.marketCapRank||999999),br=Number(b.market_cap_rank||b.marketCapRank||999999);
@@ -3744,7 +3744,7 @@ function renderBoomCoins(root=document,showMenu=false){
  qualified.forEach(addBoomCoin);
  const prefix=root===document?"":"expanded-",get=id=>root.getElementById?root.getElementById(id):root.querySelector("#"+prefix+id);
  const input=get("boom-symbol"),list=get("boom-coin-options"),menu=get("boom-coin-menu"),icon=get("boom-coin-icon"),name=get("boom-coin-name");
- const coins=qualified.map(c=>boomCoins.get(c.symbol)||c).sort((a,b)=>a.name.localeCompare(b.name));
+ const coins=qualified.map(c=>boomCoins.get(c.symbol)||c);
  if(list)list.innerHTML="";
  const selected=boomCoins.get(String(input?.value||"").trim().toUpperCase());
  if(selected){if(icon){icon.src=selected.image;icon.style.display="";}if(name)name.textContent=selected.name+" · "+selected.symbol;}
