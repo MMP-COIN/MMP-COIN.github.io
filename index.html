@@ -4371,7 +4371,7 @@ window.mmpShareDownloadLink = async function () {
 (function(){
  try{
   var native=!!(window.Capacitor&&(window.Capacitor.isNativePlatform?.()||window.Capacitor.getPlatform?.()==="android"))||location.protocol==="capacitor:";
-  if(native)return;
+  /* The installed Android app loads this same live page; keep its WebView synchronized too. */
   var HASH_KEY="mmp-web-page-hash-v1",PENDING_KEY="mmp-web-page-pending-v1";
   var checking=false,lastCheck=0,reloadQueued=false,banner=null;
   function digest(value){
@@ -4398,7 +4398,7 @@ window.mmpShareDownloadLink = async function () {
    if(!reloadQueued||!safeToReload()||document.visibilityState==="hidden")return;
    reloadQueued=false;
    var u=new URL(location.href);u.searchParams.set("mmp_site_refresh",String(Date.now()));
-   showNotice("به‌روزرسانی جدید آماده شد؛ سایت در حال تازه‌سازی امن است…");
+   showNotice(native?"به‌روزرسانی جدید آماده شد؛ اپلیکیشن در حال تازه‌سازی امن است…":"به‌روزرسانی جدید آماده شد؛ سایت در حال تازه‌سازی امن است…");
    setTimeout(function(){location.replace(u.toString());},900);
   }
   function check(){
@@ -4414,7 +4414,7 @@ window.mmpShareDownloadLink = async function () {
      if(pending&&pending===hash){try{localStorage.removeItem(PENDING_KEY);localStorage.setItem(HASH_KEY,hash);}catch(e){}return;}
      var previous="";try{previous=localStorage.getItem(HASH_KEY)||"";}catch(e){}
      if(!previous){try{localStorage.setItem(HASH_KEY,hash);}catch(e){}return;}
-     if(previous!==hash){try{localStorage.setItem(PENDING_KEY,hash);}catch(e){}reloadQueued=true;showNotice("نسخه جدید سایت آماده است؛ پس از پایان کار جاری، خودکار اعمال می‌شود.");applyUpdate();}
+     if(previous!==hash){try{localStorage.setItem(PENDING_KEY,hash);}catch(e){}reloadQueued=true;showNotice(native?"نسخه جدید MMP COIN AI آماده است؛ پس از پایان کار جاری، اپلیکیشن خودکار به‌روزرسانی می‌شود.":"نسخه جدید سایت آماده است؛ پس از پایان کار جاری، خودکار اعمال می‌شود.");applyUpdate();}
     })
     .catch(function(){})
     .finally(function(){clearTimeout(timer);checking=false;});
@@ -4422,7 +4422,7 @@ window.mmpShareDownloadLink = async function () {
   document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"){if(reloadQueued)applyUpdate();else check();}});
   window.addEventListener("focus",function(){if(reloadQueued)applyUpdate();else check();});
   document.addEventListener("focusout",function(){if(reloadQueued)setTimeout(applyUpdate,250);});
-  setInterval(function(){if(document.visibilityState==="visible"){if(reloadQueued)applyUpdate();else check();}},5*60*1000);
+  setInterval(function(){if(document.visibilityState==="visible"){if(reloadQueued)applyUpdate();else check();}},2*60*1000);
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",check,{once:true});else check();
  }catch(e){}
 })();
