@@ -2780,12 +2780,11 @@ html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!i
     return 0;
    }
    function openNativeApk(url,sizeBytes){
-    if(!/^https:\/\/github\.com\/MMP-COIN\/MMP-COIN-AI\/releases\/download\//.test(url)){showNativeUpdateMessage("پیوند بروزرسانی معتبر نیست.");return;}
-    var target="https://mmp-coin.github.io/#app-download";
+    if(!/^https:\/\/github\.com\/MMP-COIN\/MMP-COIN-AI\/releases\/(?:download\/|latest\/download\/)/.test(url)){showNativeUpdateMessage("پیوند بروزرسانی معتبر نیست.");return;}
     var browser=window.Capacitor&&window.Capacitor.Plugins&&window.Capacitor.Plugins.Browser;
-    if(browser&&typeof browser.open==="function"){browser.open({url:target}).catch(function(){window.open(target,"_blank");});}
-    else{window.open(target,"_blank");}
-    showNativeUpdateMessage("صفحه دانلود سایت باز شد؛ نسخه جدید را نصب کنید و نسخه قبلی را حذف نکنید.");
+    if(browser&&typeof browser.open==="function"){browser.open({url:url}).catch(function(){window.open(url,"_blank");});}
+    else{window.open(url,"_blank");}
+    showNativeUpdateMessage("دانلود نسخه جدید در مرورگر آغاز می‌شود؛ پس از دانلود، فایل را اجرا و روی نسخه فعلی نصب کنید. برنامه را حذف نکنید.");
    }
    function showNativeUpdateBanner(version,url,sizeBytes){
     var existing=document.querySelector(".native-update-banner");if(existing)existing.remove();
@@ -2866,6 +2865,27 @@ html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!i
      });
    }
    function checkNativeUpdate(manual){checkLivePageUpdate(!!manual);checkNativeApkUpdate(false);}
+   // Bottom app actions: share and check/download the latest signed Android APK without changing the installed app version.
+   var nativeAppDownload=document.createElement("section");
+   nativeAppDownload.id="native-app-download";
+   nativeAppDownload.className="native-app-download card";
+   nativeAppDownload.innerHTML='<div class="section-kicker">MMP COIN AI · ANDROID</div><h2>اشتراک‌گذاری و به‌روزرسانی اپلیکیشن</h2><p>اپ را برای دوستانتان بفرستید یا نسخه جدید را بررسی و روی همین نسخه نصب کنید؛ نیازی به حذف برنامه نیست.</p><div class="native-app-download-actions"><button type="button" id="native-bottom-share">↗ ارسال اپ برای دوستان</button><button type="button" id="native-bottom-update">⇧ بررسی و دریافت نسخه جدید</button></div><small id="native-bottom-version">نسخه نصب‌شده · '+currentNativeVersion+'</small>';
+   var nativeAppDownloadStyle=document.createElement("style");
+   nativeAppDownloadStyle.textContent='html.mmp-native-app .native-app-download{display:block!important;max-width:760px;margin:18px auto 30px!important;padding:19px!important;text-align:center;border:1px solid #80683f;background:linear-gradient(135deg,#171b24,#10131a 62%,#211b12);border-radius:18px}html.mmp-native-app .native-app-download h2{margin:7px 0 8px;color:#f2d99b;font-size:16px}html.mmp-native-app .native-app-download p{margin:0 auto 13px;max-width:560px;color:#aeb7c2;font-size:11px;line-height:2}html.mmp-native-app .native-app-download-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}html.mmp-native-app .native-app-download-actions button{min-height:43px;padding:9px;border:1px solid #a8874c;border-radius:11px;background:linear-gradient(120deg,#26384a,#172331);color:#f3d99f;font:700 11px Tahoma,Arial,sans-serif}html.mmp-native-app .native-app-download-actions button:last-child{background:linear-gradient(145deg,#f1d48f,#a77a38);color:#15120b;border:0}html.mmp-native-app .native-app-download>small{display:block;margin-top:11px;color:#9ca8b6;font-size:10px}@media(max-width:430px){html.mmp-native-app .native-app-download-actions{grid-template-columns:1fr}}';
+   document.head.appendChild(nativeAppDownloadStyle);
+   var siteDownload=document.getElementById("app-download");
+   if(siteDownload&&siteDownload.parentNode)siteDownload.parentNode.insertBefore(nativeAppDownload,siteDownload.nextSibling);
+   else document.body.appendChild(nativeAppDownload);
+   var bottomShare=document.getElementById("native-bottom-share");
+   if(bottomShare)bottomShare.addEventListener("click",async function(){
+    var shareUrl="https://github.com/MMP-COIN/MMP-COIN-AI/releases/latest/download/app-release.apk";
+    try{if(navigator.share){await navigator.share({title:"MMP COIN AI",text:"ترمینال هوشمند تحلیل بازار رمزارزها",url:shareUrl});}
+    else if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(shareUrl);showNativeUpdateMessage("لینک دانلود اپ کپی شد؛ برای دوستانتان ارسال کنید.");}
+    else{window.prompt("لینک دانلود اپ را کپی کنید:",shareUrl);}}
+    catch(error){if(error&&error.name!=="AbortError")showNativeUpdateMessage("اشتراک‌گذاری انجام نشد؛ دوباره تلاش کنید.");}
+   });
+   var bottomUpdate=document.getElementById("native-bottom-update");
+   if(bottomUpdate)bottomUpdate.addEventListener("click",function(){checkNativeUpdate(true);});
    var updateCheckButton=document.getElementById("native-update-check-btn");
    if(updateCheckButton)updateCheckButton.addEventListener("click",function(){checkNativeUpdate(true);});
    document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")checkNativeUpdate(false);});
