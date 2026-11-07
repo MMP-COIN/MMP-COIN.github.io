@@ -1298,7 +1298,7 @@ body{background:
 <section class="collapsible-coins-container mmp-market-catalog" id="coins-section">
  <div class="section-head">
   <div><div class="section-kicker">LIVE ASSET UNIVERSE</div><h2>بازار رمزارزها</h2><p class="sub">فهرست یکپارچه دارایی‌های جمع‌آوری‌شده و قابل پشتیبانی در MMP COIN AI</p></div>
-  <div class="mmp-market-total"><strong id="market-catalog-count">—</strong><small>دارایی شناسایی‌شده</small></div>
+  <div class="mmp-market-total"><strong id="market-catalog-count">—</strong><small>از ۱۰۰ ارز هدف</small></div>
  </div>
  <div class="mmp-market-tools">
   <label class="mmp-market-search"><span>⌕</span><input id="market-catalog-search" type="search" placeholder="نام یا نماد ارز را جستجو کن؛ مثل Bitcoin یا BTC" autocomplete="off" aria-label="جستجوی ارز در فهرست بازار"></label>
@@ -1828,7 +1828,7 @@ function renderCoinsTables(data) {
  const query=String($("market-catalog-search")?.value||"").trim().toLowerCase();
  const filtered=rows.filter(c=>!query||String(c.name||"").toLowerCase().includes(query)||String(c.symbol||"").toLowerCase().includes(query));
  if(count)count.textContent=rows.length.toLocaleString("fa-IR");
- if(result)result.textContent=query?filtered.length.toLocaleString("fa-IR")+" نتیجه از "+rows.length.toLocaleString("fa-IR")+" ارز":rows.length.toLocaleString("fa-IR")+" ارز در فهرست";
+ if(result)result.textContent=query?filtered.length.toLocaleString("fa-IR")+" نتیجه از "+rows.length.toLocaleString("fa-IR")+" ارز دریافت‌شده":rows.length.toLocaleString("fa-IR")+" ارز دریافت‌شده از ۱۰۰ ارز هدف";
  if(grid){
   if(!filtered.length){grid.innerHTML='<div class="ai-empty">'+(rows.length?'ارزی با این نام یا نماد در فهرست پشتیبانی‌شده پیدا نشد.':'فهرست دارایی‌ها هنوز دریافت نشده است.')+'</div>';}
   else grid.innerHTML=filtered.map(c=>{
