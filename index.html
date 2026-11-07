@@ -688,7 +688,25 @@ body:after{content:"";position:fixed;width:42vw;height:42vw;max-width:620px;max-
 @media(max-width:650px){.boom-toolbar{grid-template-columns:minmax(0,1fr);gap:9px}.boom-toolbar>label,.boom-toolbar>.btn{width:100%}.boom-coin-actions{grid-template-columns:1fr 1fr}.boom-coin-actions .btn{font-size:10px;padding:9px 6px}.boom-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.boom-flow-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.boom-chart-wrap{overflow:hidden}.boom-chart{min-height:230px}}
 
 .boom-custom-coin-panel{position:relative;margin-top:9px;padding:12px;border:1px solid #9b814c;border-radius:12px;background:#101925;box-shadow:0 8px 24px #0006}.boom-custom-coin-panel[hidden]{display:none}.boom-custom-title{font-weight:800;color:#f2d58d;margin-bottom:8px}.boom-custom-coin-panel input{width:100%;padding:11px;border-radius:9px;border:1px solid #48566b;background:#080e17;color:#fff;font-size:15px;direction:ltr;text-align:left}.boom-custom-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.boom-custom-coin-panel small{display:block;color:#b8c3d0;margin-top:8px;line-height:1.7}
-\n/* Boom Hunter coin picker: tap-first, searchable, icon-led dropdown */\n.boom-coin-picker{position:relative;display:block;z-index:30;padding:10px 12px 12px;border:1px solid rgba(205,170,99,.34);border-radius:13px;background:linear-gradient(145deg,rgba(19,30,43,.96),rgba(9,15,24,.96));}\n.boom-coin-select{position:relative;min-height:48px;padding:7px 10px;border:1px solid rgba(205,170,99,.42);border-radius:10px;background:#080f19;cursor:text;}\n.boom-coin-select>img{width:32px;height:32px;object-fit:contain;flex:0 0 32px;border-radius:50%;}\n.boom-coin-select input{width:100%;height:38px;border:0!important;outline:none;background:transparent!important;color:#fff!important;font-size:15px;font-weight:800;direction:ltr;text-align:left;cursor:text;}\n.boom-coin-chevron{color:#d9b66d;font-size:22px;line-height:1;padding:0 5px;pointer-events:none;}\n.boom-coin-name{display:block;min-height:20px;margin:6px 2px;color:#b9c6d5;font-size:11px;}\n.boom-coin-select-wrap{position:relative;z-index:80;width:100%;}.boom-coin-menu{position:absolute;top:calc(100% + 7px);right:0;left:0;z-index:1200;display:block;width:100%;max-height:min(62vh,440px);overflow-y:auto;overscroll-behavior:contain;padding:6px;border:1px solid rgba(205,170,99,.62);border-radius:12px;background:#0b1420;box-shadow:0 18px 42px rgba(0,0,0,.82);}.boom-toolbar,.boom-coin-picker{overflow:visible!important;}\n.boom-coin-menu[hidden]{display:none!important;}\n.boom-coin-option{width:100%;display:flex;align-items:center;gap:10px;min-height:54px;padding:7px 9px;border:0;border-bottom:1px solid rgba(255,255,255,.055);border-radius:8px;background:transparent;color:#f5f2e9;text-align:right;cursor:pointer;}\n.boom-coin-option:active,.boom-coin-option:hover{background:rgba(213,177,103,.15);}\n.boom-coin-option img,.boom-coin-icon-fallback{width:34px;height:34px;flex:0 0 34px;border-radius:50%;object-fit:contain;background:#fff;padding:2px;}\n.boom-coin-icon-fallback{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#e8cc87,#8d682e);color:#111;font-size:9px;font-weight:900;direction:ltr;}\n.boom-coin-option-name{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;}\n.boom-coin-option-name b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;}\n.boom-coin-option-name small{color:#aab8c8;font-size:10px;direction:ltr;text-align:right;}\n.boom-coin-option-pair{color:#d7b46d;font-size:9px;direction:ltr;}\n.boom-coin-no-results{padding:18px 10px;text-align:center;color:#c5ced8;font-size:12px;}\n@media(max-width:650px){.boom-coin-picker{padding:9px}.boom-coin-menu{max-height:52vh}.boom-coin-option{min-height:56px}.boom-coin-select input{font-size:16px;}}\n</style>
+\n/* Boom Hunter coin picker: tap-first, searchable, icon-led dropdown */\n.boom-coin-picker{position:relative;display:block;z-index:30;padding:10px 12px 12px;border:1px solid rgba(205,170,99,.34);border-radius:13px;background:linear-gradient(145deg,rgba(19,30,43,.96),rgba(9,15,24,.96));}\n.boom-coin-select{position:relative;min-height:48px;padding:7px 10px;border:1px solid rgba(205,170,99,.42);border-radius:10px;background:#080f19;cursor:text;}\n.boom-coin-select>img{width:32px;height:32px;object-fit:contain;flex:0 0 32px;border-radius:50%;}\n.boom-coin-select input{width:100%;height:38px;border:0!important;outline:none;background:transparent!important;color:#fff!important;font-size:15px;font-weight:800;direction:ltr;text-align:left;cursor:text;}\n.boom-coin-chevron{color:#d9b66d;font-size:22px;line-height:1;padding:0 5px;pointer-events:none;}\n.boom-coin-name{display:block;min-height:20px;margin:6px 2px;color:#b9c6d5;font-size:11px;}\n.boom-coin-select-wrap{position:relative;z-index:80;width:100%;}.boom-coin-menu{position:absolute;top:calc(100% + 7px);right:0;left:0;z-index:1200;display:block;width:100%;max-height:min(62vh,440px);overflow-y:auto;overscroll-behavior:contain;padding:6px;border:1px solid rgba(205,170,99,.62);border-radius:12px;background:#0b1420;box-shadow:0 18px 42px rgba(0,0,0,.82);}.boom-toolbar,.boom-coin-picker{overflow:visible!important;}\n.boom-coin-menu[hidden]{display:none!important;}\n.boom-coin-option{width:100%;display:flex;align-items:center;gap:10px;min-height:54px;padding:7px 9px;border:0;border-bottom:1px solid rgba(255,255,255,.055);border-radius:8px;background:transparent;color:#f5f2e9;text-align:right;cursor:pointer;}\n.boom-coin-option:active,.boom-coin-option:hover{background:rgba(213,177,103,.15);}\n.boom-coin-option img,.boom-coin-icon-fallback{width:34px;height:34px;flex:0 0 34px;border-radius:50%;object-fit:contain;background:#fff;padding:2px;}\n.boom-coin-icon-fallback{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#e8cc87,#8d682e);color:#111;font-size:9px;font-weight:900;direction:ltr;}\n.boom-coin-option-name{display:flex;flex:1;min-width:0;flex-direction:column;gap:3px;}\n.boom-coin-option-name b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;}\n.boom-coin-option-name small{color:#aab8c8;font-size:10px;direction:ltr;text-align:right;}\n.boom-coin-option-pair{color:#d7b46d;font-size:9px;direction:ltr;}\n.boom-coin-no-results{padding:18px 10px;text-align:center;color:#c5ced8;font-size:12px;}\n@media(max-width:650px){.boom-coin-picker{padding:9px}.boom-coin-menu{max-height:52vh}.boom-coin-option{min-height:56px}.boom-coin-select input{font-size:16px;}}\n
+/* MMP market universe: searchable horizontal asset directory */
+.mmp-market-catalog{padding:clamp(14px,2vw,24px)}
+.mmp-market-total{min-width:110px;text-align:center;border:1px solid #79633b88;background:#d7b46a12;border-radius:14px;padding:9px 14px}
+.mmp-market-total strong{display:block;color:var(--gold2);font-size:25px;line-height:1.3;font-variant-numeric:tabular-nums}
+.mmp-market-total small{display:block;color:var(--muted);font-size:10px}
+.mmp-market-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 16px}
+.mmp-market-search{display:flex;align-items:center;gap:9px;flex:1;max-width:620px;min-width:0;border:1px solid #39465a;background:#0b111b;border-radius:12px;padding:0 12px;color:var(--gold2)}
+.mmp-market-search span{font-size:22px}.mmp-market-search input{width:100%;min-width:0;background:transparent;border:0;outline:0;color:var(--text);padding:12px 0;font-size:13px}
+.mmp-market-result-count{font-size:11px;color:var(--muted);white-space:nowrap}
+.mmp-market-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:9px;max-height:620px;overflow:auto;overscroll-behavior:contain;padding:2px 2px 8px;scrollbar-width:thin}
+.mmp-market-coin{min-width:0;border:1px solid #2b3748;background:linear-gradient(145deg,#151e2b,#0b111a);border-radius:12px;padding:11px;display:flex;flex-direction:column;gap:9px;transition:border-color .18s,transform .18s}
+.mmp-market-coin:hover{border-color:#b99a5c99;transform:translateY(-1px)}
+.mmp-market-coin-head{display:flex;align-items:center;gap:9px;min-width:0}.mmp-market-coin-head img{width:29px;height:29px;flex:0 0 29px;object-fit:contain;border-radius:50%;background:#fff;padding:2px}.mmp-market-coin-head div{min-width:0}.mmp-market-coin-head b,.mmp-market-coin-head small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mmp-market-coin-head b{font-size:12px}.mmp-market-coin-head small{font-size:10px;color:var(--muted);direction:ltr;text-align:right}
+.mmp-market-coin-price{direction:ltr;text-align:right;font-size:14px;font-variant-numeric:tabular-nums;color:var(--gold2)}
+.mmp-market-coin-meta{display:flex;justify-content:space-between;gap:5px;flex-wrap:wrap;font-size:10px;color:var(--muted)}
+.mmp-market-foot{margin-top:10px;color:var(--muted);font-size:10px;line-height:1.8}.mmp-market-legacy{display:none!important}
+@media(max-width:560px){.mmp-market-tools{align-items:stretch;flex-direction:column}.mmp-market-search{max-width:none}.mmp-market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:560px}.mmp-market-coin{padding:9px}.mmp-market-coin-meta{font-size:9px}.mmp-market-total{min-width:88px;padding:7px}.mmp-market-total strong{font-size:21px}}
+</style>
 
 <link href="https://fonts.googleapis.com/css2?family=Estedad:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -1277,34 +1295,22 @@ body{background:
  <p class="intel-foot">هشدارها تا زمانی که صفحه یا اپ باز باشد بررسی می‌شوند؛ اعلان سیستم فقط با اجازه مرورگر فعال خواهد شد.</p>
 </section>
 
-<section class="collapsible-coins-container" id="coins-section">
-<div class="section-head">
-  <div><div class="section-kicker">LIVE ASSET UNIVERSE</div><h2>بازار رمزارزها</h2><p class="sub">قیمت لحظه‌ای، تغییر ۲۴ ساعته و ارزش بازار؛ به تتر و تومان</p></div>
-  <span class="badge" id="currency-indicator">USDT + تومان</span>
-</div>
-
-<div class="table-wrap"><table class="market-table">
-<thead><tr><th>دارایی</th><th>قیمت دلاری (USDT)</th><th>قیمت تومانی (IRT)</th><th>تغییر ۲۴ساعته</th><th>ارزش بازار</th></tr></thead>
-<tbody id="top-coins"><tr><td colspan="5" class="muted">در حال دریافت داده…</td></tr></tbody>
-</table></div>
-
-<button class="expand-coins-btn" onclick="toggleFullCoinsList()" id="expand-btn" type="button" aria-expanded="false" aria-controls="full-coins-box">
-  <span class="expand-btn-label">نمایش همه ارزها</span>
-  <span class="expand-btn-meta" id="full-coins-count">ارزهای بیشتر بازار</span>
-  <span class="expand-chevron" aria-hidden="true">⌄</span>
-</button>
-
-<div class="full-coins-list" id="full-coins-box" aria-hidden="true">
-  <div class="full-coins-toolbar">
-    <div><b>سایر ارزهای بازار</b><small>همان چینش و اطلاعات فهرست اصلی</small></div>
-    <span class="badge">قیمت زنده · USDT / IRT</span>
-  </div>
-  <div class="table-wrap"><table class="market-table">
-    <thead><tr><th>دارایی</th><th>قیمت دلاری (USDT)</th><th>قیمت تومانی (IRT)</th><th>تغییر ۲۴ساعته</th><th>ارزش بازار</th></tr></thead>
-    <tbody id="full-coins"></tbody>
-  </table></div>
-  <div class="full-coins-close-dock"><button class="full-coins-close-btn" type="button" onclick="toggleFullCoinsList()" aria-label="بستن فهرست ارزهای بیشتر">⌃ بستن فهرست ارزها و بازگشت به ابتدای لیست</button></div>
-</div>
+<section class="collapsible-coins-container mmp-market-catalog" id="coins-section">
+ <div class="section-head">
+  <div><div class="section-kicker">LIVE ASSET UNIVERSE</div><h2>بازار رمزارزها</h2><p class="sub">فهرست یکپارچه دارایی‌های جمع‌آوری‌شده و قابل پشتیبانی در MMP COIN AI</p></div>
+  <div class="mmp-market-total"><strong id="market-catalog-count">—</strong><small>دارایی شناسایی‌شده</small></div>
+ </div>
+ <div class="mmp-market-tools">
+  <label class="mmp-market-search"><span>⌕</span><input id="market-catalog-search" type="search" placeholder="نام یا نماد ارز را جستجو کن؛ مثل Bitcoin یا BTC" autocomplete="off" aria-label="جستجوی ارز در فهرست بازار"></label>
+  <span id="market-catalog-result-count" class="mmp-market-result-count">در حال دریافت فهرست…</span>
+ </div>
+ <div id="market-catalog-grid" class="mmp-market-grid"><div class="ai-empty">در حال دریافت فهرست کامل دارایی‌ها…</div></div>
+ <div class="mmp-market-foot" id="market-catalog-foot">جستجو در تمام دارایی‌های دریافت‌شده انجام می‌شود؛ برای دیدن وجود یک ارز، نام یا نماد آن را وارد کن.</div>
+ <div class="mmp-market-legacy" aria-hidden="true">
+  <table><tbody id="top-coins"></tbody></table><table><tbody id="full-coins"></tbody></table>
+  <span id="full-coins-count"></span><span id="currency-indicator">USDT + تومان</span>
+  <button id="expand-btn" type="button"><span class="expand-btn-label">نمایش همه ارزها</span><span class="expand-chevron">⌄</span></button><div id="full-coins-box"></div>
+ </div>
 </section>
 
 <section class="card mmp-directory-card" id="asset-directory">
@@ -1817,38 +1823,32 @@ function renderHeroCards() {
 
 
 function renderCoinsTables(data) {
- const renderRows=items=>items.map(c=>{
-  const symbol=aiEscape(String(c.symbol||"").toUpperCase());
-  const name=aiEscape(c.name||symbol);
-  const price=Number(c.current_price);
-  const priceText=Number.isFinite(price)&&price>0?money(price,price<1?6:2)+" USDT":"داده در دسترس نیست";
-  const tomanText=currentTetherPrice>0&&Number.isFinite(price)&&price>0?toman(price*currentTetherPrice)+" تومان":"نرخ تبدیل در دسترس نیست";
-  const source=aiEscape(c.price_source||"CoinGecko");
-  const sourceLabel=source==="CoinGecko"?"مرجع دلاری CoinGecko":source==="CoinLore"?"مرجع دلاری CoinLore":"قیمت بازار اسپات";
-  const updatedAt=c.price_updated_at||c.last_updated;
-  const updatedText=updatedAt&&!Number.isNaN(Date.parse(updatedAt))?new Date(updatedAt).toLocaleTimeString("fa-IR"):"زمان بروزرسانی نامشخص";
-  const spot=c.exchange_support?.spot;
-  const spotText=!c.exchange_support?"در حال بررسی اعتبار بازار":spot?.confirmed?"تأیید در حداقل دو صرافی معتبر: "+(spot.providers||[]).join("، "):"معیار حداقل دو صرافی معتبر را ندارد";
-  const change=Number(c.price_change_percentage_24h);
-  const changeText=Number.isFinite(change)?(change>=0?"+":"")+change.toFixed(2)+"%":"—";
-  const cap=Number(c.market_cap)>0?money(c.market_cap,0):"—";
-  return `
-   <tr class="coin-card-row">
-    <td class="coin-identity" data-label="دارایی"><img class="coin-icon" src="${aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol).toLowerCase()+"@2x.png"))}" alt="" loading="lazy"><span><b>${name}</b><span class="coin-symbol">${symbol}</span></span></td>
-    <td class="num coin-price-usdt" data-label="قیمت به تتر">${priceText}</td>
-    <td class="num coin-price-irt" data-label="قیمت به تومان">${tomanText}</td>
-    <td class="num coin-change ${Number.isFinite(change)?(change>=0?"positive":"negative"):"muted"}" data-label="تغییر ۲۴ ساعت">${changeText}</td>
-    <td class="num coin-market-cap" data-label="ارزش بازار">${cap}</td>
-    <td class="coin-source" data-label="منبع قیمت"><span>منبع قیمت: <b>${source}</b></span><small>${sourceLabel} · ${updatedText}</small><small>${aiEscape(spotText)}</small><small class="coin-risk-note">تأیید بازار به معنی تضمین سلامت قرارداد نیست.</small><small>نرخ تبدیل تتر: ${aiEscape(currentTetherSources.join(" + ")||"در دسترس نیست")}${currentTetherWarning?" · "+aiEscape(currentTetherWarning):""}</small></td>
-   </tr>`;
- }).join("");
- $("top-coins").innerHTML=renderRows(data.slice(0,5));
- $("full-coins").innerHTML=renderRows(data.slice(5));
- const count=$("full-coins-count");
- if(count)count.textContent=data.slice(5).length+" ارز دیگر · برای مشاهده باز کنید";
+ const rows=Array.isArray(data)?data:[];
+ const grid=$("market-catalog-grid"),count=$("market-catalog-count"),result=$("market-catalog-result-count");
+ const query=String($("market-catalog-search")?.value||"").trim().toLowerCase();
+ const filtered=rows.filter(c=>!query||String(c.name||"").toLowerCase().includes(query)||String(c.symbol||"").toLowerCase().includes(query));
+ if(count)count.textContent=rows.length.toLocaleString("fa-IR");
+ if(result)result.textContent=query?filtered.length.toLocaleString("fa-IR")+" نتیجه از "+rows.length.toLocaleString("fa-IR")+" ارز":rows.length.toLocaleString("fa-IR")+" ارز در فهرست";
+ if(grid){
+  if(!filtered.length){grid.innerHTML='<div class="ai-empty">'+(rows.length?'ارزی با این نام یا نماد در فهرست پشتیبانی‌شده پیدا نشد.':'فهرست دارایی‌ها هنوز دریافت نشده است.')+'</div>';}
+  else grid.innerHTML=filtered.map(c=>{
+   const symbol=aiEscape(String(c.symbol||"").toUpperCase()),name=aiEscape(c.name||symbol),price=Number(c.current_price);
+   const priceText=Number.isFinite(price)&&price>0?(price<1?money(price,8):money(price,2))+" USDT":"قیمت ناموجود";
+   const tomanText=currentTetherPrice>0&&price>0?toman(price*currentTetherPrice)+" تومان":"— تومان";
+   const change=Number(c.price_change_percentage_24h),changeText=Number.isFinite(change)?(change>=0?"+":"")+change.toFixed(2)+"%":"—";
+   const image=aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"));
+   return '<article class="mmp-market-coin"><div class="mmp-market-coin-head"><img src="'+image+'" alt="" loading="lazy" onerror="handleAiCoinIconError(this)" data-symbol="'+symbol+'" data-fallback-step="0"><div><b>'+name+'</b><small>'+symbol+'</small></div></div><strong class="mmp-market-coin-price">'+priceText+'</strong><div class="mmp-market-coin-meta"><span class="'+(change>=0?'positive':'negative')+'">'+changeText+'</span><span>'+tomanText+'</span></div></article>';
+  }).join("");
+ }
+ // نگهداری جدول‌های قدیمی به‌صورت مخفی برای سازگاری با کدهای قبلی سایت
+ const renderRows=items=>items.map(c=>'<tr><td>'+aiEscape(c.name||c.symbol||"")+'</td><td>'+aiEscape(c.symbol||"")+'</td></tr>').join("");
+ if($("top-coins"))$("top-coins").innerHTML=renderRows(rows);
+ if($("full-coins"))$("full-coins").innerHTML="";
+ const legacyCount=$("full-coins-count");if(legacyCount)legacyCount.textContent=rows.length+" ارز";
 }
 
 
+document.addEventListener("input",event=>{if(event.target?.id==="market-catalog-search")renderCoinsTables(cachedCoinsData);});
 function handleAiCoinIconError(img){
  const symbol=String(img?.dataset?.symbol||"").toLowerCase();
  if(!symbol)return;
