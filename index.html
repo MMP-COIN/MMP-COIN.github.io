@@ -1297,15 +1297,15 @@ body{background:
 
 <section class="collapsible-coins-container mmp-market-catalog" id="coins-section">
  <div class="section-head">
-  <div><div class="section-kicker">LIVE ASSET UNIVERSE</div><h2>بازار رمزارزها</h2><p class="sub">فهرست یکپارچه دارایی‌های جمع‌آوری‌شده و قابل پشتیبانی در MMP COIN AI</p></div>
-  <div class="mmp-market-total"><strong id="market-catalog-count">—</strong><small>از ۱۰۰ ارز هدف</small></div>
+  <div><div class="section-kicker">LIVE ASSET UNIVERSE</div><h2>بازار رمزارزها</h2><p class="sub">فهرست مرکزی بازارهای معتبر صرافی‌های داخلی و خارجی؛ بدون سقف تعداد</p></div>
+  <div class="mmp-market-total"><strong id="market-catalog-count">—</strong><small>دارایی معتبر شناسایی‌شده</small></div>
  </div>
  <div class="mmp-market-tools">
   <label class="mmp-market-search"><span>⌕</span><input id="market-catalog-search" type="search" placeholder="نام یا نماد ارز را جستجو کن؛ مثل Bitcoin یا BTC" autocomplete="off" aria-label="جستجوی ارز در فهرست بازار"></label>
   <span id="market-catalog-result-count" class="mmp-market-result-count">در حال دریافت فهرست…</span>
  </div>
  <div id="market-catalog-grid" class="mmp-market-grid"><div class="ai-empty">در حال دریافت فهرست کامل دارایی‌ها…</div></div>
- <div class="mmp-market-foot" id="market-catalog-foot">جستجو در تمام دارایی‌های دریافت‌شده انجام می‌شود؛ برای دیدن وجود یک ارز، نام یا نماد آن را وارد کن.</div>
+ <div class="mmp-market-foot" id="market-catalog-foot">جستجو در کل کاتالوگ انجام می‌شود؛ ارزهای تازه‌کشف‌شده شکارچی نیز جداگانه رصد می‌شوند.</div>
  <div class="mmp-market-legacy" aria-hidden="true">
   <table><tbody id="top-coins"></tbody></table><table><tbody id="full-coins"></tbody></table>
   <span id="full-coins-count"></span><span id="currency-indicator">USDT + تومان</span>
@@ -1772,8 +1772,35 @@ async function refreshAll(){
     console.warn("Second-page market enrichment unavailable; rendering verified first-page assets:",pageTwoError);
    }
   }
-  if(!verifiedCoins.length)throw new Error("هیچ داده قیمت معتبری برای نمایش دریافت نشد");
-  let data=orderPrimaryCoins(verifiedCoins.slice(0,100));
+  // همگام‌سازی فهرست مرکزی با کاتالوگ تجمیع‌شده صرافی‌ها؛ بدون سقف ۱۰۰تایی.
+  try{
+   if(!unifiedAssetCatalogCache.length){hunterUniverseCache.expires=0;await fetchHunterUniverse();}
+  }catch(catalogError){console.warn("Unified exchange catalog unavailable; keeping market-provider assets:",catalogError);}
+  const catalogBySymbol=new Map();
+  [...verifiedCoins,...(Array.isArray(unifiedAssetCatalogCache)?unifiedAssetCatalogCache:[])].forEach(coin=>{
+   const symbol=String(coin?.symbol||"").toUpperCase();
+   if(!coin?.id||!symbol||!/^[A-Z0-9_]{2,30}$/.test(symbol)||NON_TRADABLE_COIN_IDS.has(coin.id)||NON_TRADABLE_SYMBOLS.has(symbol))return;
+   const previous=catalogBySymbol.get(symbol);
+   if(!previous){catalogBySymbol.set(symbol,{...coin});return;}
+   const preferred=Number(coin.current_price)>0?coin:previous;
+   const secondary=preferred===coin?previous:coin;
+   catalogBySymbol.set(symbol,{...secondary,...preferred,
+    id:previous.id||coin.id,
+    name:(preferred.name&&preferred.name!==symbol)?preferred.name:(secondary.name||symbol),
+    image:preferred.image||secondary.image||"",
+    market_cap:preferred.market_cap||secondary.market_cap||null,
+    market_cap_rank:preferred.market_cap_rank||secondary.market_cap_rank||null,
+    price_change_percentage_24h:Number.isFinite(Number(preferred.hunterChange24h))?Number(preferred.hunterChange24h):(preferred.price_change_percentage_24h??secondary.price_change_percentage_24h),
+    price_source:preferred.hunterPriceExchange||preferred.price_source||secondary.price_source||"Exchange market",
+    marketPairs:preferred.marketPairs||secondary.marketPairs||[],
+    hunterExchange:preferred.hunterExchange||secondary.hunterExchange||"",
+    hasUsdtMarket:preferred.hasUsdtMarket===true||secondary.hasUsdtMarket===true,
+    hasDomesticMarket:preferred.hasDomesticMarket===true||secondary.hasDomesticMarket===true
+   });
+  });
+  const mergedCatalog=[...catalogBySymbol.values()];
+  if(!mergedCatalog.length)throw new Error("هیچ دارایی معتبر از منابع بازار دریافت نشد");
+  let data=orderPrimaryCoins(mergedCatalog);
   exchangeSupportBySymbol=supportBySymbol;
   data.forEach(coin=>{coin.exchange_support=supportBySymbol[String(coin.symbol||"").toUpperCase()]||null;});
   exchangeAuditAt=Date.now();
@@ -1828,7 +1855,7 @@ function renderCoinsTables(data) {
  const query=String($("market-catalog-search")?.value||"").trim().toLowerCase();
  const filtered=rows.filter(c=>!query||String(c.name||"").toLowerCase().includes(query)||String(c.symbol||"").toLowerCase().includes(query));
  if(count)count.textContent=rows.length.toLocaleString("fa-IR");
- if(result)result.textContent=query?filtered.length.toLocaleString("fa-IR")+" نتیجه از "+rows.length.toLocaleString("fa-IR")+" ارز دریافت‌شده":rows.length.toLocaleString("fa-IR")+" ارز دریافت‌شده از ۱۰۰ ارز هدف";
+ if(result)result.textContent=query?filtered.length.toLocaleString("fa-IR")+" نتیجه از "+rows.length.toLocaleString("fa-IR")+" دارایی معتبر":rows.length.toLocaleString("fa-IR")+" دارایی معتبر شناسایی‌شده";
  if(grid){
   if(!filtered.length){grid.innerHTML='<div class="ai-empty">'+(rows.length?'ارزی با این نام یا نماد در فهرست پشتیبانی‌شده پیدا نشد.':'فهرست دارایی‌ها هنوز دریافت نشده است.')+'</div>';}
   else grid.innerHTML=filtered.map(c=>{
@@ -1837,7 +1864,9 @@ function renderCoinsTables(data) {
    const tomanText=currentTetherPrice>0&&price>0?toman(price*currentTetherPrice)+" تومان":"— تومان";
    const change=Number(c.price_change_percentage_24h),changeText=Number.isFinite(change)?(change>=0?"+":"")+change.toFixed(2)+"%":"—";
    const image=aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"));
-   return '<article class="mmp-market-coin"><div class="mmp-market-coin-head"><img src="'+image+'" alt="" loading="lazy" onerror="handleAiCoinIconError(this)" data-symbol="'+symbol+'" data-fallback-step="0"><div><b>'+name+'</b><small>'+symbol+'</small></div></div><strong class="mmp-market-coin-price">'+priceText+'</strong><div class="mmp-market-coin-meta"><span class="'+(change>=0?'positive':'negative')+'">'+changeText+'</span><span>'+tomanText+'</span></div></article>';
+   const sources=Array.isArray(c.marketPairs)?[...new Set(c.marketPairs.map(x=>x.exchange).filter(Boolean))]:[];
+   const marketLabel=c.hasDomesticMarket&&c.hasUsdtMarket?"داخلی + جهانی":c.hasDomesticMarket?"بازار داخلی":sources.length?sources.slice(0,3).join(" · "):"بازار تأییدشده";
+   return '<article class="mmp-market-coin"><div class="mmp-market-coin-head"><img src="'+image+'" alt="" loading="lazy" onerror="handleAiCoinIconError(this)" data-symbol="'+symbol+'" data-fallback-step="0"><div><b>'+name+'</b><small>'+symbol+'</small></div></div><strong class="mmp-market-coin-price">'+priceText+'</strong><div class="mmp-market-coin-meta"><span class="'+(change>=0?'positive':'negative')+'">'+changeText+'</span><span>'+tomanText+'</span></div><small class="mmp-market-coin-sources">'+aiEscape(marketLabel)+'</small></article>';
   }).join("");
  }
  // نگهداری جدول‌های قدیمی به‌صورت مخفی برای سازگاری با کدهای قبلی سایت
@@ -2182,6 +2211,7 @@ const hunterEarlyExchangeSockets=new Map(),hunterEarlyExchangeRetry=new Map(),hu
 let hunterStreamMarkets=[];
 
 let hunterUniverseCache={expires:0,coins:[]};
+let unifiedAssetCatalogCache=[];
 let hunterMetadataCache={expires:0,coins:[]};
 let fastRadarBusy=false,fastRadarLastRun=0,fastRadarLastMessage="در انتظار اولین پایش سریع",fastRadarCursor=0;
 async function fetchFastCandles(symbol,coin){
@@ -2282,15 +2312,18 @@ async function fetchHunterUniverse(){
   payload=await hunterFetchJson(AI_ANALYSIS_ENDPOINT+"/hunter-universe",20000);
   if(!Array.isArray(payload.assets)||!payload.assets.length)throw new Error(payload.detail||payload.error||"فهرست بازارها خالی است");
  }catch(error){workerError=error;console.warn("Hunter Worker universe unavailable; using verified exchange-list fallback:",error?.message||error);}
- let allUniverse=[];
- if(Array.isArray(payload?.assets)&&payload.assets.length){
-  allUniverse=payload.assets.map(c=>({
-   id:String(c.id||("cmc:"+c.cmcId)),cmcId:Number(c.cmcId)||null,symbol:String(c.symbol||"").toUpperCase(),name:c.name||c.symbol,
-   image:c.image||"",current_price:Number(c.current_price)||0,total_volume:Number(c.total_volume)||0,market_cap:Number(c.market_cap)||null,
-   market_cap_rank:Number(c.market_cap_rank)||null,hunterExchange:c.hunterExchange||"Binance",hunterPriceExchange:c.hunterPriceExchange||"CoinMarketCap",
-   hunterChange24h:Number(c.hunterChange24h)||0,hunterVenueVolume:c.hunterVenueVolume||{},cmcDuplicateCount:Number(c.cmcDuplicateCount)||1
-  })).filter(c=>c.symbol&&c.current_price>0&&/^[A-Z0-9]{2,20}$/.test(c.symbol));
- }
+ const mapCatalogAsset=c=>({
+  id:String(c.id||("cmc:"+c.cmcId)),cmcId:Number(c.cmcId)||null,symbol:String(c.symbol||"").toUpperCase(),name:c.name||c.symbol,
+  image:c.image||"",current_price:Number(c.current_price)||0,total_volume:Number(c.total_volume)||0,market_cap:Number(c.market_cap)||null,
+  market_cap_rank:Number(c.market_cap_rank)||null,hunterExchange:c.hunterExchange||"",hunterPriceExchange:c.hunterPriceExchange||"Exchange market",
+  hunterChange24h:Number(c.hunterChange24h)||0,price_change_percentage_24h:Number(c.hunterChange24h)||0,
+  hunterVenueVolume:c.hunterVenueVolume||{},marketPairs:Array.isArray(c.marketPairs)?c.marketPairs:[],
+  hasUsdtMarket:c.hasUsdtMarket===true,hasDomesticMarket:c.hasDomesticMarket===true,isDiscovery:c.isDiscovery===true,
+  cmcDuplicateCount:Number(c.cmcDuplicateCount)||1
+ });
+ unifiedAssetCatalogCache=Array.isArray(payload?.assets)?payload.assets.map(mapCatalogAsset).filter(c=>c.symbol&&c.current_price>0):[];
+ const rawHunterAssets=Array.isArray(payload?.hunter_assets)?payload.hunter_assets:(Array.isArray(payload?.assets)?payload.assets:[]);
+ let allUniverse=rawHunterAssets.map(mapCatalogAsset).filter(c=>c.symbol&&c.current_price>0&&/^[A-Z0-9]{2,20}$/.test(c.symbol));
  if(!allUniverse.length){
   // پشتیبان مستقل: داده قیمت موجود سایت + فهرست واقعی جفت‌های USDT صرافی‌ها؛ خرابی مسیر تجمیع Worker نباید کل شکارچی را متوقف کند.
   const exchangeSets=await getHunterExchangeMarkets().catch(error=>{console.warn("Hunter exchange fallback unavailable:",error?.message||error);return new Map();});
@@ -2315,6 +2348,7 @@ async function fetchHunterUniverse(){
    if(!previous||(coin.market_cap_rank||Infinity)<(previous.market_cap_rank||Infinity))bestBySymbol.set(symbol,coin);
   }
   allUniverse=[...bestBySymbol.values()];
+  if(!unifiedAssetCatalogCache.length)unifiedAssetCatalogCache=allUniverse.slice();
   if(!allUniverse.length)throw new Error("فهرست Worker و مسیر پشتیبان صرافی‌ها در دسترس نیست"+(workerError?": "+String(workerError.message||workerError).slice(0,150):""));
   allUniverse.sort((a,b)=>(b.total_volume||0)-(a.total_volume||0)||(a.market_cap_rank||Infinity)-(b.market_cap_rank||Infinity));
   console.info("Hunter running on verified exchange-list fallback:",allUniverse.length,"symbols");
@@ -2323,7 +2357,7 @@ async function fetchHunterUniverse(){
  hunterStreamMarkets=allUniverse;
  hunterCoinIndex.clear();hunterSymbolIndex.clear();
  allUniverse.forEach(c=>{hunterCoinIndex.set(c.id,c);hunterSymbolIndex.set(c.symbol,c);});
- hunterUniverseCache={expires:Date.now()+30000,coins:allUniverse,sources:payload?.sources||{fallback:true},checkedAt:payload?.checked_at||new Date().toISOString()};
+ hunterUniverseCache={expires:Date.now()+30000,coins:allUniverse,sources:payload?.sources||{fallback:true},checkedAt:payload?.checked_at||new Date().toISOString(),discoveredCount:Number(payload?.discovered_count)||allUniverse.filter(c=>c.isDiscovery).length};
  connectHunterEarlyStream();connectHunterEarlyExchangeStreams();
  return allUniverse;
 }
@@ -2773,7 +2807,7 @@ function renderMarketHunter(){
  if($("hunter-feed-status"))$("hunter-feed-status").textContent=entries.length?entries.length.toLocaleString("fa-IR")+" حرکت فعال · مرتب‌سازی بر اساس قدرت حرکت":"هنوز حرکت تأییدشده‌ای پیدا نشده";
  if(!entries.length){feed.innerHTML='<div class="hunter-empty"><span class="hunter-radar-icon">⌁</span><b>در حال رصد بازار</b><small>تمام نمادهای مشترک Binance Spot و CoinMarketCap به‌صورت چرخشی از نظر جهش، ریزش و حجم غیرعادی بررسی می‌شوند.</small></div>';return;}
  feed.innerHTML=entries.map(({coin:c,signal:m,id})=>{
-  const up=m.trend==="bull",direction=up?"جهش صعودی":"ریزش نزولی",cls=up?"up":"down",mainSymbols=new Set(cachedCoinsData.map(x=>String(x.symbol||"").toUpperCase())),isMain100=mainSymbols.has(String(c.symbol||"").toUpperCase()),originTag=isMain100?"":'<small class="hunter-origin-tag" title="این ارز خارج از فهرست اصلی ۱۰۰ ارز است">🎯 شکار</small>',risk=m.overextended?'<span class="hunter-warning">حرکت کش‌آمده · ورود دیرهنگام پرریسک</span>':m.dailyMover?'<span class="hunter-confirm">حرکت ۲۴ساعته قابل‌توجه · منتظر تأیید کندلی</span>':m.lowLiquidity?'<span class="hunter-warning">نقدشوندگی محدود · ریسک لغزش قیمت</span>':'<span class="hunter-confirm">'+(m.breakout?"شکست محدوده تأیید شد":"شتاب حرکت در حال شکل‌گیری")+'</span>';
+  const up=m.trend==="bull",direction=up?"جهش صعودی":"ریزش نزولی",cls=up?"up":"down",mainSymbols=new Set(cachedCoinsData.map(x=>String(x.symbol||"").toUpperCase())),isInMasterCatalog=mainSymbols.has(String(c.symbol||"").toUpperCase()),originTag=isInMasterCatalog?"":'<small class="hunter-origin-tag" title="این نماد خارج از فهرست مرکزی و از بازار صرافی‌ها کشف شده است">🎯 کشف مستقل</small>',risk=m.overextended?'<span class="hunter-warning">حرکت کش‌آمده · ورود دیرهنگام پرریسک</span>':m.dailyMover?'<span class="hunter-confirm">حرکت ۲۴ساعته قابل‌توجه · منتظر تأیید کندلی</span>':m.lowLiquidity?'<span class="hunter-warning">نقدشوندگی محدود · ریسک لغزش قیمت</span>':'<span class="hunter-confirm">'+(m.breakout?"شکست محدوده تأیید شد":"شتاب حرکت در حال شکل‌گیری")+'</span>';
   return '<article class="hunter-card '+cls+' hunter-density-'+density+'" data-hunter-card="'+aiEscape(id)+'"><div class="hunter-card-head"><div class="hunter-coin"><div class="hunter-coin-emblem"><img src="'+aiEscape(hunterCoinImage(c))+'" data-symbol="'+aiEscape(String(c.symbol).toUpperCase())+'" alt="'+aiEscape(String(c.symbol).toUpperCase())+'" loading="lazy" onerror="hunterCoinImageError(this)"><i style="display:none">'+aiEscape(String(c.symbol).slice(0,1).toUpperCase())+'</i></div><span><b>'+aiEscape(c.name)+' <small>('+aiEscape(String(c.symbol).toUpperCase())+')</small>'+originTag+'</b><em>'+direction+'</em><small class="hunter-symbol-tag">نماد معاملاتی: '+aiEscape(String(c.symbol).toUpperCase())+'/USDT</small></span></div><button type="button" class="hunter-mini-move hunter-chart-trigger" data-hunter-mini="'+aiEscape(id)+'" data-hunter-chart="'+aiEscape(id)+'" aria-label="نمایش نمودار بزرگ '+aiEscape(String(c.symbol).toUpperCase())+'"><span>'+(up?'پرواز قیمت ↑':'سقوط قیمت ↓')+'</span>'+hunterMiniCandles(m.rows,m.trend)+'<span class="hunter-target-reticle" aria-hidden="true"><i></i></span></button><div class="hunter-score"><b>'+m.score.toLocaleString("fa-IR")+'</b><small>قدرت حرکت</small></div></div><div class="hunter-exchanges" data-hunter-exchanges="'+aiEscape(id)+'"><span class="hunter-exchange-label">در حال بررسی بازارهای قابل معامله…</span></div><div class="hunter-price-row"><span>قیمت مرجع <b class="hunter-live-price">'+hunterPrice(m.price)+'</b></span><span>حجم نسبی <b>'+m.volumeRatio.toFixed(1)+'×</b></span><span>خالص جریان ۳ دقیقه <b class="'+(Number(m.flow?.net3m)>=0?"up":"down")+'">'+(Number(m.flow?.net3m)>=0?"+":"")+hunterUsd(m.flow?.net3m)+'</b></span><span>تغییر ۱ دقیقه <b class="'+cls+'">'+(m.change1m>0?"+":"")+m.change1m.toFixed(2)+'٪</b></span><span>تغییر ۳ دقیقه <b class="'+cls+'">'+(m.change3m>0?"+":"")+m.change3m.toFixed(2)+'٪</b></span><span>تغییر ۲۴ ساعت <b class="'+(m.dailyChange24h>=0?"up":"down")+'">'+(m.dailyChange24h>0?"+":"")+Number(m.dailyChange24h||0).toFixed(2)+'٪</b></span></div><div class="hunter-card-bottom">'+risk+'</div></article>';
  }).join("");
  loadHunterListings(entries.map(({coin,id})=>({coin,id}))).catch(error=>console.debug("Hunter exchange listing check:",error));
@@ -2909,12 +2943,13 @@ async function runDedicatedHunterScan(force=false){
  try{
   const universe=await fetchHunterUniverse();if(!universe.length)throw new Error("فهرست نمادهای معتبر دریافت نشد");
   const ranked=universe.slice().sort((a,b)=>(Number(b.total_volume)||0)-(Number(a.total_volume)||0));
-  const selected=[],selectedSymbols=new Set(),addCoin=coin=>{const key=String(coin?.symbol||"").toUpperCase();if(coin&&key&&!selectedSymbols.has(key)&&selected.length<100){selected.push(coin);selectedSymbols.add(key);}};
+  const scanBatchSize=Math.min(universe.length,150);
+  const selected=[],selectedSymbols=new Set(),addCoin=coin=>{const key=String(coin?.symbol||"").toUpperCase();if(coin&&key&&!selectedSymbols.has(key)&&selected.length<scanBatchSize){selected.push(coin);selectedSymbols.add(key);}};
   // اولویت اول: هشدارهای زنده و شکارهای فعال؛ سپس بازارهای پرحجم و در نهایت چرخش در کل فهرست.
   [...hunterEarlyAlerts.values()].filter(x=>Date.now()-x.updatedAt<4*60*1000).sort((a,b)=>b.updatedAt-a.updatedAt).forEach(x=>addCoin(hunterSymbolIndex.get(x.symbol)));
   for(const item of [...dualHunterState.spot,...dualHunterState.futures].sort((a,b)=>b.signal.score-a.signal.score).slice(0,25))addCoin(item.coin);
   ranked.slice(0,35).forEach(addCoin);
-  let walked=0;while(selected.length<Math.min(100,universe.length)&&walked<universe.length){const coin=universe[(dualHunterState.universeCursor+walked)%universe.length];addCoin(coin);walked++;}
+  let walked=0;while(selected.length<scanBatchSize&&walked<universe.length){const coin=universe[(dualHunterState.universeCursor+walked)%universe.length];addCoin(coin);walked++;}
   dualHunterState.universeCursor=(dualHunterState.universeCursor+Math.max(1,walked))%universe.length;
   let cursor=0,spot=[],futures=[],spotReady=0,futuresReady=0,dataIssues=0;
   const workers=Array.from({length:8},async()=>{
@@ -4461,6 +4496,7 @@ window.mmpShareDownloadLink = async function () {
   if(typeof hunterUniverseCache!=="undefined"&&Array.isArray(hunterUniverseCache.coins))hunterUniverseCache.coins.forEach(add);
   if(typeof hunterCoinIndex!=="undefined"&&hunterCoinIndex instanceof Map)hunterCoinIndex.forEach(add);
   allAssets=[...map.values()].sort((a,b)=>(Number(a.market_cap_rank)||Infinity)-(Number(b.market_cap_rank)||Infinity)||String(a.name||"").localeCompare(String(b.name||""),"fa"));
+  if(!$id("asset-directory-count"))return;
   $id("asset-directory-count").textContent=allAssets.length.toLocaleString("fa-IR")+" ارز";
   renderAssets($id("asset-directory-search")?.value||"");
  }
