@@ -1313,11 +1313,7 @@ body{background:
  </div>
 </section>
 
-<section class="card mmp-directory-card" id="asset-directory">
- <div class="section-head"><div><div class="section-kicker">DISCOVERED ASSET CATALOG</div><h2>فهرست کامل ارزهای شناسایی‌شده</h2><p class="sub">ترکیب فهرست قیمت سایت و بازارهای تأییدشده شکارچی؛ بدون سقف نمایشی ثابت</p></div><span class="badge" id="asset-directory-count">در حال دریافت…</span></div>
- <div class="mmp-directory-toolbar"><input id="asset-directory-search" type="search" placeholder="جستجوی نام یا نماد ارز…" aria-label="جستجوی ارز"><span id="asset-directory-meta">فهرست در حال همگام‌سازی است</span></div>
- <details class="mmp-directory-details"><summary><span>باز کردن فهرست ارزها</span><span class="mmp-summary-count" id="asset-directory-summary-count">—</span></summary><div id="asset-directory-list" class="mmp-asset-grid"><div class="ai-empty">در حال دریافت کاتالوگ ارزها…</div></div></details>
-</section>
+
 <section class="card" id="trading-tools">
 <div class="section-head"><div><div class="section-kicker">TRADER TOOLKIT</div><h2>ابزارهای حرفه‌ای معامله‌گر</h2></div><span class="badge">محاسبه در همین دستگاه</span></div>
 <div class="tool-grid">
@@ -4551,7 +4547,7 @@ window.mmpShareDownloadLink = async function () {
    if(typeof fetchHunterUniverse==="function")await fetchHunterUniverse();
   }catch(error){console.warn("Asset directory: hunter catalog unavailable",error);}
   mergeAssets();
-  if(!allAssets.length)$id("asset-directory-list").innerHTML='<div class="ai-empty">فعلاً فهرست ارزها دریافت نشد؛ پس از بروزرسانی بازار دوباره تلاش کنید.</div>';
+  if(!allAssets.length&&$id("asset-directory-list"))$id("asset-directory-list").innerHTML='<div class="ai-empty">فعلاً فهرست ارزها دریافت نشد؛ پس از بروزرسانی بازار دوباره تلاش کنید.</div>';
  }
  window.addEventListener("mmp-market-data-updated",mergeAssets);
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
