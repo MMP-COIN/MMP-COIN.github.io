@@ -2578,8 +2578,8 @@ function radarScore(c){
  if(Date.now()-signal.updatedAt>8*60*1000)return {score:0,trend:"unknown",h1:null,h:null,d:null,directional:null,liquidity:null,range:null,dataQuality:"داده رادار نیازمند بروزرسانی است"};
  return {...signal};
 }
-const INDEPENDENT_RADAR_STATE_KEY="mmp-independent-radar-state-v3";
-const INDEPENDENT_RADAR_LOCK_KEY="mmp-independent-radar-lock-v3";
+const INDEPENDENT_RADAR_STATE_KEY="mmp-independent-radar-state-v4";
+const INDEPENDENT_RADAR_LOCK_KEY="mmp-independent-radar-lock-v4";
 const INDEPENDENT_RADAR_BATCH_SIZE=45;
 const INDEPENDENT_RADAR_CONCURRENCY=4;
 const INDEPENDENT_RADAR_CACHE_TTL=3*60*1000;
@@ -2599,8 +2599,8 @@ function independentRadarLoadState(coins){
  if(independentRadarState&&independentRadarState.universeKey===key)return independentRadarState;
  let saved=null;
  try{saved=JSON.parse(localStorage.getItem(INDEPENDENT_RADAR_STATE_KEY)||"null");}catch(error){}
- if(!saved||saved.version!==3||saved.universeKey!==key||!saved.cache||typeof saved.cache!=="object"){
-  saved={version:3,universeKey:key,cursor:0,cycle:1,cache:{},candidates:{},pending:[],startedAt:Date.now(),updatedAt:Date.now()};
+ if(!saved||saved.version!==4||saved.universeKey!==key||!saved.cache||typeof saved.cache!=="object"){
+  saved={version:4,universeKey:key,cursor:0,cycle:1,cache:{},candidates:{},pending:[],startedAt:Date.now(),updatedAt:Date.now()};
  }
  saved.cursor=Math.max(0,Math.min(coins.length,Number(saved.cursor)||0));
  saved.pending=Array.isArray(saved.pending)?saved.pending.filter(i=>Number.isInteger(i)&&i>=0&&i<coins.length):[];
