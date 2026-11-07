@@ -2230,7 +2230,7 @@ async function scanFastCoin(coin){
  const avgVolume=baseline.reduce((a,b)=>a+b,0)/baseline.length,volumeRatio=avgVolume>0?volume/avgVolume:0;
  const change1m=(close/open-1)*100,start3=Number(rows[index-2][1]);
  if(!Number.isFinite(start3)||start3<=0)return null;
- const change3m=(close/start3-1)*100,dailyChange24h=Number(coin.hunterChange24h)||0;
+ const change3m=(close/start3-1)*100,start5=Number(rows[index-4]?.[1]);if(!Number.isFinite(start5)||start5<=0)return null;const change5m=(close/start5-1)*100,dailyChange24h=Number(coin.hunterChange24h)||0;
  const recent=rows.slice(Math.max(0,index-7),index),priorHigh=Math.max(...recent.map(x=>Number(x[2]))),priorLow=Math.min(...recent.map(x=>Number(x[3])));
  const breakoutUp=close>priorHigh,breakoutDown=close<priorLow;
  const flowNetPct=Number(flow?.netPct3m)||0,flowRatio=Number(flow?.volumeRatio3m)||0,flowNet=Number(flow?.net3m)||0;
@@ -2244,8 +2244,8 @@ async function scanFastCoin(coin){
  const bearBreakout=breakoutDown&&volumeRatio>=1.1&&change1m<=-0.01;
  const bullImpulse=change1m>=0.08&&change3m>=0.08&&volumeRatio>=1.1;
  const bearImpulse=change1m<=-0.08&&change3m<=-0.08&&volumeRatio>=1.1;
- const bullMomentum=bullEarly||bullBreakout||bullImpulse;
- const bearMomentum=bearEarly||bearBreakout||bearImpulse;
+ const bullMomentum=(bullEarly||bullBreakout||bullImpulse)&&change5m>0;
+ const bearMomentum=(bearEarly||bearBreakout||bearImpulse)&&change5m<0;
  if(!bullMomentum&&!bearMomentum)return null;
  // اگر خرید و فروش هم‌زمان متناقض باشند، تا روشن‌شدن جهت از صدور شکار خودداری می‌شود.
  if(bullMomentum&&bearMomentum)return null;
@@ -2259,7 +2259,7 @@ async function scanFastCoin(coin){
   (listedVenues.length>=2?5:listedVenues.length?2:0)+
   (lowLiquidity?-6:0)+(flow?4:0)+(volumeSpike?2:0)));
  if(score<55)return null;
- return {trend,score,change1m,change3m,dailyChange24h,dailyMover:Math.abs(dailyChange24h)>=8,lowLiquidity,volumeRatio,breakout:breakoutUp||breakoutDown,overextended:Math.abs(change3m)>=1.2||Math.abs(change1m)>=0.7,price:Number(coin.current_price)||close,provider,flow,flowSignal:bullEarly?"inflow":bearEarly?"outflow":"",earlySignal:bullEarly||bearEarly,updatedAt:now,candleTime:Number(last[0]),rows:rows.map(x=>x.slice(0,6).map(Number))};
+ return {trend,score,change1m,change3m,change5m,dailyChange24h,dailyMover:Math.abs(dailyChange24h)>=8,lowLiquidity,volumeRatio,breakout:breakoutUp||breakoutDown,overextended:Math.abs(change3m)>=1.2||Math.abs(change1m)>=0.7,price:Number(coin.current_price)||close,provider,flow,flowSignal:bullEarly?"inflow":bearEarly?"outflow":"",earlySignal:bullEarly||bearEarly,updatedAt:now,candleTime:Number(last[0]),rows:rows.map(x=>x.slice(0,6).map(Number))};
 }
 async function fetchHunterUniverse(){
  if(Date.now()<hunterUniverseCache.expires&&hunterUniverseCache.coins.length)return hunterUniverseCache.coins;
@@ -2449,8 +2449,8 @@ async function runFastRadarScan(forceRefresh=false){
  if(hunterLast)hunterLast.textContent=new Date().toLocaleTimeString("fa-IR");
  try{universe=await fetchHunterUniverse();}catch(error){console.debug("Hunter universe unavailable:",error?.message||error);universe=[];}
  if(!universe.length){fastRadarLastMessage="دریافت فهرست بازارهای اسپات ناموفق بود؛ اتصال صرافی‌ها را بررسی کنید.";if(status)status.textContent=fastRadarLastMessage;if(hunterStatus)hunterStatus.textContent="فهرست بازارها دریافت نشد؛ پایش کندلی انجام نشد.";if(hunterLast)hunterLast.textContent="خطای دریافت داده";fastRadarBusy=false;return;}
- // در هر نوبت ۶۰ نماد بررسی می‌شود؛ ابتدا هشدارهای تازه، سپس ۲۰ بازار با بیشترین حجم ۲۴ساعته و بعد بقیه فهرست به‌صورت چرخشی.
- const batchSize=Math.min(60,universe.length),batch=[],selectedIds=new Set();
+ // همه نمادهای فهرست در هر نوبت بررسی می‌شوند؛ هشدارهای تازه و بازارهای پرحجم در اولویت صف هستند.
+ const batchSize=universe.length,batch=[],selectedIds=new Set();
  [...hunterEarlyAlerts.values()].filter(x=>Date.now()-x.updatedAt<4*60*1000).sort((a,b)=>b.updatedAt-a.updatedAt).slice(0,12).forEach(alert=>{
   const coin=hunterCoinIndex.get(alert.id);if(coin&&!selectedIds.has(coin.id)&&batch.length<Math.min(12,batchSize)){batch.push(coin);selectedIds.add(coin.id);}
  });
@@ -2458,7 +2458,7 @@ async function runFastRadarScan(forceRefresh=false){
  volumeRanked.slice(0,Math.min(20,batchSize)).forEach(coin=>{if(!selectedIds.has(coin.id)&&batch.length<batchSize){batch.push(coin);selectedIds.add(coin.id);}});
  let offset=0;while(batch.length<batchSize&&offset<universe.length){const coin=universe[(fastRadarCursor+offset)%universe.length];offset++;if(!selectedIds.has(coin.id)){batch.push(coin);selectedIds.add(coin.id);}}
  fastRadarCursor=(fastRadarCursor+offset)%universe.length;
- const workers=Array.from({length:18},async()=>{
+ const workers=Array.from({length:8},async()=>{
   while(cursor<batch.length){
    const coin=batch[cursor++];
    try{const signal=await scanFastCoin(coin);scanned.set(coin.id,signal&&signal.trend!=="neutral"?signal:null);}
@@ -2498,7 +2498,7 @@ function radarScore(c){
    flow:alignedFlow?Math.min(30,Math.max(0,Math.abs(flowPct)/12*20+Math.max(0,flowRatio-1)*8)):0,
    volume:Math.min(25,Math.max(0,(Number(fast.volumeRatio)||0)-1)*16.67),
    breakout:fast.breakout?20:(Math.abs(Number(fast.change1m)||0)>=.08&&Math.abs(Number(fast.change3m)||0)>=.08?10:0),
-   multi:(Number(fast.change1m||0)*sign>0?7.5:0)+(Number(fast.change3m||0)*sign>0?7.5:0),
+   multi:(Number(fast.change1m||0)*sign>0?5:0)+(Number(fast.change3m||0)*sign>0?5:0)+(Number(fast.change5m||0)*sign>0?5:0),
    liquidity:liquidity>0?Math.min(10,Math.max(0,Math.log10(Math.max(.01,liquidity))*4+6)):0
   };
   const score=Math.round(Object.values(components).reduce((sum,value)=>sum+value,0));
@@ -2957,11 +2957,11 @@ function renderOpportunities(){
   return '<section class="radar-side '+cls+'"><div class="section-head radar-group-head"><div><b class="radar-large-heading">'+title+'</b></div><span class="badge">'+items.length.toLocaleString("fa-IR")+' فرصت قوی</span></div><div class="radar-list">'+top.map(card).join("")+'</div>'+(extra.length?'<details class="radar-more"><summary><span class="radar-toggle-copy"><b>'+extra.length.toLocaleString("fa-IR")+' فرصت قوی دیگر</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+extra.map(card).join("")+'</div></details>':"")+(lower.length?'<details class="radar-more radar-below-threshold"><summary><span class="radar-toggle-copy"><b>'+lower.length.toLocaleString("fa-IR")+' نامزد با امتیاز ۷۰ تا ۷۹</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+lower.map(card).join("")+'</div></details>':"")+'</section>';
  };
  el.innerHTML=list("فرصت‌های صعودی",bullish,bullish70,"bull")+list("فرصت‌های نزولی",bearish,bearish70,"bear");
- // AI radar scan is manual to prevent background requests exhausting the analysis quota.
+ // Fast radar runs independently from the manual AI analysis quota.
 }
 function calcRisk(){const capital=Number($("risk-capital").value),pct=Number($("risk-percent").value),entry=Number($("risk-entry").value),stop=Number($("risk-stop").value);const out=$("risk-result");if(!(capital>0&&pct>0&&pct<=100&&entry>0&&stop>0)){out.textContent="سرمایه، درصد ریسک، قیمت ورود و قیمت حد ضرر را کامل و معتبر وارد کنید.";return;}if(entry===stop){out.textContent="قیمت ورود و قیمت حد ضرر نباید برابر باشند.";return;}const risk=capital*pct/100,dist=Math.abs(entry-stop)/entry,notional=risk/dist,qty=notional/entry;out.innerHTML="<div><b>مبلغ ورود به معامله:</b> "+money(notional,2)+" USDT</div><div><b>ضرر احتمالی در صورت برخورد به حد ضرر:</b> "+money(risk,2)+" USDT</div><div><b>فاصله تا حد ضرر:</b> "+(dist*100).toFixed(2)+"%</div><div><b>مقدار دارایی:</b> "+money(qty,6)+"</div><small>مبلغ ورود، ارزش کل معامله است و با اهرم می‌تواند از مارجین پرداختی بیشتر باشد. کارمزد و لغزش قیمت محاسبه نشده‌اند.</small>";}
 $("market-refresh-btn")?.addEventListener("click",()=>refreshAll());
- $("radar-refresh-btn")?.addEventListener("click",()=>{refreshAll();checkConnections();});
+ $("radar-refresh-btn")?.addEventListener("click",async()=>{const button=$("radar-refresh-btn"),label=button?.querySelector("span");if(button){button.disabled=true;button.classList.add("is-refreshing");if(label)label.textContent="در حال اسکن…";}try{while(fastRadarBusy)await new Promise(resolve=>setTimeout(resolve,250));await runFastRadarScan(true);await checkConnections();}finally{if(button){button.disabled=false;button.classList.remove("is-refreshing");if(label)label.textContent="بروزرسانی";}}});
  $("hunter-refresh-btn")?.addEventListener("click",async()=>{
   const button=$("hunter-refresh-btn"),label=button?.querySelector("span");
   if(button){button.disabled=true;button.classList.add("is-refreshing");if(label)label.textContent="در حال شکار…";}
