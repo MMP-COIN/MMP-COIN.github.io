@@ -510,6 +510,12 @@ body:after{content:"";position:fixed;width:42vw;height:42vw;max-width:620px;max-
 .radar-group-bear .radar-group-icon{color:#ff6576;background:#ff657618;border:1px solid #ff657655}
 .radar-group-count{border:1px solid #394557;border-radius:30px;padding:6px 10px;font-size:10px;color:#d6deea;white-space:nowrap}
 .radar-group .radar-list{gap:8px}
+/* Keep radar candidates inside a bounded, independently scrollable frame. */
+.radar-side .radar-list{max-height:430px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#8b754a #111a25;padding:3px 6px 5px 2px}
+.radar-side .radar-list::-webkit-scrollbar{width:7px}
+.radar-side .radar-list::-webkit-scrollbar-track{background:#111a25;border-radius:8px}
+.radar-side .radar-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#c6a45e,#70572f);border-radius:8px;border:1px solid #111a25}
+@media(max-width:560px){.radar-side .radar-list{max-height:360px;padding-right:4px}}
 .radar-group .radar-item{grid-template-columns:minmax(115px,1.2fr) 54px minmax(130px,1.2fr) auto;padding:10px;gap:9px}
 .radar-more{margin-top:12px;border:1px solid #6e5b35;border-radius:13px;background:linear-gradient(110deg,#292315,#171b23);overflow:hidden}
 .radar-more>summary{display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;padding:13px 14px;color:#f5dda2;font-size:12px;font-weight:800;min-height:58px}
