@@ -2634,11 +2634,13 @@ function hunter4hSignal(rows,kind,confirm1h,confirm15m){
  const x=hunter4hIndicators(rows);if(!x||!x.atr||!x.volRatio)return null;
  const h1=hunterTfBias(confirm1h,"60"),m15=hunterTfBias(confirm15m,"15");
  if(!h1||!m15)return null;
- const bull=x.last.c>x.ema20&&x.ema20>x.ema50&&x.rsi>=51&&x.rsi<=73&&x.volRatio>=1.05&&(x.breakUp||x.move4>=.35)&&h1.up&&m15.entryUp;
- const bear=x.last.c<x.ema20&&x.ema20<x.ema50&&x.rsi>=27&&x.rsi<=49&&x.volRatio>=1.05&&(x.breakDown||x.move4<=-.35)&&h1.down&&m15.entryDown;
+ // 4H remains the primary direction; 1H confirms trend or momentum.
+ // 15m blocks a directly opposing entry, but is not a rigid alignment gate.
+ const bull=x.last.c>x.ema20&&x.ema20>x.ema50&&x.rsi>=45&&x.rsi<=78&&x.volRatio>=.85&&(x.breakUp||x.move4>=.20)&&(h1.up||h1.entryUp)&&!m15.entryDown;
+ const bear=x.last.c<x.ema20&&x.ema20<x.ema50&&x.rsi>=22&&x.rsi<=55&&x.volRatio>=.85&&(x.breakDown||x.move4<=-.20)&&(h1.down||h1.entryDown)&&!m15.entryUp;
  let direction;if(kind==="spot"){if(!bull)return null;direction="spot";}else{if(!bull&&!bear)return null;direction=bull?"long":"short";}
- const score=Math.min(97,Math.round(54+Math.min(14,Math.abs(x.move4)*5)+Math.min(12,(x.volRatio-1)*8)+(direction==="spot"||direction==="long"?x.rsi-50:50-x.rsi)*.35+(x.breakUp||x.breakDown?8:0)));
- if(score<65)return null;
+ const score=Math.min(97,Math.round(54+Math.min(14,Math.abs(x.move4)*5)+Math.min(12,(x.volRatio-.85)*8)+(direction==="spot"||direction==="long"?x.rsi-45:55-x.rsi)*.30+(x.breakUp||x.breakDown?8:0)));
+ if(score<60)return null;
  const entry=x.last.c,stop=direction==="short"?entry+x.atr*1.5:entry-x.atr*1.5,risk=Math.abs(entry-stop)/entry*100;
  return {direction,score,entry,stop,risk,rsi:x.rsi,volRatio:x.volRatio,move4:x.move4,candleTime:x.last.t,closeTime:x.last.t+4*60*60*1000,rows:x.closedCount};
 }
@@ -2660,23 +2662,33 @@ function renderMarketHunter(){
 async function runDedicatedHunterScan(force=false){
  if(dualHunterState.busy)return;if(!force&&Date.now()-dualHunterState.lastScan<4*60*1000)return;
  dualHunterState.busy=true;const status=$("hunter-feed-status"),button=$("hunter-refresh-btn");
- if(status)status.textContent="در حال بررسی بازارهای اسپات و فیوچرز با کندل‌های بسته‌شده ۴ ساعته…";
+ if(status)status.textContent="در حال بررسی بازارهای اسپات و فیوچرز با کندل‌های بسته‌شده…";
  if(button)button.disabled=true;
  try{
   const universe=await fetchHunterUniverse();if(!universe.length)throw new Error("فهرست نمادهای معتبر دریافت نشد");
   const selected=universe.slice().sort((a,b)=>(Number(b.total_volume)||0)-(Number(a.total_volume)||0)).slice(0,100);
-  let cursor=0,spot=[],futures=[];const workers=Array.from({length:8},async()=>{
-   while(cursor<selected.length){const coin=selected[cursor++],symbol=hunterSafeSymbol(coin.symbol);if(!symbol||NON_TRADABLE_SYMBOLS.has(symbol))continue;
+  let cursor=0,spot=[],futures=[],spotReady=0,futuresReady=0,dataIssues=0;
+  const workers=Array.from({length:8},async()=>{
+   while(cursor<selected.length){
+    const coin=selected[cursor++],symbol=hunterSafeSymbol(coin.symbol);if(!symbol||NON_TRADABLE_SYMBOLS.has(symbol))continue;
     const cached=dualHunterState.cache.get(symbol),fresh=cached&&Date.now()-cached.checkedAt<3*60*1000;
-    if(fresh){if(cached.spot)spot.push({coin,signal:cached.spot});if(cached.futures)futures.push({coin,signal:cached.futures});continue;}
+    if(fresh){
+     if(cached.spotReady)spotReady++;else dataIssues++;
+     if(cached.futuresReady)futuresReady++;else dataIssues++;
+     if(cached.spot)spot.push({coin,signal:cached.spot});if(cached.futures)futures.push({coin,signal:cached.futures});
+     continue;
+    }
     const [spot4h,fut4h,spot1h,spot15m,fut1h,fut15m]=await Promise.all([
      hunter4hSpot(symbol).catch(()=>null),hunter4hFutures(symbol).catch(()=>null),
      hunterConfirmTf(symbol,"spot","60").catch(()=>null),hunterConfirmTf(symbol,"spot","15").catch(()=>null),
      hunterConfirmTf(symbol,"futures","60").catch(()=>null),hunterConfirmTf(symbol,"futures","15").catch(()=>null)
     ]);
-    const s=spot4h&&spot1h&&spot15m?hunter4hSignal(spot4h,"spot",spot1h,spot15m):null;
-    const f=fut4h&&fut1h&&fut15m?hunter4hSignal(fut4h,"futures",fut1h,fut15m):null;
-    dualHunterState.cache.set(symbol,{spot:s,futures:f,checkedAt:Date.now()});
+    const sr=!!(spot4h&&spot1h&&spot15m),fr=!!(fut4h&&fut1h&&fut15m);
+    if(sr)spotReady++;else dataIssues++;
+    if(fr)futuresReady++;else dataIssues++;
+    const s=sr?hunter4hSignal(spot4h,"spot",spot1h,spot15m):null;
+    const f=fr?hunter4hSignal(fut4h,"futures",fut1h,fut15m):null;
+    dualHunterState.cache.set(symbol,{spot:s,futures:f,spotReady:sr,futuresReady:fr,checkedAt:Date.now()});
     if(s)spot.push({coin,signal:s});if(f)futures.push({coin,signal:f});
    }
   });
@@ -2684,11 +2696,11 @@ async function runDedicatedHunterScan(force=false){
   dualHunterState.spot=spot.sort((a,b)=>b.signal.score-a.signal.score).slice(0,6);
   dualHunterState.futures=futures.sort((a,b)=>b.signal.score-a.signal.score).slice(0,6);
   dualHunterState.lastScan=Date.now();renderMarketHunter();
-  if(status)status.textContent="پایش کامل شد · "+selected.length.toLocaleString("fa-IR")+" نماد بررسی شد · جهت ۴ساعته + تأیید ۱ساعته + نقطه ورود ۱۵دقیقه · فقط کندل‌های بسته‌شده · بروزرسانی خودکار هر ۵ دقیقه";
- }catch(error){if(status)status.textContent="پایش کامل نشد: "+(error?.message||"خطای دریافت داده")+" · شکارهای معتبر قبلی حفظ شدند";}
+  const summary="پایش "+selected.length.toLocaleString("fa-IR")+" نماد تمام شد · داده کامل اسپات: "+spotReady.toLocaleString("fa-IR")+" · داده کامل فیوچرز: "+futuresReady.toLocaleString("fa-IR")+" · خطای دریافت داده: "+dataIssues.toLocaleString("fa-IR")+" · شکار اسپات: "+dualHunterState.spot.length.toLocaleString("fa-IR")+" · شکار فیوچرز: "+dualHunterState.futures.length.toLocaleString("fa-IR");
+  if(status)status.textContent=summary+(spotReady+futuresReady===0?" · منبع داده پاسخگو نیست؛ اتصال صرافی‌ها را بررسی کنید.":(spot.length+futures.length===0?" · داده دریافت شده اما فعلاً هیچ سیگنالی از فیلتر اعتبار عبور نکرده است.":" · فقط سیگنال‌های تأییدشده نمایش داده می‌شوند."))+" · اسکن خودکار هر ۵ دقیقه";
+ }catch(error){if(status)status.textContent="پایش کامل نشد: "+(error?.message||"خطای دریافت داده")+" · لطفاً اتصال داده‌ها را بررسی کنید";}
  finally{dualHunterState.busy=false;if(button)button.disabled=false;}
 }
-
 document.addEventListener("click",function(event){
  const trigger=event.target.closest("[data-hunter-chart]");
  if(trigger){event.preventDefault();event.stopPropagation();openHunterChart(trigger.getAttribute("data-hunter-chart"));return;}
