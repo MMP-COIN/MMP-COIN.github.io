@@ -96,13 +96,17 @@ button{cursor:pointer}
 .full-coins-list{display:none;margin-top:12px}
 .full-coins-list.show{display:block}
 
-.menu-btn{background:var(--panel2);border:1px solid var(--line);color:var(--gold2);padding:8px 12px;border-radius:10px;font-size:16px}
-.dropdown-menu{position:absolute;top:70px;left:14px;background:#11131be6;border:1px solid var(--line);border-radius:14px;width:220px;box-shadow:0 10px 30px rgba(0,0,0,0.5);backdrop-filter:blur(16px);display:none;z-index:200;flex-direction:column;overflow:hidden}
+.menu-btn{width:50px;min-width:50px;height:50px;display:grid;place-items:center;background:linear-gradient(145deg,#26394a,#142332);border:1px solid #8d754a;color:var(--gold2);padding:0;border-radius:13px;font-size:21px;box-shadow:0 5px 16px #0005;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.menu-btn:active{transform:scale(.96);background:#26394a}
+.dropdown-menu{position:absolute;top:calc(100% + 8px);left:14px;background:linear-gradient(145deg,#172536f7,#0b121df7);border:1px solid #80683f;border-radius:16px;width:min(290px,calc(100vw - 24px));box-shadow:0 18px 45px #000b;backdrop-filter:blur(18px);display:none;z-index:1600;flex-direction:column;overflow:hidden;max-height:calc(100dvh - 92px);overflow-y:auto;overscroll-behavior:contain}
 .dropdown-menu.show{display:flex}
-.dropdown-menu{max-height:calc(100dvh - 90px);overflow-y:auto;overscroll-behavior:contain;width:min(270px,calc(100vw - 28px))}
-.dropdown-menu a{color:var(--text);text-decoration:none;padding:12px 16px;font-size:13px;border-bottom:1px solid var(--line);transition:0.2s}
-.dropdown-menu a:hover{background:var(--panel2);color:var(--gold2)}
-.dropdown-menu a:last-child{border:0}
+.dropdown-menu a{min-height:50px;display:flex;align-items:center;gap:9px;color:var(--text);text-decoration:none;padding:12px 16px;font-size:13px;border-bottom:1px solid #ffffff12;transition:background .18s,color .18s;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.dropdown-menu a:hover,.dropdown-menu a:focus-visible{background:#d9b66d18;color:var(--gold2);outline:none}
+.dropdown-menu a:active{background:#d9b66d28}
+.menu-section-label{padding:12px 16px 7px;color:#a88d5a;font-size:10px;font-weight:800}
+.menu-divider{height:1px;background:#80683f66;margin:5px 12px}
+.dropdown-menu a.menu-admin-link{margin:8px;padding:13px 14px;min-height:54px;justify-content:space-between;border:1px solid #a98b50;border-radius:11px;background:linear-gradient(120deg,#a77c35,#e8cd8c);color:#17130a;font-weight:900}
+.dropdown-menu a.menu-admin-link span{font-size:22px;line-height:1}
 
 @media(max-width:900px){
 .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -1076,23 +1080,16 @@ body{background:
   <button class="btn" id="refresh-all-btn" type="button" onclick="refreshSiteData()" aria-label="تازه‌سازی کامل داده‌ها" title="دریافت دوباره قیمت‌ها، داده‌های بازار و بررسی اتصال همه منابع">⟳ تازه‌سازی داده‌ها</button>
   <button class="menu-btn" type="button" onclick="toggleMenu()" aria-label="باز کردن منوی اصلی" aria-controls="dropdownMenu" aria-expanded="false"><span aria-hidden="true">☰</span></button>
 </div>
-<div class="dropdown-menu" id="dropdownMenu">
-  <a href="#hero" onclick="toggleMenu()">⌂ نمای کلی بازار</a>
-  <a href="#opportunities" onclick="toggleMenu()">📡 رادار صعودی و نزولی</a>
-  <a href="#market-hunter" onclick="toggleMenu()">🎯 شکارچی بازار</a>
-  <a href="#ai-section" onclick="toggleMenu()">✧ تحلیلگر هوشمند AI</a>
-  <a href="#boom-hunter" onclick="toggleMenu()">◉ آزمایشگاه Boom Hunter</a>
-  <a href="#chart-section" onclick="toggleMenu()">▥ نمودار حرفه‌ای</a>
-  <a href="#market-intelligence" onclick="toggleMenu()">◉ مرکز هوشمندی بازار</a>
-  <a href="#smart-alerts" onclick="toggleMenu()">♢ دیده‌بانی و هشدارها</a>
-  <a href="#signal-journal" onclick="toggleMenu()">▦ دفتر سیگنال و بک‌تست</a>
-  <a href="#coins-section" onclick="toggleMenu()">◈ فهرست کامل ارزها</a>
-  <a href="#trading-tools" onclick="toggleMenu()">⌗ ابزارهای معامله</a>
-  <a href="#market-hours" onclick="toggleMenu()">◷ ساعت بازارهای جهان</a>
-  <a href="#connections" onclick="toggleMenu()">◉ وضعیت منابع داده</a>
-  <a href="#app-download" onclick="toggleMenu()">⬇ دانلود اپلیکیشن اندروید</a>
-  <a href="#contact-us" onclick="toggleMenu()">✉ ارتباط با مدیریت</a>
-  <a href="https://mmp-coin.github.io/admin.html">⚙ پنل مدیریت</a>
+<div class="dropdown-menu" id="dropdownMenu" aria-label="منوی اصلی">
+  <div class="menu-section-label">بخش‌های اصلی</div>
+  <a href="#opportunities">📡 رادار هوشمند بازار</a>
+  <a href="#market-hunter">🎯 شکارچی بازار</a>
+  <a href="#ai-section">✧ تحلیلگر هوشمند AI</a>
+  <a href="#boom-hunter">◉ آزمایشگاه Boom Hunter</a>
+  <a href="#chart-section">▥ نمودار حرفه‌ای</a>
+  <a href="#trading-tools">⌗ ابزارهای معامله</a>
+  <div class="menu-divider"></div>
+  <a class="menu-admin-link" href="https://mmp-coin.github.io/admin.html">⚙ ورود به پنل مدیریت <span>›</span></a>
 </div>
 </header>
 
@@ -1407,14 +1404,22 @@ async function refreshSiteData(){
  }
 }
 
-function toggleMenu(){
-  $('dropdownMenu').classList.toggle('show');
+function toggleMenu(force){
+  const menu=$('dropdownMenu'),button=document.querySelector('.menu-btn');
+  if(!menu||!button)return;
+  const open=typeof force==='boolean'?force:!menu.classList.contains('show');
+  menu.classList.toggle('show',open);
+  button.setAttribute('aria-expanded',open?'true':'false');
+  button.setAttribute('aria-label',open?'بستن منوی اصلی':'باز کردن منوی اصلی');
 }
-window.onclick = function(event) {
-  if (!event.target.matches('.menu-btn') && !event.target.closest('.dropdown-menu')) {
-    $('dropdownMenu').classList.remove('show');
-  }
-}
+document.addEventListener('click',function(event){
+  const menu=$('dropdownMenu'),button=document.querySelector('.menu-btn');
+  if(!menu||!button)return;
+  if(event.target.closest('.menu-btn')){event.preventDefault();event.stopPropagation();toggleMenu();return;}
+  if(event.target.closest('#dropdownMenu a')){toggleMenu(false);return;}
+  if(!menu.contains(event.target))toggleMenu(false);
+});
+document.addEventListener('keydown',function(event){if(event.key==='Escape')toggleMenu(false);});
 
 function setCurrency(curr) {
   currentCurrency = curr === 'USDT' ? 'USDT' : 'IRT';
