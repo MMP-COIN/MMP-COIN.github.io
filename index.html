@@ -1746,26 +1746,33 @@ async function refreshAll(){
   let verifiedCoins=await verifyCoinBatch(candidateCoins);
   // If exchange audit returns no usable matches, retain market-provider prices instead of blanking the board.
   if(!verifiedCoins.length)verifiedCoins=candidateCoins;
-  if(verifiedCoins.length<100){
-   const pageTwoUrl=marketMetadataSource==="CoinLore"
-    ?AI_ANALYSIS_ENDPOINT+"/market-proxy?source=coinlore-top&offset=100"
-    :AI_ANALYSIS_ENDPOINT+"/market-proxy?source=coingecko-top&page=2";
-   // صفحه دوم فقط برای تکمیل فهرست است؛ خرابی آن نباید نمایش قیمت‌های معتبر صفحه اول را متوقف کند.
-   try{
-    const pageTwoResponse=await fetch(pageTwoUrl,{cache:"no-store"});
-    if(pageTwoResponse.ok){
-     const pageTwoPayload=await pageTwoResponse.json();
-     const pageTwo=marketMetadataSource==="CoinLore"?normalizeCoinLoreAssets(pageTwoPayload):pageTwoPayload;
-     if(Array.isArray(pageTwo)){
-      const knownIds=new Set(candidateCoins.map(c=>c.id));
-      const knownSymbols=new Set(candidateCoins.map(c=>String(c.symbol||"").toUpperCase()));
-      const extraCandidates=pageTwo.filter(c=>c&&c.id&&c.symbol&&passesMarketQualityFilter(c)&&!knownIds.has(c.id)&&!NON_TRADABLE_COIN_IDS.has(c.id)&&!NON_TRADABLE_SYMBOLS.has(String(c.symbol).toUpperCase())&&!knownSymbols.has(String(c.symbol).toUpperCase()));
-      const extraVerified=await verifyCoinBatch(extraCandidates);
-      verifiedCoins=verifiedCoins.concat(extraVerified);
-     }
-    }
-   }catch(pageTwoError){
-    console.warn("Second-page market enrichment unavailable; rendering verified first-page assets:",pageTwoError);
+  // دریافت چند صفحه از مرجع بازار، بدون سقف ۱۰۰تایی؛ تمام صفحات پیش از ادغام، با بازارهای واقعی صرافی‌ها اعتبارسنجی می‌شوند.
+  {
+   const pageNumbers=marketMetadataSource==="CoinLore"?[2,3,4,5,6,7,8,9,10]:[2,3,4,5];
+   const pageResults=await Promise.allSettled(pageNumbers.map(async pageNumber=>{
+    const url=marketMetadataSource==="CoinLore"
+     ?AI_ANALYSIS_ENDPOINT+"/market-proxy?source=coinlore-top&offset="+((pageNumber-1)*100)
+     :AI_ANALYSIS_ENDPOINT+"/market-proxy?source=coingecko-top&page="+pageNumber;
+    const response=await fetch(url,{cache:"no-store"});
+    if(!response.ok)throw new Error("صفحه "+pageNumber+" · HTTP "+response.status);
+    const payload=await response.json();
+    return marketMetadataSource==="CoinLore"?normalizeCoinLoreAssets(payload):payload;
+   }));
+   const knownIds=new Set(candidateCoins.map(c=>c.id));
+   const knownSymbols=new Set(candidateCoins.map(c=>String(c.symbol||"").toUpperCase()));
+   const extraCandidates=[];
+   pageResults.forEach((result,index)=>{
+    if(result.status!=="fulfilled"||!Array.isArray(result.value))return;
+    result.value.forEach(coin=>{
+     const symbol=String(coin?.symbol||"").toUpperCase();
+     if(!coin?.id||!symbol||!passesMarketQualityFilter(coin)||NON_TRADABLE_COIN_IDS.has(coin.id)||NON_TRADABLE_SYMBOLS.has(symbol)||knownIds.has(coin.id)||knownSymbols.has(symbol))return;
+     knownIds.add(coin.id);knownSymbols.add(symbol);extraCandidates.push(coin);
+    });
+    if(result.status==="rejected")console.warn("Market page "+(index+2)+" unavailable:",result.reason);
+   });
+   if(extraCandidates.length){
+    const extraVerified=await verifyCoinBatch(extraCandidates);
+    verifiedCoins=verifiedCoins.concat(extraVerified);
    }
   }
   // همگام‌سازی فهرست مرکزی با کاتالوگ تجمیع‌شده صرافی‌ها؛ بدون سقف ۱۰۰تایی.
