@@ -2233,13 +2233,16 @@ async function fetchFastCandles(symbol,coin){
  // درخواست‌های مستقیم مرورگر به بعضی صرافی‌ها جلوگیری می‌کند.
  try{
   const marketSymbol=domestic?base+"IRT":pair;
-  const local=await hunterFetchJson(AI_ANALYSIS_ENDPOINT+"/market-candles?symbol="+encodeURIComponent(marketSymbol)+"&interval=1m",11000);
+  const local=await hunterFetchJson(AI_ANALYSIS_ENDPOINT+"/market-candles?symbol="+encodeURIComponent(marketSymbol)+"&interval=1m",16000);
   const candles=Array.isArray(local?.candles)?local.candles:[];
   if(candles.length>=25){
    const rows=candles.map(c=>{const t=Number(c.time);return [t<1e12?t*1000:t,Number(c.open),Number(c.high),Number(c.low),Number(c.close),Number(c.volume)||0];}).sort((a,b)=>a[0]-b[0]);
    if(rows.length>=25&&rows.every(row=>row.slice(1,6).every(Number.isFinite)&&row[4]>0)){
     return {rows,provider:local.provider|| (domestic?"Nobitex Spot":"MMP Market API")};
    }
+  }else if(!domestic){
+   // پاسخ موفق Worker بدون تاریخچه کافی، به‌جای شش درخواست تکراری مرورگر، قابل‌تلاش‌مجدد ثبت می‌شود.
+   throw new Error("HTTP 502 · MMP candle history insufficient");
   }
   if(domestic)throw new Error("کندل یک‌دقیقه‌ای بازار داخلی کافی نیست");
  }catch(error){
@@ -2578,7 +2581,7 @@ function radarScore(c){
 const INDEPENDENT_RADAR_STATE_KEY="mmp-independent-radar-state-v3";
 const INDEPENDENT_RADAR_LOCK_KEY="mmp-independent-radar-lock-v3";
 const INDEPENDENT_RADAR_BATCH_SIZE=45;
-const INDEPENDENT_RADAR_CONCURRENCY=6;
+const INDEPENDENT_RADAR_CONCURRENCY=4;
 const INDEPENDENT_RADAR_CACHE_TTL=3*60*1000;
 const INDEPENDENT_RADAR_RETRY_TTL=90*1000;
 const INDEPENDENT_RADAR_FAIL_TTL=10*60*1000;
@@ -2586,8 +2589,10 @@ const independentRadarTabId="radar-"+Date.now().toString(36)+"-"+Math.random().t
 let independentRadarState=null;
 function independentRadarUniverseKey(coins){
  let hash=2166136261;
- for(const coin of coins){const value=String(coin?.id||coin?.symbol||"")+"|"+String(coin?.symbol||"")+";";for(let i=0;i<value.length;i++){hash^=value.charCodeAt(i);hash=Math.imul(hash,16777619);}}
- return coins.length+":"+((hash>>>0).toString(36));
+ // مرتب‌سازی نمادها باعث می‌شود تغییر ترتیب فهرست قیمت‌ها، پیشرفت اسکن را از بین نبرد.
+ const stable=coins.map(coin=>String(coin?.symbol||"").toUpperCase()).sort();
+ for(const value of stable){for(let i=0;i<value.length;i++){hash^=value.charCodeAt(i);hash=Math.imul(hash,16777619);}hash^=124;hash=Math.imul(hash,16777619);}
+ return stable.length+":"+((hash>>>0).toString(36));
 }
 function independentRadarLoadState(coins){
  const key=independentRadarUniverseKey(coins);
