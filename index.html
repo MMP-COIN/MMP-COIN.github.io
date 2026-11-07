@@ -2560,7 +2560,7 @@ async function runIndependentRadarScan(force=false){
   if(diagnostics){
    const providers=[...providerFailures.entries()].sort((a,b)=>b[1]-a[1]).map(([name,count])=>aiEscape(name)+" ("+count+")").join("، ")||"هیچ خطای منبعی ثبت نشد";
    const samples=failedSamples.map(item=>"<li><b>"+aiEscape(item.symbol)+"</b>: "+aiEscape(item.message)+"</li>").join("");
-   diagnostics.innerHTML="<div>نمادهای ناموفق: <b>"+failed+"</b> از "+coins.length+"</div><div>تعداد خطاهای ثبت‌شده به تفکیک منبع (ممکن است یک نماد چند منبع ناموفق داشته باشد): "+providers+"</div>"+(samples?"<details style=\\"margin-top:6px\\"><summary>نمونه خطاها (حداکثر ۸ نماد)</summary><ul style=\\"padding-inline-start:20px\\">"+samples+"</ul></details>":"");
+   diagnostics.innerHTML="<div>نمادهای ناموفق: <b>"+failed+"</b> از "+coins.length+"</div><div>تعداد خطاهای ثبت‌شده به تفکیک منبع (ممکن است یک نماد چند منبع ناموفق داشته باشد): "+providers+"</div>"+(samples?"<details style=\"margin-top:6px\"><summary>نمونه خطاها (حداکثر ۸ نماد)</summary><ul style=\"padding-inline-start:20px\">"+samples+"</ul></details>":"");
   }
   if(status)status.textContent="رادار مستقل · "+completed+" از "+coins.length+" ارز بررسی شد · نامزدها: "+qualified+" · خطاهای داده: "+failed+" · "+new Date().toLocaleTimeString("fa-IR");
  }catch(error){if(status)status.textContent="اسکن مستقل رادار کامل نشد: "+(error?.message||"خطای نامشخص");console.warn("Independent radar scan:",error);}
