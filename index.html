@@ -2650,9 +2650,9 @@ function hunterDetailIndicators(rows,interval){
  const tr=closed.slice(-15).map((x,i,a)=>{const p=a[i-1];return Math.max(x.h-x.l,p?Math.abs(x.h-p.c):0,p?Math.abs(x.l-p.c):0);}),atr=tr.reduce((s,v)=>s+v,0)/Math.max(1,tr.length);
  const vwapRows=closed.slice(-Math.min(48,closed.length)),vwapDen=vwapRows.reduce((s,x)=>s+x.v,0),vwap=vwapDen?vwapRows.reduce((s,x)=>s+((x.h+x.l+x.c)/3)*x.v,0)/vwapDen:null,levels=closed.slice(-40),support=Math.min(...levels.map(x=>x.l)),resistance=Math.max(...levels.map(x=>x.h));
  const avgVol=closed.slice(-21,-1).reduce((s,x)=>s+x.v,0)/Math.max(1,Math.min(20,closed.length-1)),volRatio=avgVol?last.v/avgVol:0;
- const quote=closed.slice(-12).reduce((s,x)=>s+(x.quoteVol||x.v*x.c),0),hasAgg=closed.slice(-12).some(x=>Number.isFinite(x.takerBuyQuote)&&x.takerBuyQuote>0),buy=closed.slice(-12).reduce((s,x)=>s+(Number.isFinite(x.takerBuyQuote)&&x.takerBuyQuote>0?x.takerBuyQuote:(x.quoteVol||x.v*x.c)*Math.max(0,Math.min(1,(x.c-x.l)/Math.max(1e-12,x.h-x.l)))),0),sell=Math.max(0,quote-buy);
+ const flowRows=closed.slice(-12),quote=flowRows.reduce((s,x)=>s+(x.quoteVol||x.v*x.c),0),hasAgg=flowRows.every(x=>Number.isFinite(x.takerBuyQuote)),buy=flowRows.reduce((s,x)=>s+(Number.isFinite(x.takerBuyQuote)?Math.max(0,x.takerBuyQuote):(x.quoteVol||x.v*x.c)*Math.max(0,Math.min(1,(x.c-x.l)/Math.max(1e-12,x.h-x.l)))),0),sell=Math.max(0,quote-buy);
  const direction=last.c>e20&&e20>e50?"صعودی":last.c<e20&&e20<e50?"نزولی":"خنثی";
- return {closed,last,prev,e20,e50,e200,rsi,macd,bbHigh:mean+2*sd,bbLow:mean-2*sd,atr,vwap,volRatio,quote,buy,sell,net:buy-sell,flowEstimated:!hasAgg,direction,change:(last.c/prev.c-1)*100};
+ return {closed,last,prev,e20,e50,e200,rsi,macd,macdHist,bbHigh:mean+2*sd,bbLow:mean-2*sd,atr,vwap,volRatio,quote,buy,sell,net:buy-sell,flowEstimated:!hasAgg,direction,change:(last.c/prev.c-1)*100,support,resistance};
 }
 function hunterDetailChart(rows,ind){
  const data=rows.slice(-90),W=1000,H=390,L=18,R=20,T=24,PB=285,VB=355;
