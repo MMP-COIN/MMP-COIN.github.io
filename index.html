@@ -1002,6 +1002,36 @@ body{background:
 .hunter-4h-empty{grid-column:1/-1;padding:20px;text-align:center;border:1px dashed #3d4b5c;border-radius:11px;color:#aab5c3;font-size:11px;line-height:1.9}
 @media(max-width:650px){.hunter-feed{grid-template-columns:1fr}.hunter-mode-panel{padding:10px}.hunter-mode-head{align-items:flex-start}.hunter-4h-level b{font-size:10px}}
 </style>
+
+<style>
+.hunter-detail-open{display:block;width:100%;margin-top:10px;padding:11px 12px;border:1px solid #b99b5c;border-radius:10px;background:linear-gradient(110deg,#b99b5c25,#b99b5c08);color:#f3d995;font:inherit;font-size:11px;font-weight:900;cursor:pointer}
+.hunter-detail-dialog{width:min(1080px,100%);max-height:94dvh}
+.hunter-detail-summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0;padding:11px;border:1px solid #b99b5c44;border-radius:12px;background:#ffffff08}
+.hunter-detail-summary b{color:#f1d58e}.hunter-detail-summary span{font-size:10px;color:#aeb9c5}.hunter-detail-summary strong{margin-inline-start:auto;color:#f3d995;direction:ltr}
+.hunter-detail-toolbar{display:flex;gap:7px;flex-wrap:wrap;margin:12px 0}
+.hunter-detail-toolbar button{padding:8px 13px;border:1px solid #475365;border-radius:9px;background:#111c29;color:#c5d0dc;font:inherit;font-size:10px;cursor:pointer}
+.hunter-detail-toolbar button.active{border-color:#d3b36a;background:#9f7d3a2b;color:#f5dc9c}
+.hunter-detail-chart{overflow:hidden;padding:8px;border:1px solid #344154;border-radius:12px;background:#080f18}
+.hunter-detail-chart svg{display:block;width:100%;height:auto}
+.hunter-detail-indicators{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:12px 0}
+.hunter-detail-indicators>div,.hunter-detail-candle>span{min-width:0;padding:9px;border:1px solid #ffffff18;border-radius:9px;background:#ffffff08}
+.hunter-detail-indicators small,.hunter-detail-candle span{display:block;color:#9eacba;font-size:9px}
+.hunter-detail-indicators b,.hunter-detail-candle b{display:block;margin-top:5px;color:#f1d596;font-size:11px;direction:ltr;overflow-wrap:anywhere}
+.hunter-detail-section-title{margin:16px 0 8px;color:#e8d4a4;font-size:12px}
+.hunter-detail-flow{padding:12px;border:1px solid #ffffff18;border-radius:11px;background:#ffffff08}
+.hunter-detail-flowbar{display:flex;height:13px;overflow:hidden;border-radius:99px;background:#ff657822}
+.hunter-detail-flowbar span{background:#29d5a0}.hunter-detail-flowbar i{background:#ff6578}
+.hunter-detail-flow>div:nth-child(2){display:flex;gap:12px;flex-wrap:wrap;margin-top:9px;font-size:10px}
+.hunter-detail-flow small{display:block;margin-top:8px;color:#aab6c4;font-size:9px}
+.hunter-detail-candle{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.hunter-detail-plan{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.hunter-detail-plan>div{min-width:0;padding:10px;border:1px solid #ffffff18;border-radius:9px;background:#ffffff08}
+.hunter-detail-plan small{display:block;color:#9eacba;font-size:9px}.hunter-detail-plan b{display:block;margin-top:5px;color:#f2d68f;font-size:11px;direction:ltr;overflow-wrap:anywhere}
+.hunter-detail-note,.hunter-detail-loading{padding:10px 12px;border:1px solid #a88b503b;border-radius:10px;background:#ffffff08;color:#aeb9c5;font-size:10px;line-height:1.9}
+.hunter-detail-empty{padding:35px;text-align:center;color:#aeb9c5}
+@media(max-width:650px){.hunter-detail-indicators{grid-template-columns:repeat(2,minmax(0,1fr))}.hunter-detail-plan{grid-template-columns:repeat(2,minmax(0,1fr))}.hunter-detail-dialog{max-height:96dvh}.hunter-detail-candle{grid-template-columns:repeat(2,minmax(0,1fr))}.hunter-detail-summary{gap:7px}.hunter-detail-summary strong{margin-inline-start:0}}
+</style>
+
 </head>
 <body class="mmp-app-mode">
 
@@ -2593,6 +2623,81 @@ function closeHunterChart(){
  const modal=document.getElementById("hunter-chart-modal");if(!modal)return;
  modal.classList.remove("show");document.body.classList.remove("hunter-chart-open");
 }
+
+let hunterDetailState={symbol:"",market:"spot",coin:null,signal:null,interval:"60",busy:false,rows:[]};
+function hunterDetailPrice(v){return hunterPrice(v);}
+async function hunterDetailFetch(symbol,market,interval){
+ const map={15:{binance:"15m",bybit:"15",okx:"15m"},60:{binance:"1h",bybit:"60",okx:"1H"},240:{binance:"4h",bybit:"240",okx:"4H"},D:{binance:"1d",bybit:"D",okx:"1D"}},tf=map[interval]||map[60],pair=symbol.toUpperCase()+"USDT",limit=interval==="D"?220:220;
+ const urls=market==="spot"?[
+  async()=>hunter4hParse(await hunterFetchJson("https://api.binance.com/api/v3/klines?symbol="+pair+"&interval="+tf.binance+"&limit="+limit,12000)),
+  async()=>{const d=await hunterFetchJson("https://api.bybit.com/v5/market/kline?category=spot&symbol="+pair+"&interval="+tf.bybit+"&limit="+limit,12000);if(d.retCode!==0)throw new Error(d.retMsg||"Bybit Spot");return hunter4hParse((d.result?.list||[]).slice().reverse());},
+  async()=>{const d=await hunterFetchJson("https://www.okx.com/api/v5/market/candles?instId="+symbol.toUpperCase()+"-USDT&bar="+tf.okx+"&limit=220",12000);if(d.code!=="0")throw new Error(d.msg||"OKX Spot");return hunter4hParse((d.data||[]).slice().reverse());}
+ ]:[
+  async()=>hunter4hParse(await hunterFetchJson("https://fapi.binance.com/fapi/v1/klines?symbol="+pair+"&interval="+tf.binance+"&limit="+limit,12000)),
+  async()=>{const d=await hunterFetchJson("https://api.bybit.com/v5/market/kline?category=linear&symbol="+pair+"&interval="+tf.bybit+"&limit="+limit,12000);if(d.retCode!==0)throw new Error(d.retMsg||"Bybit Linear");return hunter4hParse((d.result?.list||[]).slice().reverse());}
+ ];
+ let last;for(const load of urls){try{const rows=await load();if(rows.length>=30)return rows;}catch(e){last=e;}}
+ throw last||new Error("داده کندلی این تایم‌فریم دریافت نشد");
+}
+function hunterDetailIndicators(rows,interval){
+ const duration=(interval==="D"?1440:Number(interval))*60000,closed=(rows||[]).filter(x=>x.t+duration<=Date.now());
+ if(closed.length<25)return null;
+ const closes=closed.map(x=>x.c),ema=(a,p)=>{if(a.length<p)return null;const k=2/(p+1);let v=a[0];for(let i=1;i<a.length;i++)v=a[i]*k+v*(1-k);return v;};
+ const last=closed[closed.length-1],prev=closed[closed.length-2],e20=ema(closes,20),e50=ema(closes,50),e200=ema(closes,200);
+ const changes=closes.slice(-15).map((v,i,a)=>i?v-a[i-1]:0).slice(1),g=changes.reduce((s,v)=>s+Math.max(0,v),0)/Math.max(1,changes.length),l=changes.reduce((s,v)=>s+Math.max(0,-v),0)/Math.max(1,changes.length),rsi=l===0?100:100-100/(1+g/l);
+ const ema12=ema(closes.slice(-60),12),ema26=ema(closes.slice(-80),26),macd=ema12!=null&&ema26!=null?ema12-ema26:null;
+ const mean=closes.slice(-20).reduce((s,v)=>s+v,0)/Math.min(20,closes.length),sd=Math.sqrt(closes.slice(-20).reduce((s,v)=>s+(v-mean)**2,0)/Math.min(20,closes.length));
+ const tr=closed.slice(-15).map((x,i,a)=>{const p=a[i-1];return Math.max(x.h-x.l,p?Math.abs(x.h-p.c):0,p?Math.abs(x.l-p.c):0);}),atr=tr.reduce((s,v)=>s+v,0)/Math.max(1,tr.length);
+ const vwapRows=closed.slice(-Math.min(48,closed.length)),vwapDen=vwapRows.reduce((s,x)=>s+x.v,0),vwap=vwapDen?vwapRows.reduce((s,x)=>s+((x.h+x.l+x.c)/3)*x.v,0)/vwapDen:null;
+ const avgVol=closed.slice(-21,-1).reduce((s,x)=>s+x.v,0)/Math.max(1,Math.min(20,closed.length-1)),volRatio=avgVol?last.v/avgVol:0;
+ const quote=closed.slice(-12).reduce((s,x)=>s+(x.quoteVol||x.v*x.c),0),hasAgg=closed.slice(-12).some(x=>Number.isFinite(x.takerBuyQuote)&&x.takerBuyQuote>0),buy=closed.slice(-12).reduce((s,x)=>s+(Number.isFinite(x.takerBuyQuote)&&x.takerBuyQuote>0?x.takerBuyQuote:(x.quoteVol||x.v*x.c)*Math.max(0,Math.min(1,(x.c-x.l)/Math.max(1e-12,x.h-x.l)))),0),sell=Math.max(0,quote-buy);
+ const direction=last.c>e20&&e20>e50?"صعودی":last.c<e20&&e20<e50?"نزولی":"خنثی";
+ return {closed,last,prev,e20,e50,e200,rsi,macd,bbHigh:mean+2*sd,bbLow:mean-2*sd,atr,vwap,volRatio,quote,buy,sell,net:buy-sell,flowEstimated:!hasAgg,direction,change:(last.c/prev.c-1)*100};
+}
+function hunterDetailChart(rows,ind){
+ const data=rows.slice(-90),W=1000,H=390,L=18,R=20,T=24,PB=285,VB=355;
+ if(!data.length)return '<div class="hunter-detail-empty">کندلی برای نمایش وجود ندارد.</div>';
+ const lo=Math.min(...data.map(x=>x.l)),hi=Math.max(...data.map(x=>x.h)),pad=(hi-lo)*.08||hi*.002,min=lo-pad,max=hi+pad,y=v=>T+(max-v)/(max-min)*(PB-T),slot=(W-L-R)/data.length,cw=Math.max(3,Math.min(9,slot*.62)),maxV=Math.max(1,...data.map(x=>x.v));
+ const emaLine=period=>{if(data.length<period)return "";const k=2/(period+1);let v=data[0].c,pts=[];data.forEach((x,i)=>{v=i===0?x.c:x.c*k+v*(1-k);if(i>=data.length-70)pts.push((L+i*slot+slot/2)+","+y(v));});return '<polyline points="'+pts.join(" ")+'" fill="none" stroke="'+(period===20?"#f0cf79":"#65a9ff")+'" stroke-width="2" opacity=".9"/>';};
+ let out='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="نمودار کندلی و میانگین‌های متحرک"><defs><clipPath id="hunter-detail-clip"><rect x="'+L+'" y="'+T+'" width="'+(W-L-R)+'" height="'+(PB-T)+'"/></clipPath></defs>';
+ for(let g=0;g<5;g++){const yy=T+(PB-T)*g/4;out+='<line x1="'+L+'" y1="'+yy+'" x2="'+(W-R)+'" y2="'+yy+'" stroke="#8292a4" opacity=".18"/>';}
+ out+='<g clip-path="url(#hunter-detail-clip)">';
+ data.forEach((x,i)=>{const xx=L+i*slot+slot/2,up=x.c>=x.o,color=up?"#2bd5a0":"#ff6578",by=Math.min(y(x.o),y(x.c)),bh=Math.max(2,Math.abs(y(x.o)-y(x.c))),vh=x.v/maxV*(VB-300);out+='<line x1="'+xx+'" y1="'+y(x.h)+'" x2="'+xx+'" y2="'+y(x.l)+'" stroke="'+color+'" stroke-width="1.5"/><rect x="'+(xx-cw/2)+'" y="'+by+'" width="'+cw+'" height="'+bh+'" rx="1" fill="'+color+'"/><rect x="'+(xx-cw/2)+'" y="'+(VB-vh)+'" width="'+cw+'" height="'+Math.max(1,vh)+'" fill="'+color+'" opacity=".42"/>';});
+ out+=emaLine(20)+emaLine(50)+'</g><line x1="'+L+'" y1="295" x2="'+(W-R)+'" y2="295" stroke="#8292a4" opacity=".25"/><text x="'+L+'" y="15" fill="#aab8c7" font-size="11">کندل‌ها و حجم معاملات</text><text x="'+(W-R)+'" y="'+(H-7)+'" text-anchor="end" fill="#aab8c7" font-size="10">طلایی: EMA20 · آبی: EMA50 · سبز: رشد · قرمز: سقوط</text></svg>';
+ return out;
+}
+function hunterDetailTradePlan(ind,signal){
+ const short=signal?.direction==="short",entry=ind.last.c,stop=short?entry+ind.atr*1.5:entry-ind.atr*1.5,risk=Math.abs(entry-stop),r=(v)=>hunterDetailPrice(v);
+ const target=n=>short?entry-risk*n:entry+risk*n,rr=entry?((risk/entry)*100):0;
+ const trendOk=short?ind.direction==="نزولی":ind.direction==="صعودی";
+ return '<div class="hunter-detail-plan"><div><small>جهت پیشنهادی</small><b class="'+(short?"down":"up")+'">'+(short?"SHORT":"LONG")+'</b></div><div><small>ورود مرجع</small><b>'+r(entry)+'</b></div><div><small>حد ضرر ATR</small><b>'+r(stop)+'</b></div><div><small>ریسک قیمتی</small><b>'+rr.toFixed(2)+'٪</b></div><div><small>هدف اول · 1R</small><b>'+r(target(1))+'</b></div><div><small>هدف دوم · 2R</small><b>'+r(target(2))+'</b></div><div><small>هدف سوم · 3R</small><b>'+r(target(3))+'</b></div><div><small>وضعیت روند</small><b>'+ind.direction+'</b></div></div><p class="hunter-detail-note">'+(trendOk?"جهت روند با سمت شکار هم‌سو است.":"هشدار: روند اندیکاتوری فعلی کاملاً با سمت شکار هم‌سو نیست.")+' پیشنهاد مدیریت ریسک: در هر معامله حداکثر ۰٫۵ تا ۱٪ سرمایه را در معرض زیان قرار بده؛ حجم پوزیشن باید از فاصله ورود تا حد ضرر محاسبه شود. این اعداد سناریوی محاسباتی‌اند، نه تضمین معامله.</p>';
+}
+function hunterDetailRender(){
+ const modal=document.getElementById("hunter-chart-modal"),s=hunterDetailState,ind=hunterDetailIndicators(s.rows,s.interval);if(!modal||!s.coin)return;
+ const tf=[["15","۱۵ دقیقه"],["60","۱ ساعت"],["240","۴ ساعت"],["D","روزانه"]];
+ const tabs=tf.map(([v,label])=>'<button type="button" data-hunter-detail-tf="'+v+'" class="'+(s.interval===v?"active":"")+'">'+label+'</button>').join("");
+ if(!ind){modal.innerHTML='<div class="hunter-chart-backdrop" data-hunter-chart-close="1"></div><section class="hunter-chart-dialog hunter-detail-dialog"><button class="hunter-chart-close" data-hunter-chart-close="1">×</button><p class="hunter-detail-loading">داده کافی برای محاسبه اندیکاتورها وجود ندارد.</p></section>';return;}
+ const buyPct=ind.quote?ind.buy/ind.quote*100:0,sellPct=100-buyPct,fmt=v=>v==null?"داده کافی نیست":hunterDetailPrice(v),flowLabel=ind.flowEstimated?"تخمینی از ساختار کندل (نه جریان واقعی سفارش)":"بر اساس حجم خرید تهاجمی ثبت‌شده صرافی";
+ const body='<div class="hunter-detail-toolbar">'+tabs+'</div><div class="hunter-detail-chart">'+hunterDetailChart(s.rows,ind)+'</div><div class="hunter-detail-indicators"><div><small>EMA 20</small><b>'+fmt(ind.e20)+'</b></div><div><small>EMA 50</small><b>'+fmt(ind.e50)+'</b></div><div><small>EMA 200</small><b>'+fmt(ind.e200)+'</b></div><div><small>RSI 14</small><b>'+ind.rsi.toFixed(1)+'</b></div><div><small>MACD</small><b>'+fmt(ind.macd)+'</b></div><div><small>VWAP</small><b>'+fmt(ind.vwap)+'</b></div><div><small>باند بالایی Bollinger</small><b>'+fmt(ind.bbHigh)+'</b></div><div><small>باند پایینی Bollinger</small><b>'+fmt(ind.bbLow)+'</b></div><div><small>ATR 14</small><b>'+fmt(ind.atr)+'</b></div><div><small>حجم نسبت به میانگین</small><b>'+ind.volRatio.toFixed(2)+'×</b></div></div><h4 class="hunter-detail-section-title">جریان خرید و فروش · ۱۲ کندل بسته‌شده</h4><div class="hunter-detail-flow"><div class="hunter-detail-flowbar"><span style="width:'+buyPct+'%"></span><i style="width:'+sellPct+'%"></i></div><div><b class="up">خرید '+buyPct.toFixed(1)+'٪ · '+hunterUsd(ind.buy)+'</b><b class="down">فروش '+sellPct.toFixed(1)+'٪ · '+hunterUsd(ind.sell)+'</b><b>خالص '+(ind.net>=0?"+":"")+hunterUsd(ind.net)+'</b></div><small>'+flowLabel+'</small></div><h4 class="hunter-detail-section-title">آخرین کندل بسته‌شده</h4><div class="hunter-detail-candle"><span>بازشدن <b>'+fmt(ind.last.o)+'</b></span><span>بیشترین <b>'+fmt(ind.last.h)+'</b></span><span>کمترین <b>'+fmt(ind.last.l)+'</b></span><span>بسته‌شدن <b>'+fmt(ind.last.c)+'</b></span><span>تغییر کندل <b class="'+(ind.change>=0?"up":"down")+'">'+(ind.change>=0?"+":"")+ind.change.toFixed(2)+'٪</b></span><span>حجم پایه <b>'+Number(ind.last.v).toLocaleString("en-US",{maximumFractionDigits:2})+'</b></span></div><h4 class="hunter-detail-section-title">سناریوی معامله و مدیریت ریسک</h4>'+hunterDetailTradePlan(ind,s.signal)+'<p class="hunter-detail-note">نمودار و محاسبات بر اساس کندل‌های بسته‌شده‌اند؛ داده زنده ممکن است با بسته‌شدن کندل تغییر کند. اندیکاتورها ابزار کمکی‌اند و به‌تنهایی سیگنال قطعی نیستند.</p>';
+ modal.innerHTML='<div class="hunter-chart-backdrop" data-hunter-chart-close="1"></div><section class="hunter-chart-dialog hunter-detail-dialog '+(s.signal?.direction==="short"?"down":"up")+'" role="dialog" aria-modal="true" aria-labelledby="hunter-detail-title"><header class="hunter-chart-header"><div><small>اتاق تحلیل اختصاصی شکار · '+(s.market==="spot"?"SPOT":"FUTURES")+'</small><h3 id="hunter-detail-title">'+aiEscape(s.coin.name||s.symbol)+' ('+aiEscape(s.symbol)+'/USDT)</h3></div><button type="button" class="hunter-chart-close" data-hunter-chart-close="1" aria-label="بستن">×</button></header><div class="hunter-detail-summary"><b>قدرت شکار '+Number(s.signal?.score||0)+'/100</b><span>تایم‌فریم انتخابی: '+(tf.find(x=>x[0]===s.interval)?.[1]||s.interval)+'</span><strong>'+fmt(ind.last.c)+'</strong></div>'+body+'</section>';
+}
+async function openHunterDetail(symbol,market){
+ const item=(market==="spot"?dualHunterState.spot:dualHunterState.futures).find(x=>String(x.coin.symbol||"").toUpperCase()===String(symbol).toUpperCase());
+ if(!item)return;
+ hunterDetailState={symbol:String(symbol).toUpperCase(),market,coin:item.coin,signal:item.signal,interval:"60",busy:true,rows:[]};
+ const modal=document.getElementById("hunter-chart-modal");if(!modal)return;
+ modal.innerHTML='<div class="hunter-chart-backdrop" data-hunter-chart-close="1"></div><section class="hunter-chart-dialog hunter-detail-dialog"><header class="hunter-chart-header"><div><small>در حال دریافت داده از صرافی‌ها</small><h3>'+aiEscape(item.coin.name||symbol)+' ('+aiEscape(symbol)+'/USDT)</h3></div><button class="hunter-chart-close" data-hunter-chart-close="1">×</button></header><p class="hunter-detail-loading">در حال بارگذاری ۲۲۰ کندل، حجم معاملات و اندیکاتورها…</p></section>';
+ modal.classList.add("show");document.body.classList.add("hunter-chart-open");
+ try{const rows=await hunterDetailFetch(symbol,market,"60");if(hunterDetailState.symbol!==String(symbol).toUpperCase())return;hunterDetailState.rows=rows;hunterDetailState.busy=false;hunterDetailRender();}
+ catch(e){modal.innerHTML='<div class="hunter-chart-backdrop" data-hunter-chart-close="1"></div><section class="hunter-chart-dialog hunter-detail-dialog"><button class="hunter-chart-close" data-hunter-chart-close="1">×</button><p class="hunter-detail-loading">دریافت نمودار ناموفق بود: '+aiEscape(e?.message||"خطای اتصال")+'</p></section>';}
+}
+async function hunterDetailChangeTf(interval){
+ const s=hunterDetailState;if(!s.coin||s.busy)return;s.interval=interval;s.busy=true;
+ const modal=document.getElementById("hunter-chart-modal");if(modal)modal.querySelector(".hunter-detail-chart")?.insertAdjacentHTML("beforebegin",'<p class="hunter-detail-loading" id="hunter-detail-loading">در حال دریافت کندل‌های جدید…</p>');
+ try{const rows=await hunterDetailFetch(s.symbol,s.market,interval);if(hunterDetailState.symbol!==s.symbol)return;hunterDetailState.rows=rows;hunterDetailState.busy=false;hunterDetailRender();}
+ catch(e){s.busy=false;const el=document.getElementById("hunter-detail-loading");if(el)el.textContent="دریافت تایم‌فریم ناموفق بود: "+(e?.message||"خطا");}
+}
+
 function renderMarketHunter(){
  const feed=$("hunter-feed");if(!feed)return;
  const candidates=[...fastRadarSignals.entries()].map(([id,signal])=>({coin:hunterCoinIndex.get(id)||cachedCoinsData.find(c=>c.id===id),signal,id})).filter(x=>x.coin&&Date.now()-x.signal.updatedAt<8*60*1000&&x.signal.score>=55);
@@ -2712,7 +2817,7 @@ function hunter4hCard(coin,signal,market){
  const cls=signal.direction==="short"?"short":market==="spot"?"spot":"long",img=hunterCoinImage(coin);
  const flowPct=(signal.buyRatio*100).toFixed(1),flowLabel=signal.flowEstimated?"فشار خرید تخمینی":"خرید تهاجمی واقعی";
  const flowColor=signal.buyRatio>=.5?"up":"down",breakLabel=signal.trendBreak?"شکست خط روند":signal.rangeBreak?"شکست محدوده":"بدون شکست خط روند";
- return '<article class="hunter-4h-card '+cls+'"><div class="hunter-4h-title"><div class="hunter-4h-coin"><img src="'+aiEscape(img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><span><b>'+aiEscape(coin.name||sym)+'</b><small>'+aiEscape(sym)+'/USDT · ۱ساعته + ۱۵دقیقه · ۴ساعته کمکی</small></span></div><span class="hunter-4h-type">'+type+'</span></div><div class="hunter-4h-levels"><div class="hunter-4h-level"><small>قیمت مرجع / ورود</small><b>'+hunterPrice(signal.entry)+'</b></div><div class="hunter-4h-level"><small>حد ضرر محاسباتی</small><b>'+hunterPrice(signal.stop)+'</b></div><div class="hunter-4h-level"><small>فاصله ریسک</small><b>'+signal.risk.toFixed(2)+'٪</b></div></div><div class="hunter-4h-meta"><span>قدرت شکار: <strong>'+signal.score+'/100</strong></span><span>RSI: <strong>'+signal.rsi.toFixed(1)+'</strong></span><span>حجم نسبی: <strong>'+signal.volRatio.toFixed(2)+'×</strong></span><span>حرکت ۱ساعته: <strong>'+signal.move1h.toFixed(2)+'٪</strong></span><span>سهم خرید: <strong class="'+flowColor+'">'+flowPct+'٪</strong></span><span>جریان پول: <strong>'+flowLabel+'</strong></span><span>ساختار قیمت: <strong>'+breakLabel+'</strong></span><span>تأیید ۴ساعته: <strong>'+(signal.confirm4h||"نامشخص")+'</strong></span></div><a class="hunter-4h-link" href="'+url+'" target="_blank" rel="noopener noreferrer">بازکردن بازار '+(market==="spot"?"اسپات":"فیوچرز")+' ↗</a></article>';
+ return '<article class="hunter-4h-card '+cls+'"><div class="hunter-4h-title"><div class="hunter-4h-coin"><img src="'+aiEscape(img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><span><b>'+aiEscape(coin.name||sym)+'</b><small>'+aiEscape(sym)+'/USDT · ۱ساعته + ۱۵دقیقه · ۴ساعته کمکی</small></span></div><span class="hunter-4h-type">'+type+'</span></div><div class="hunter-4h-levels"><div class="hunter-4h-level"><small>قیمت مرجع / ورود</small><b>'+hunterPrice(signal.entry)+'</b></div><div class="hunter-4h-level"><small>حد ضرر محاسباتی</small><b>'+hunterPrice(signal.stop)+'</b></div><div class="hunter-4h-level"><small>فاصله ریسک</small><b>'+signal.risk.toFixed(2)+'٪</b></div></div><div class="hunter-4h-meta"><span>قدرت شکار: <strong>'+signal.score+'/100</strong></span><span>RSI: <strong>'+signal.rsi.toFixed(1)+'</strong></span><span>حجم نسبی: <strong>'+signal.volRatio.toFixed(2)+'×</strong></span><span>حرکت ۱ساعته: <strong>'+signal.move1h.toFixed(2)+'٪</strong></span><span>سهم خرید: <strong class="'+flowColor+'">'+flowPct+'٪</strong></span><span>جریان پول: <strong>'+flowLabel+'</strong></span><span>ساختار قیمت: <strong>'+breakLabel+'</strong></span><span>تأیید ۴ساعته: <strong>'+(signal.confirm4h||"نامشخص")+'</strong></span></div><button type="button" class="hunter-detail-open" data-hunter-detail="'+aiEscape(sym)+'" data-hunter-market="'+market+'">مشاهده نمودار و تحلیل کامل این شکار</button><a class="hunter-4h-link" href="'+url+'" target="_blank" rel="noopener noreferrer">بازکردن بازار '+(market==="spot"?"اسپات":"فیوچرز")+' ↗</a></article>';
 }
 function renderMarketHunter(){
  const spot=$("hunter-spot-feed"),fut=$("hunter-futures-feed");if(!spot||!fut)return;
@@ -2765,6 +2870,8 @@ async function runDedicatedHunterScan(force=false){
  finally{dualHunterState.busy=false;if(button)button.disabled=false;}
 }
 document.addEventListener("click",function(event){
+ const detail=event.target.closest("[data-hunter-detail]");if(detail){event.preventDefault();openHunterDetail(detail.getAttribute("data-hunter-detail"),detail.getAttribute("data-hunter-market")||"spot");return;}
+ const tf=event.target.closest("[data-hunter-detail-tf]");if(tf){event.preventDefault();hunterDetailChangeTf(tf.getAttribute("data-hunter-detail-tf"));return;}
  const trigger=event.target.closest("[data-hunter-chart]");
  if(trigger){event.preventDefault();event.stopPropagation();openHunterChart(trigger.getAttribute("data-hunter-chart"));return;}
  if(event.target.closest("[data-hunter-chart-close]"))closeHunterChart();
