@@ -4457,7 +4457,7 @@ window.mmpShareDownloadLink = async function () {
    const key=id||("symbol:"+symbol),old=map.get(key);
    if(!old||(!old.image&&c.image)||(!(Number(old.current_price)>0)&&Number(c.current_price)>0))map.set(key,{...old,...c,symbol});
   };
-  (Array.isArray(window.cachedCoinsData)?window.cachedCoinsData:[]).forEach(add);
+  (typeof cachedCoinsData!=="undefined"&&Array.isArray(cachedCoinsData)?cachedCoinsData:[]).forEach(add);
   if(typeof hunterUniverseCache!=="undefined"&&Array.isArray(hunterUniverseCache.coins))hunterUniverseCache.coins.forEach(add);
   if(typeof hunterCoinIndex!=="undefined"&&hunterCoinIndex instanceof Map)hunterCoinIndex.forEach(add);
   allAssets=[...map.values()].sort((a,b)=>(Number(a.market_cap_rank)||Infinity)-(Number(b.market_cap_rank)||Infinity)||String(a.name||"").localeCompare(String(b.name||""),"fa"));
