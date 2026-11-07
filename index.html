@@ -3277,9 +3277,9 @@ function renderRadarSignalPage(id){
  const flowStatus=String(signal.flowStatus||"not_available");
  const flowSource=radarSignalValue(signal,"flowSource")||exchange;
  const flowDefinitions=[
-  ["حجم خرید تهاجمی","buyQuoteVolume"," USDT"],
-  ["حجم فروش تهاجمی","sellQuoteVolume"," USDT"],
-  ["خالص جریان پول","netFlow"," USDT"],
+  ["حجم خرید تهاجمی","buyQuoteVolume"," "+String(signal.flowQuote||signal.quote||"USDT")],
+  ["حجم فروش تهاجمی","sellQuoteVolume"," "+String(signal.flowQuote||signal.quote||"USDT")],
+  ["خالص جریان پول","netFlow"," "+String(signal.flowQuote||signal.quote||"USDT")],
   ["قدرت خرید","buyPressure","٪"],
   ["تعداد معاملات ثبت‌شده","flowTradeCount"," معامله"],
   ["بازه محاسبه","flowWindowMinutes"," دقیقه"]
