@@ -2230,6 +2230,12 @@ const unifiedRadarSignals = new Map();
 let unifiedRadarSnapshotAt = 0;
 let unifiedRadarSnapshotBusy = false;
 let unifiedRadarProgress = {completed:0,total:0,failed:0,candidates:0,percent:0,state:"در انتظار اتصال به موتور هوشمند"};
+const RADAR_MIN_DISPLAY_SCORE=69;
+function radarSignalPassesDisplayThreshold(signal){
+ const score=Number(signal?.score),weakScans=Number(signal?.weakScans)||0;
+ return Number.isFinite(score)&&["bull","bear"].includes(signal?.trend)&&(score>=RADAR_MIN_DISPLAY_SCORE||weakScans===1);
+}
+function getVisibleRadarSignalCount(){return [...unifiedRadarSignals.values()].filter(radarSignalPassesDisplayThreshold).length;}
 function renderUnifiedRadarProgress(){
  const p=unifiedRadarProgress,put=(id,value)=>{const el=$(id);if(el)el.textContent=String(value);};
  put("radar-core-live-state",p.state||"هسته آماده دریافت داده زنده");
@@ -2240,7 +2246,7 @@ function renderUnifiedRadarProgress(){
  put("radar-scan-candidates",Number(p.candidates||0).toLocaleString("fa-IR"));
  put("radar-scan-errors",Number(p.failed||0).toLocaleString("fa-IR"));
  const bar=$("radar-scan-bar");if(bar)bar.style.width=Math.max(0,Math.min(100,Number(p.percent)||0))+"%";
- const score=$("radar-core-live-score");if(score)score.textContent=unifiedRadarSignals.size?String(unifiedRadarSignals.size).padStart(2,"0"):"CORE";
+ const score=$("radar-core-live-score"),visibleCount=getVisibleRadarSignalCount();if(score)score.textContent=visibleCount?String(visibleCount).padStart(2,"0"):"CORE";
  const note=$("radar-scan-persistence");if(note)note.textContent="تحلیل و اسکن روی موتور مرکزی MMP انجام می‌شود؛ این صفحه فقط خروجی معتبر را دریافت می‌کند.";
 }
 async function loadUnifiedRadarSnapshot(){
@@ -2270,13 +2276,13 @@ async function loadUnifiedRadarSnapshot(){
   }
   const total=Number(snapshot.universe_count)||0,done=Number(snapshot.next_cursor)||0;
   unifiedRadarProgress={
-   completed:done,total,failed:Number(snapshot.failed_count)||0,candidates:unifiedRadarSignals.size,
+   completed:done,total,failed:Number(snapshot.failed_count)||0,candidates:getVisibleRadarSignalCount(),
    percent:total?Math.round(done/total*100):0,
    state:"موتور هوشمند فعال · اسکن چرخشی "+Number(snapshot.batch_size||36).toLocaleString("fa-IR")+" نماد در هر نوبت"
   };
   renderUnifiedRadarProgress();
   const status=$("radar-updated");
-  if(status)status.textContent="موتور هوشمند مرکزی · "+unifiedRadarSignals.size.toLocaleString("fa-IR")+" سیگنال معتبر · آخرین دریافت "+new Date(snapshotAt).toLocaleTimeString("fa-IR");
+  if(status)status.textContent="موتور هوشمند مرکزی · "+getVisibleRadarSignalCount().toLocaleString("fa-IR")+" سیگنال واجد شرایط · آخرین دریافت "+new Date(snapshotAt).toLocaleTimeString("fa-IR");
   return snapshot;
  }catch(error){
   unifiedRadarProgress={...unifiedRadarProgress,state:"اتصال به موتور هوشمند برقرار نشد · تلاش مجدد خودکار"};
@@ -3191,7 +3197,7 @@ function connectHunterStreams(){
 function renderOpportunities(){
  const el=$("opportunity-list");if(!el)return;
  const active=[...unifiedRadarSignals.entries()].filter(([,signal])=>
-  Number.isFinite(Number(signal.score))&&(Number(signal.score)>=64||Number(signal.weakScans)===1)&&["bull","bear"].includes(signal.trend)
+  radarSignalPassesDisplayThreshold(signal)
  ).map(([id,signal])=>{
   const cached=cachedCoinsData.find(x=>String(x.id)===String(id));
   const coin={...(cached||{}),...(signal.coin||{}),id:String(id),symbol:signal.symbol||signal.coin?.symbol||cached?.symbol||""};
@@ -3215,7 +3221,7 @@ function renderOpportunities(){
   const remainingHtml=remaining.length
    ?'<div class="radar-overflow-head"><span>سایر نامزدها</span><b>'+remaining.length.toLocaleString("fa-IR")+' مورد · اسکرول برای مشاهده</b></div><div class="radar-list radar-overflow-list" tabindex="0" aria-label="فهرست اسکرولی '+title+'">'+remaining.map(card).join("")+'</div>'
    :'';
-  return '<section class="radar-group radar-side '+(up?"radar-group-bull":"radar-group-bear")+'"><div class="section-head radar-group-head"><div class="radar-group-title"><span class="radar-group-icon">'+symbol+'</span><span><b>'+title+'</b><small>سه گزینه قدرتمند در نمای اصلی · مرتب‌شده بر اساس امتیاز</small></span></div><span class="radar-group-count">'+items.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list radar-featured-list">'+featuredHtml+'</div>'+remainingHtml+'</section>';
+  return '<section class="radar-group radar-side '+(up?"radar-group-bull":"radar-group-bear")+'"><div class="section-head radar-group-head"><div class="radar-group-title"><span class="radar-group-icon">'+symbol+'</span><span><b>'+title+'</b><small>حداقل قدرت ۶۹ · سه گزینه قدرتمند در نمای اصلی · مرتب‌شده بر اساس امتیاز</small></span></div><span class="radar-group-count">'+items.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list radar-featured-list">'+featuredHtml+'</div>'+remainingHtml+'</section>';
  };
  if(!active.length){
   el.innerHTML='<div class="ai-empty">موتور هوشمند مرکزی فعال است؛ در انتظار ارزیابی معتبر نمادها. سیگنال‌های قبلی تا اعلام افت تأییدشده حفظ می‌شوند.</div>';
