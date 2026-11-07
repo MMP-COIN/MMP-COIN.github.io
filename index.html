@@ -1078,7 +1078,7 @@ body{background:
 <section class="terminal-grid" id="opportunities">
 <section class="card radar-card"><div class="section-head"><div><div class="section-kicker">MMP MARKET SCANNER</div><h2>رادار هوشمند بازار</h2><p class="sub">خلاصه وضعیت بازار و پیشنهاد ورود و خروج بر پایه داده‌های زنده</p></div><button class="radar-refresh-btn" id="radar-refresh-btn" type="button" aria-label="بروزرسانی رادار و داده‌های بازار" title="بروزرسانی رادار و داده‌های بازار"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2v2.1M12 18.7v2.1M3.2 12h2.1m13.4 0h2.1M5.8 5.8l1.5 1.5m9.4 9.4 1.5 1.5m0-12.4-1.5 1.5m-9.4 9.4-1.5 1.5"/><circle cx="12" cy="12" r="6.1"/><path d="M12 8.7v3.6l2.3 1.4"/></svg><span>بروزرسانی</span></button></div><div class="radar-live-note"><span class="radar-live-dot"></span><span>شکار حرکت‌های سریع با کندل ۱ دقیقه‌ای و تأیید ۵ دقیقه‌ای</span><span id="radar-updated" class="sub">در انتظار داده بازار…</span></div>
 <div id="opportunity-list" class="radar-groups"><div class="ai-empty">پس از دریافت قیمت‌ها، رادار بازار را بررسی می‌کند.</div></div>
-<p class="sub radar-footnote">رادار فقط داده‌های زنده و شاخص‌های فنی بازار را پایش می‌کند؛ تحلیل هوش مصنوعی فقط با درخواست کاربر در بخش تحلیلگر اجرا می‌شود.</p>
+<p class="sub radar-footnote">امتیاز فرصت از ۱۰۰ محاسبه می‌شود: جریان پول ۳۰، حجم غیرعادی ۲۵، شکست محدوده ۲۰، هم‌جهتی حرکت ۱۵ و نقدشوندگی ۱۰. داده روزانه به‌تنهایی سیگنال قوی نمی‌سازد؛ نبود داده معتبر یعنی عدم صدور فرصت.</p><p class="sub radar-footnote">رادار فرصت‌یاب است، نه دستور معامله؛ شکارچی بازار هر موقعیت را مستقل تأیید می‌کند.</p>
 <p class="sub radar-footnote">پیشنهادها بر اساس داده‌های واقعی بازار تهیه می‌شوند و تضمین سود نیستند. در نبود داده معتبر، پیشنهادی صادر نمی‌شود.</p></section></section>
 
 <section class="card market-hunter" id="market-hunter">
@@ -2428,12 +2428,19 @@ function radarScore(c){
  if(fast){
   if(now-fast.updatedAt>150000)return {score:0,trend:"unknown",h1:null,h:null,d:null,directional:null,liquidity:null,range:null,dataQuality:"سیگنال سریع منقضی شده"};
   const volume=Number(c.total_volume)||0,cap=Number(c.market_cap)||0,liquidity=cap>0?volume/cap*100:null;
-  const flow=fast.flow,flowPct=Number(flow?.netPct3m),flowRatio=Number(flow?.volumeRatio3m);
-  const flowConfirmed=!!flow&&Number.isFinite(flowPct)&&Number.isFinite(flowRatio)&&flowRatio>=1.3&&((fast.trend==="bull"&&flowPct>=4.5)||(fast.trend==="bear"&&flowPct<=-4.5));
+  const flow=fast.flow,flowPct=Number(flow?.netPct3m),flowRatio=Number(flow?.volumeRatio3m),sign=fast.trend==="bull"?1:-1;
+  const alignedFlow=!!flow&&Number.isFinite(flowPct)&&Number.isFinite(flowRatio)&&flowPct*sign>0;
+  const components={
+   flow:alignedFlow?Math.min(30,Math.max(0,Math.abs(flowPct)/12*20+Math.max(0,flowRatio-1)*8)):0,
+   volume:Math.min(25,Math.max(0,(Number(fast.volumeRatio)||0)-1)*16.67),
+   breakout:fast.breakout?20:(Math.abs(Number(fast.change1m)||0)>=.08&&Math.abs(Number(fast.change3m)||0)>=.08?10:0),
+   multi:(Number(fast.change1m||0)*sign>0?7.5:0)+(Number(fast.change3m||0)*sign>0?7.5:0),
+   liquidity:liquidity>0?Math.min(10,Math.max(0,Math.log10(Math.max(.01,liquidity))*4+6)):0
+  };
+  const score=Math.round(Object.values(components).reduce((sum,value)=>sum+value,0));
+  const flowConfirmed=alignedFlow&&flowRatio>=1.3&&Math.abs(flowPct)>=4.5;
   const priceConfirmed=fast.trend==="bull"?fast.change3m>=-0.25:fast.change3m<=0.25;
-  const score=flowConfirmed&&priceConfirmed?Math.min(100,Math.max(70,fast.score)):Math.min(79,fast.score);
-  return {score,trend:fast.trend,h1:fast.change1m,h:fast.change3m,d:null,directional:fast.change3m,liquidity,range:null,dataQuality:flowConfirmed?"تأیید جریان خالص پول در ۳ دقیقه · کندل ۱ دقیقه":"شتاب کوتاه‌مدت؛ تأیید جریان پول ناقص",fast};
- }
+  return {score,components,trend:fast.trend,h1:fast.change1m,h:fast.change3m,d:null,directional:fast.change3m,liquidity,range:null,dataQuality:flowConfirmed&&priceConfirmed?"جریان پول هم‌جهت و تأییدشده":"نیازمند تأیید بیشتر جریان پول یا حرکت قیمت",fast};
  const raw1h=c.price_change_percentage_1h_in_currency??c.price_change_percentage_1h,raw24=c.price_change_percentage_24h,raw7=c.price_change_percentage_7d_in_currency;
  const h1=raw1h==null?null:Number(raw1h),h=raw24==null?null:Number(raw24),d=raw7==null?null:Number(raw7);
  const has1h=h1!=null&&Number.isFinite(h1),has24=h!=null&&Number.isFinite(h)&&Math.abs(h)<250,has7=d!=null&&Number.isFinite(d)&&Math.abs(d)<500;
@@ -2448,8 +2455,9 @@ function radarScore(c){
  if(directional*sign<=0)return {score:0,trend:"neutral",h1:has1h?h1:null,h,d,directional,liquidity,range,dataQuality:"شتاب کوتاه‌مدت خلاف جهت روند است"};
  const liquidityPoints=Math.max(0,Math.min(8,Math.log10(Math.max(1,liquidity*100))*2));
  const rangeAligned=trend==="bull"?range>=55:range<=45,magnitude=Math.min(25,Math.abs(directional)*3.5);
- const score=Math.round(50+magnitude+(h1Aligned?8:0)+liquidityPoints+(rangeAligned?7:-5));
- return {score:Math.max(0,Math.min(100,score)),trend,h1:has1h?h1:null,h,d,directional,liquidity,range,dataQuality:(h1Aligned?"هم‌جهتی ۱ساعته، ۲۴ساعته و هفتگی":"تأیید ۲۴ساعته و هفتگی")+" · نقدشوندگی و دامنه روز"};
+ const legacyScore=Math.round(50+magnitude+(h1Aligned?8:0)+liquidityPoints+(rangeAligned?7:-5));
+ const score=Math.min(69,Math.max(0,legacyScore));
+ return {score,trend,h1:has1h?h1:null,h,d,directional,liquidity,range,dataQuality:"داده روزانه؛ برای امتیاز فرصت معتبر، جریان پول و حجم زنده لازم است"};
 }
 const hunterExchangeCache={expires:0,sets:null,loading:null};
 function hunterSafeSymbol(value){const symbol=String(value||"").toUpperCase();return /^[A-Z0-9]{2,24}$/.test(symbol)?symbol:"";}
@@ -2741,11 +2749,7 @@ function connectHunterStreams(){
   try{
    const ws=new WebSocket("wss://stream.binance.com:9443/ws/"+String(coin.symbol||"").toLowerCase()+"usdt@kline_1m");hunterSockets.set(id,ws);
    ws.onmessage=event=>{try{const payload=JSON.parse(event.data),k=payload.k;if(!k)return;const current=fastRadarSignals.get(id);if(!current)return;const row=[Number(k.t),Number(k.o),Number(k.h),Number(k.l),Number(k.c),Number(k.v)],rows=current.rows||[],last=rows[rows.length-1];if(last&&Number(last[0])===row[0])rows[rows.length-1]=row;else rows.push(row);current.rows=rows.slice(-30);current.price=row[4];current.change1m=(row[4]/row[1]-1)*100;current.change3m=(row[4]/Number(current.rows[Math.max(0,current.rows.length-3)][1])-1)*100;current.updatedAt=Date.now();const mini=document.querySelector('[data-hunter-mini="'+id+'"]');if(mini)mini.innerHTML='<span>'+(current.trend==="bull"?"پرواز قیمت ↑":"سقوط قیمت ↓")+'</span>'+hunterMiniCandles(current.rows,current.trend);const card=document.querySelector('[data-hunter-card="'+id+'"]');if(card){const price=card.querySelector(".hunter-live-price");if(price)price.textContent=hunterPrice(current.price);}}catch(error){console.debug("Hunter stream parse:",error);}};
-   ws.onerror=()=>{try{ws.close();}catch(e){}};ws.onclose=()=>{if(hunterSockets.get(id)===ws)hunterSockets.delete(id);};
-  }catch(error){console.debug("Hunter websocket unavailable:",error);}
- });
-}
-function renderOpportunities(){
+   ws.onerror=()=>{function renderOpportunities(){
  const el=$("opportunity-list");
  if(!el)return;
  if(!cachedCoinsData.length){el.innerHTML='<div class="ai-empty">داده بازار هنوز دریافت نشده است.</div>';return;}
@@ -2774,10 +2778,13 @@ function renderOpportunities(){
   const change=v=>v==null?"ناموجود":(v>0?"+":"")+v.toFixed(2)+"٪";
   const change1h=m.h1==null?"ناموجود":(m.h1>0?"+":"")+m.h1.toFixed(2)+"٪";
 
-  return '<article class="radar-item '+(up?"radar-item-bullish":down?"radar-item-bearish":"radar-item-neutral")+'"><div class="radar-asset"><img src="'+aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"))+'" alt="" loading="lazy"><span><b>'+aiEscape(c.name)+'</b><small>'+aiEscape(String(c.symbol).toUpperCase())+'</small><strong class="radar-direction-label">'+direction+'</strong></span></div><div class="radar-score"><b>'+m.score.toLocaleString("fa-IR")+'</b><small>قدرت روند</small></div><div class="radar-stats">'+(m.fast?'<span>تغییر ۱دقیقه<b class="'+(m.fast.change1m>=0?"positive":"negative")+'">'+change(m.fast.change1m)+'</b></span><span>تغییر ۳دقیقه<b class="'+(m.fast.change3m>=0?"positive":"negative")+'">'+change(m.fast.change3m)+'</b></span><span>حجم نسبی<b>'+m.fast.volumeRatio.toFixed(1)+'×</b></span>':'<span>تغییر ۱ساعته<b>'+change1h+'</b></span><span>تغییر ۲۴ساعته<b>'+change(m.h)+'</b></span><span>نقدشوندگی نسبی<b>'+(m.liquidity==null?"ناموجود":m.liquidity.toFixed(2)+"٪")+'</b></span>')+'</div><div class="radar-action"><span class="radar-trend">'+(m.fast?(m.fast.overextended?"حرکت سریع؛ ورود دیرهنگام پرریسک":"شتاب لحظه‌ای · "+(m.fast.breakout?"شکست محدوده":"در حال شکل‌گیری")):(m.dataQuality||""))+'</span></div></article>';
+  const p=m.components||{},why=m.fast?("جریان پول "+Math.round(p.flow||0)+"/۳۰ · حجم "+Math.round(p.volume||0)+"/۲۵ · شکست "+Math.round(p.breakout||0)+"/۲۰ · هم‌جهتی "+Math.round(p.multi||0)+"/۱۵ · نقدشوندگی "+Math.round(p.liquidity||0)+"/۱۰"):m.dataQuality;
+  return '<article class="radar-item '+(up?"radar-item-bullish":down?"radar-item-bearish":"radar-item-neutral")+'"><div class="radar-asset"><img src="'+aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"))+'" alt="" loading="lazy"><span><b>'+aiEscape(c.name)+'</b><small>'+aiEscape(String(c.symbol).toUpperCase())+'</small><strong class="radar-direction-label">'+direction+'</strong></span></div><div class="radar-score"><b>'+m.score.toLocaleString("fa-IR")+'</b><small>امتیاز فرصت</small></div><div class="radar-stats">'+(m.fast?'<span>تغییر ۱دقیقه<b class="'+(m.fast.change1m>=0?"positive":"negative")+'">'+change(m.fast.change1m)+'</b></span><span>تغییر ۳دقیقه<b class="'+(m.fast.change3m>=0?"positive":"negative")+'">'+change(m.fast.change3m)+'</b></span><span>حجم نسبی<b>'+m.fast.volumeRatio.toFixed(1)+'×</b></span>':'<span>تغییر ۱ساعته<b>'+change1h+'</b></span><span>تغییر ۲۴ساعته<b>'+change(m.h)+'</b></span><span>نقدشوندگی نسبی<b>'+(m.liquidity==null?"ناموجود":m.liquidity.toFixed(2)+"٪")+'</b></span>')+'</div><div class="radar-action"><span class="radar-trend">'+aiEscape(why||"در انتظار تأیید")+'</span></div></article>';
  };
- const list=(title,items,lower,cls)=>'<section class="radar-side '+cls+'"><div class="section-head radar-group-head"><div><b class="radar-large-heading">'+title+'</b></div><span class="badge">'+items.length.toLocaleString("fa-IR")+' ارز</span></div><div class="radar-list">'+items.map(card).join("")+'</div>'+(false?'<details class="radar-more"><summary><span class="radar-toggle-copy"><b>'+items.length.toLocaleString("fa-IR")+' ارز</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+items.slice(6).map(card).join("")+'</div></details>':"")+(lower.length?'<details class="radar-more radar-below-threshold"><summary><span class="radar-toggle-copy"><b>'+lower.length.toLocaleString("fa-IR")+' ارز</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+lower.map(card).join("")+'</div></details>':"")+'</section>';
+ const list=(title,items,lower,cls)=>{const top=items.slice(0,6),extra=items.slice(6);return '<section class="radar-side '+cls+'"><div class="section-head radar-group-head"><div><b class="radar-large-heading">'+title+'</b></div><span class="badge">'+items.length.toLocaleString("fa-IR")+' فرصت قوی</span></div><div class="radar-list">'+top.map(card).join("")+'</div>'+(extra.length?'<details class="radar-more"><summary><span class="radar-toggle-copy"><b>'+extra.length.toLocaleString("fa-IR")+' فرصت قوی دیگر</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+extra.map(card).join("")+'</div></details>':"")+(lower.length?'<details class="radar-more radar-below-threshold"><summary><span class="radar-toggle-copy"><b>'+lower.length.toLocaleString("fa-IR")+' نامزد با امتیاز ۷۰ تا ۷۹</b></span><span class="radar-expand-action" aria-hidden="true"></span></summary><div class="radar-list">'+lower.map(card).join("")+'</div></details>':"")+'</section>';};
  el.innerHTML=list("فرصت‌های صعودی",bullish,bullish70,"bull")+list("فرصت‌های نزولی",bearish,bearish70,"bear");
+ // AI radar scan is manual to prevent background requests exhausting the analysis quota.
+}صت‌های صعودی",bullish,bullish70,"bull")+list("فرصت‌های نزولی",bearish,bearish70,"bear");
  // AI radar scan is manual to prevent background requests exhausting the analysis quota.
 }
 function calcRisk(){const capital=Number($("risk-capital").value),pct=Number($("risk-percent").value),entry=Number($("risk-entry").value),stop=Number($("risk-stop").value);const out=$("risk-result");if(!(capital>0&&pct>0&&pct<=100&&entry>0&&stop>0)){out.textContent="سرمایه، درصد ریسک، قیمت ورود و قیمت حد ضرر را کامل و معتبر وارد کنید.";return;}if(entry===stop){out.textContent="قیمت ورود و قیمت حد ضرر نباید برابر باشند.";return;}const risk=capital*pct/100,dist=Math.abs(entry-stop)/entry,notional=risk/dist,qty=notional/entry;out.innerHTML="<div><b>مبلغ ورود به معامله:</b> "+money(notional,2)+" USDT</div><div><b>ضرر احتمالی در صورت برخورد به حد ضرر:</b> "+money(risk,2)+" USDT</div><div><b>فاصله تا حد ضرر:</b> "+(dist*100).toFixed(2)+"%</div><div><b>مقدار دارایی:</b> "+money(qty,6)+"</div><small>مبلغ ورود، ارزش کل معامله است و با اهرم می‌تواند از مارجین پرداختی بیشتر باشد. کارمزد و لغزش قیمت محاسبه نشده‌اند.</small>";}
