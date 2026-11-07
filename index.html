@@ -2218,7 +2218,15 @@ let unifiedAssetCatalogCache=[];
 let hunterMetadataCache={expires:0,coins:[]};
 let fastRadarBusy=false,fastRadarLastRun=0,fastRadarLastMessage="در انتظار اولین پایش سریع",fastRadarCursor=0;
 async function fetchFastCandles(symbol,coin){
- const pair=String(symbol||"").toUpperCase()+"USDT";
+ const base=String(symbol||"").toUpperCase();
+ if(coin?.hasDomesticMarket&&coin?.hasUsdtMarket!==true){
+  const local=await hunterFetchJson(AI_ANALYSIS_ENDPOINT+"/market-candles?symbol="+encodeURIComponent(base+"IRT")+"&interval=1m");
+  if(local?.provider!=="Nobitex Spot"||!Array.isArray(local.candles)||local.candles.length<25)throw new Error("کندل یک‌دقیقه‌ای نوبیتکس برای این نماد کافی نیست");
+  const rows=local.candles.map(c=>[Number(c.time)*1000,Number(c.open),Number(c.high),Number(c.low),Number(c.close),Number(c.volume)||0]).sort((a,b)=>a[0]-b[0]);
+  if(rows.length<25||!rows.every(row=>row.slice(1,6).every(Number.isFinite)))throw new Error("داده کندلی داخلی معتبر نیست");
+  return {rows,provider:"Nobitex Spot"};
+ }
+ const pair=base+"USDT";
  const attempts=[
   ["Binance Spot",async()=>{let last;for(const base of ["https://api.binance.com","https://data-api.binance.vision"]){try{const d=await hunterFetchJson(base+"/api/v3/klines?symbol="+encodeURIComponent(pair)+"&interval=1m&limit=30");if(!Array.isArray(d)||d.length<25)throw new Error("کمبود کندل");return d.map(x=>x.slice(0,6).map(Number));}catch(e){last=e;}}throw last||new Error("Binance unavailable");}],
   ["Bybit Spot",async()=>{const d=await hunterFetchJson("https://api.bybit.com/v5/market/kline?category=spot&symbol="+encodeURIComponent(pair)+"&interval=1&limit=30");if(String(d.retCode)!=="0"||!Array.isArray(d.result?.list)||d.result.list.length<25)throw new Error(d.retMsg||"Bybit candles unavailable");return d.result.list.map(x=>[Number(x[0]),Number(x[1]),Number(x[2]),Number(x[3]),Number(x[4]),Number(x[5])]).sort((a,b)=>a[0]-b[0]);}],
@@ -2325,7 +2333,7 @@ async function fetchHunterUniverse(){
   cmcDuplicateCount:Number(c.cmcDuplicateCount)||1
  });
  unifiedAssetCatalogCache=Array.isArray(payload?.assets)?payload.assets.map(mapCatalogAsset).filter(c=>c.symbol&&c.current_price>0):[];
- const rawHunterAssets=Array.isArray(payload?.hunter_assets)?payload.hunter_assets:(Array.isArray(payload?.assets)?payload.assets:[]);
+ const rawHunterAssets=Array.isArray(payload?.radar_assets)?payload.radar_assets:(Array.isArray(payload?.hunter_assets)?payload.hunter_assets:(Array.isArray(payload?.assets)?payload.assets:[]));
  let allUniverse=rawHunterAssets.map(mapCatalogAsset).filter(c=>c.symbol&&c.current_price>0&&/^[A-Z0-9]{2,20}$/.test(c.symbol));
  if(!allUniverse.length){
   // پشتیبان مستقل: داده قیمت موجود سایت + فهرست واقعی جفت‌های USDT صرافی‌ها؛ خرابی مسیر تجمیع Worker نباید کل شکارچی را متوقف کند.
@@ -2944,7 +2952,7 @@ async function runDedicatedHunterScan(force=false){
  if(status)status.textContent="در حال بررسی ۱ ساعته و ماشه ۱۵ دقیقه‌ای؛ ۴ ساعت فقط امتیاز تأییدی…";
  if(button)button.disabled=true;
  try{
-  const universe=await fetchHunterUniverse();if(!universe.length)throw new Error("فهرست نمادهای معتبر دریافت نشد");
+  const universe=(await fetchHunterUniverse()).filter(c=>c?.hasUsdtMarket===true||c?.isDiscovery===true||!Array.isArray(c?.marketPairs));if(!universe.length)throw new Error("فهرست نمادهای دارای بازار USDT دریافت نشد");
   const ranked=universe.slice().sort((a,b)=>(Number(b.total_volume)||0)-(Number(a.total_volume)||0));
   const scanBatchSize=Math.min(universe.length,150);
   const selected=[],selectedSymbols=new Set(),addCoin=coin=>{const key=String(coin?.symbol||"").toUpperCase();if(coin&&key&&!selectedSymbols.has(key)&&selected.length<scanBatchSize){selected.push(coin);selectedSymbols.add(key);}};
