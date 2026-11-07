@@ -1199,6 +1199,19 @@ body{background:
 @media(max-width:760px){#opportunity-list.radar-groups{grid-template-columns:minmax(0,1fr)!important;gap:12px!important;}#opportunity-list .radar-side .radar-list{max-height:360px;}}
 @media(max-width:420px){#opportunity-list .radar-side{padding:10px;}#opportunity-list .radar-side .radar-list{max-height:330px;}}
 </style>
+<style id="mmp-radar-independent-scroll-frames">
+/* Keep each direction in its own frame: top three stay visible, remaining candidates scroll inside that frame. */
+#opportunity-list.radar-groups{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;max-height:none;overflow:visible;overscroll-behavior:auto;scrollbar-gutter:auto;padding:0;border:0;border-radius:0;background:transparent}
+#opportunity-list.radar-groups>.radar-side{min-width:0;max-height:none}
+#opportunity-list .radar-featured-list{max-height:none;overflow:visible;padding:0}
+#opportunity-list .radar-overflow-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:13px 0 7px;padding-top:10px;border-top:1px solid #ffffff18;color:#c9d2df;font-size:10px}
+#opportunity-list .radar-overflow-head b{color:#d9b66d;font-size:9px;font-weight:700}
+#opportunity-list .radar-overflow-list{max-height:330px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#c09b52 #111a25;padding:3px 6px 5px 2px}
+#opportunity-list .radar-overflow-list::-webkit-scrollbar{width:7px}
+#opportunity-list .radar-overflow-list::-webkit-scrollbar-track{background:#111a25;border-radius:8px}
+#opportunity-list .radar-overflow-list::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#d9b66d,#806334);border-radius:8px}
+@media(max-width:760px){#opportunity-list.radar-groups{grid-template-columns:minmax(0,1fr);gap:12px}#opportunity-list .radar-overflow-list{max-height:300px}}
+</style>
 </head>
 <body class="mmp-app-mode">
 
@@ -3196,7 +3209,13 @@ function renderOpportunities(){
  };
  const group=(items,type)=>{
   const up=type==="bull",title=up?"فرصت‌های صعودی":"فرصت‌های نزولی",symbol=up?"↗":"↘";
-  return '<section class="radar-group radar-side '+(up?"radar-group-bull":"radar-group-bear")+'"><div class="section-head radar-group-head"><div class="radar-group-title"><span class="radar-group-icon">'+symbol+'</span><span><b>'+title+'</b><small>قوی‌ترین امتیاز در ابتدا · ۳ نامزد نخست همیشه نمایان</small></span></div><span class="radar-group-count">'+items.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list">'+(items.length?items.map(card).join(""):'<div class="ai-empty">هنوز سیگنال معتبر در این جهت تأیید نشده است.</div>')+'</div></section>';
+  const featured=items.slice(0,3),remaining=items.slice(3);
+  const empty='<div class="ai-empty">هنوز سیگنال معتبر در این جهت تأیید نشده است.</div>';
+  const featuredHtml=featured.length?featured.map(card).join(""):empty;
+  const remainingHtml=remaining.length
+   ?'<div class="radar-overflow-head"><span>سایر نامزدها</span><b>'+remaining.length.toLocaleString("fa-IR")+' مورد · اسکرول برای مشاهده</b></div><div class="radar-list radar-overflow-list" tabindex="0" aria-label="فهرست اسکرولی '+title+'">'+remaining.map(card).join("")+'</div>'
+   :'';
+  return '<section class="radar-group radar-side '+(up?"radar-group-bull":"radar-group-bear")+'"><div class="section-head radar-group-head"><div class="radar-group-title"><span class="radar-group-icon">'+symbol+'</span><span><b>'+title+'</b><small>سه گزینه قدرتمند در نمای اصلی · مرتب‌شده بر اساس امتیاز</small></span></div><span class="radar-group-count">'+items.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list radar-featured-list">'+featuredHtml+'</div>'+remainingHtml+'</section>';
  };
  if(!active.length){
   el.innerHTML='<div class="ai-empty">موتور هوشمند مرکزی فعال است؛ در انتظار ارزیابی معتبر نمادها. سیگنال‌های قبلی تا اعلام افت تأییدشده حفظ می‌شوند.</div>';
