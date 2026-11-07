@@ -3143,7 +3143,7 @@ function connectHunterStreams(){
 function renderOpportunities(){
  const el=$("opportunity-list");if(!el)return;
  const active=[...unifiedRadarSignals.entries()].filter(([,signal])=>
-  Number.isFinite(Number(signal.score))&&Number(signal.score)>=64&&["bull","bear"].includes(signal.trend)
+  Number.isFinite(Number(signal.score))&&(Number(signal.score)>=64||Number(signal.weakScans)===1)&&["bull","bear"].includes(signal.trend)
  ).map(([id,signal])=>{
   const cached=cachedCoinsData.find(x=>String(x.id)===String(id));
   const coin={...(cached||{}),...(signal.coin||{}),id:String(id),symbol:signal.symbol||signal.coin?.symbol||cached?.symbol||""};
