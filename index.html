@@ -2639,7 +2639,7 @@ function independentRadarIsRetryable(error){
 }
 async function runIndependentRadarScan(force=false){
  if(independentRadarBusy||(!force&&Date.now()-independentRadarLastRun<12000))return;
- const coins=Array.isArray(cachedCoinsData)?cachedCoinsData.slice():[];
+ const coins=Array.isArray(cachedCoinsData)?cachedCoinsData.slice().sort((a,b)=>String(a?.symbol||"").localeCompare(String(b?.symbol||""))||String(a?.id||"").localeCompare(String(b?.id||""))):[];
  const status=$("radar-updated");
  if(!coins.length){if(status)status.textContent="در انتظار دریافت فهرست ارزها…";return;}
  const state=independentRadarLoadState(coins);
