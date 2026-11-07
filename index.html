@@ -4117,7 +4117,7 @@ window.mmpShareDownloadLink = async function () {
   function safeToReload(){
    var el=document.activeElement;
    if(el&&(el.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)))return false;
-   if(window.aiBusy===true||window.liveAnalysisBusy===true)return false;
+   if((typeof aiBusy!=="undefined"&&aiBusy)||(typeof liveAnalysisBusy!=="undefined"&&liveAnalysisBusy))return false;
    return true;
   }
   function showNotice(message){
