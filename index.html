@@ -2488,7 +2488,9 @@ async function runFastRadarScan(forceRefresh=false){
  finally{fastRadarBusy=false;}
 }
 function radarScore(c){
- const fast=fastRadarSignals.get(c.id),now=Date.now();
+ const radarSymbol=String(c?.symbol||"").toUpperCase();
+ const radarHunterCoin=hunterSymbolIndex.get(radarSymbol);
+ const fast=fastRadarSignals.get(c.id)||(radarHunterCoin?fastRadarSignals.get(radarHunterCoin.id):null),now=Date.now();
  if(fast){
   if(now-fast.updatedAt>150000)return {score:0,trend:"unknown",h1:null,h:null,d:null,directional:null,liquidity:null,range:null,dataQuality:"سیگنال سریع منقضی شده"};
   const volume=Number(c.total_volume)||0,cap=Number(c.market_cap)||0,liquidity=cap>0?volume/cap*100:null;
