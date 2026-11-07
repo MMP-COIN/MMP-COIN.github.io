@@ -3176,7 +3176,7 @@ function renderOpportunities(){
  const el=$("opportunity-list");
  if(!el)return;
  if(!cachedCoinsData.length){el.innerHTML='<div class="ai-empty">داده بازار هنوز دریافت نشده است.</div>';return;}
- const scored=cachedCoinsData.map(c=>({coin:c,metrics:radarScore(c)}));
+ const scored=cachedCoinsData.map(c=>{const symbol=String(c?.symbol||"").toUpperCase();const liveSignal=radarOpportunitySignals instanceof Map?radarOpportunitySignals.get(symbol):null;return {coin:c,metrics:liveSignal?liveSignal:radarScore(c)};});
  const rankRadar=(a,b)=>(b.metrics.score-a.metrics.score)||(Math.abs(b.metrics.directional??0)-Math.abs(a.metrics.directional??0));
  const bullish=scored.filter(x=>x.metrics.trend==="bull"&&x.metrics.score>=80).sort(rankRadar);
  const bearish=scored.filter(x=>x.metrics.trend==="bear"&&x.metrics.score>=80).sort(rankRadar);
