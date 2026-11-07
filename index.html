@@ -2577,7 +2577,7 @@ async function runIndependentRadarScan(force=false){
  const found=new Map(),providerFailures=new Map(),failedSamples=[];
  if(status)status.textContent="رادار مستقل · آماده‌سازی "+coins.length+" ارز…";
  try{
-  const workers=Array.from({length:6},async()=>{
+  const workers=Array.from({length:4},async()=>{
    while(cursor<coins.length){
     const coin=coins[cursor++],symbol=String(coin?.symbol||"").toUpperCase();
     try{
