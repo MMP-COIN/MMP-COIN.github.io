@@ -3018,212 +3018,39 @@ async function hunterDetailChangeTf(interval){
 }
 
 function renderMarketHunter(){
- const feed=$("hunter-feed");if(!feed)return;
- const candidates=[...fastRadarSignals.entries()].map(([id,signal])=>({coin:hunterCoinIndex.get(id)||cachedCoinsData.find(c=>c.id===id),signal,id})).filter(x=>x.coin&&Date.now()-x.signal.updatedAt<8*60*1000&&x.signal.score>=55);
- const rank=(a,b)=>b.signal.score-a.signal.score;
- const entries=[...candidates.filter(x=>x.signal.trend==="bull").sort(rank).slice(0,6),...candidates.filter(x=>x.signal.trend==="bear").sort(rank).slice(0,6)];
- const density=entries.length<=2?"wide":entries.length<=6?"medium":"compact";
- const bulls=entries.filter(x=>x.signal.trend==="bull").length,bears=entries.filter(x=>x.signal.trend==="bear").length;
- if($("hunter-bull-count"))$("hunter-bull-count").textContent=bulls.toLocaleString("fa-IR");
- if($("hunter-bear-count"))$("hunter-bear-count").textContent=bears.toLocaleString("fa-IR");
- if($("hunter-last-scan"))$("hunter-last-scan").textContent=fastRadarLastRun?new Date(fastRadarLastRun).toLocaleTimeString("fa-IR"):"—";
- if($("hunter-feed-status"))$("hunter-feed-status").textContent=entries.length?entries.length.toLocaleString("fa-IR")+" حرکت فعال · مرتب‌سازی بر اساس قدرت حرکت":"هنوز حرکت تأییدشده‌ای پیدا نشده";
- if(!entries.length){feed.innerHTML='<div class="hunter-empty"><span class="hunter-radar-icon">⌁</span><b>در حال رصد بازار</b><small>تمام نمادهای مشترک Binance Spot و CoinMarketCap به‌صورت چرخشی از نظر جهش، ریزش و حجم غیرعادی بررسی می‌شوند.</small></div>';return;}
- feed.innerHTML=entries.map(({coin:c,signal:m,id})=>{
-  const up=m.trend==="bull",direction=up?"جهش صعودی":"ریزش نزولی",cls=up?"up":"down",mainSymbols=new Set(cachedCoinsData.map(x=>String(x.symbol||"").toUpperCase())),isInMasterCatalog=mainSymbols.has(String(c.symbol||"").toUpperCase()),originTag=isInMasterCatalog?"":'<small class="hunter-origin-tag" title="این نماد خارج از فهرست مرکزی و از بازار صرافی‌ها کشف شده است">🎯 کشف مستقل</small>',risk=m.overextended?'<span class="hunter-warning">حرکت کش‌آمده · ورود دیرهنگام پرریسک</span>':m.dailyMover?'<span class="hunter-confirm">حرکت ۲۴ساعته قابل‌توجه · منتظر تأیید کندلی</span>':m.lowLiquidity?'<span class="hunter-warning">نقدشوندگی محدود · ریسک لغزش قیمت</span>':'<span class="hunter-confirm">'+(m.breakout?"شکست محدوده تأیید شد":"شتاب حرکت در حال شکل‌گیری")+'</span>';
-  return '<article class="hunter-card '+cls+' hunter-density-'+density+'" data-hunter-card="'+aiEscape(id)+'"><div class="hunter-card-head"><div class="hunter-coin"><div class="hunter-coin-emblem"><img src="'+aiEscape(hunterCoinImage(c))+'" data-symbol="'+aiEscape(String(c.symbol).toUpperCase())+'" alt="'+aiEscape(String(c.symbol).toUpperCase())+'" loading="lazy" onerror="hunterCoinImageError(this)"><i style="display:none">'+aiEscape(String(c.symbol).slice(0,1).toUpperCase())+'</i></div><span><b>'+aiEscape(c.name)+' <small>('+aiEscape(String(c.symbol).toUpperCase())+')</small>'+originTag+'</b><em>'+direction+'</em><small class="hunter-symbol-tag">نماد معاملاتی: '+aiEscape(String(c.symbol).toUpperCase())+'/USDT</small></span></div><button type="button" class="hunter-mini-move hunter-chart-trigger" data-hunter-mini="'+aiEscape(id)+'" data-hunter-chart="'+aiEscape(id)+'" aria-label="نمایش نمودار بزرگ '+aiEscape(String(c.symbol).toUpperCase())+'"><span>'+(up?'پرواز قیمت ↑':'سقوط قیمت ↓')+'</span>'+hunterMiniCandles(m.rows,m.trend)+'<span class="hunter-target-reticle" aria-hidden="true"><i></i></span></button><div class="hunter-score"><b>'+m.score.toLocaleString("fa-IR")+'</b><small>قدرت حرکت</small></div></div><div class="hunter-exchanges" data-hunter-exchanges="'+aiEscape(id)+'"><span class="hunter-exchange-label">در حال بررسی بازارهای قابل معامله…</span></div><div class="hunter-price-row"><span>قیمت مرجع <b class="hunter-live-price">'+hunterPrice(m.price)+'</b></span><span>حجم نسبی <b>'+m.volumeRatio.toFixed(1)+'×</b></span><span>خالص جریان ۳ دقیقه <b class="'+(Number(m.flow?.net3m)>=0?"up":"down")+'">'+(Number(m.flow?.net3m)>=0?"+":"")+hunterUsd(m.flow?.net3m)+'</b></span><span>تغییر ۱ دقیقه <b class="'+cls+'">'+(m.change1m>0?"+":"")+m.change1m.toFixed(2)+'٪</b></span><span>تغییر ۳ دقیقه <b class="'+cls+'">'+(m.change3m>0?"+":"")+m.change3m.toFixed(2)+'٪</b></span><span>تغییر ۲۴ ساعت <b class="'+(m.dailyChange24h>=0?"up":"down")+'">'+(m.dailyChange24h>0?"+":"")+Number(m.dailyChange24h||0).toFixed(2)+'٪</b></span></div><div class="hunter-card-bottom">'+risk+'</div></article>';
- }).join("");
- loadHunterListings(entries.map(({coin,id})=>({coin,id}))).catch(error=>console.debug("Hunter exchange listing check:",error));
-}
-
-
-// MMP Dual Hunter · closed 4H spot and independent USDT perpetual futures
-const dualHunterState={spot:[],futures:[],busy:false,lastScan:0,cache:new Map(),visibleLimit:6,universeCursor:0};
-function hunter4hParse(rows){return (rows||[]).map(k=>{const t=Number(k[0]),o=Number(k[1]),h=Number(k[2]),l=Number(k[3]),c=Number(k[4]),v=Number(k[5]);let quoteVol=0,takerBuyQuote=null;if(k.length>=11){quoteVol=Number(k[7])||0;takerBuyQuote=Number(k[10]);}else if(k.length===9){quoteVol=Number(k[7])||0;}else if(k.length>=7){quoteVol=Number(k[6])||0;}return {t,o,h,l,c,v,quoteVol,takerBuyQuote};}).filter(x=>[x.t,x.o,x.h,x.l,x.c,x.v].every(Number.isFinite)&&x.c>0&&x.h>=x.l);}
-async function hunter4hSpot(symbol){
- const pair=symbol.toUpperCase()+"USDT",urls=[
-  async()=>hunter4hParse(await hunterFetchJson("https://api.binance.com/api/v3/klines?symbol="+pair+"&interval=4h&limit=90",10000)),
-  async()=>{const d=await hunterFetchJson("https://api.bybit.com/v5/market/kline?category=spot&symbol="+pair+"&interval=240&limit=90",10000);if(d.retCode!==0)throw new Error(d.retMsg||"Bybit Spot");return hunter4hParse((d.result?.list||[]).slice().reverse());},
-  async()=>{const d=await hunterFetchJson("https://www.okx.com/api/v5/market/candles?instId="+symbol.toUpperCase()+"-USDT&bar=4H&limit=90",10000);if(d.code!=="0")throw new Error(d.msg||"OKX Spot");return hunter4hParse((d.data||[]).slice().reverse());}
- ];
- let last;for(const load of urls){try{const rows=await load();if(rows.length>=55)return rows;}catch(e){last=e;}}throw last||new Error("Spot 4H unavailable");
-}
-async function hunter4hFutures(symbol){
- const pair=symbol.toUpperCase()+"USDT",urls=[
-  async()=>hunter4hParse(await hunterFetchJson("https://fapi.binance.com/fapi/v1/klines?symbol="+pair+"&interval=4h&limit=90",10000)),
-  async()=>{const d=await hunterFetchJson("https://api.bybit.com/v5/market/kline?category=linear&symbol="+pair+"&interval=240&limit=90",10000);if(d.retCode!==0)throw new Error(d.retMsg||"Bybit Linear");return hunter4hParse((d.result?.list||[]).slice().reverse());}
- ];
- let last;for(const load of urls){try{const rows=await load();if(rows.length>=55)return rows;}catch(e){last=e;}}throw last||new Error("Futures 4H unavailable");
-}
-async function hunterConfirmTf(symbol,market,interval){
- const pair=symbol.toUpperCase()+"USDT",mins=interval==="60"?60:15,limit=90;
- const urls=market==="spot"?[
-  async()=>hunter4hParse(await hunterFetchJson("https://api.binance.com/api/v3/klines?symbol="+pair+"&interval="+(interval==="60"?"1h":"15m")+"&limit="+limit,10000)),
-  async()=>{const d=await hunterFetchJson("https://api.bybit.com/v5/market/kline?category=spot&symbol="+pair+"&interval="+interval+"&limit="+limit,10000);if(d.retCode!==0)throw new Error(d.retMsg||"Bybit Spot");return hunter4hParse((d.result?.list||[]).slice().reverse());},
-  async()=>{const bar=interval==="60"?"1H":"15m",d=await hunterFetchJson("https://www.okx.com/api/v5/market/candles?instId="+symbol.toUpperCase()+"-USDT&bar="+bar+"&limit="+limit,10000);if(d.code!=="0")throw new Error(d.msg||"OKX Spot");return hunter4hParse((d.data||[]).slice().reverse());}
- ]:[
-  async()=>hunter4hParse(await hunterFetchJson("https://fapi.binance.com/fapi/v1/klines?symbol="+pair+"&interval="+(interval==="60"?"1h":"15m")+"&limit="+limit,10000)),
-  async()=>{const d=await hunterFetchJson("https://api.bybit.com/v5/market/kline?category=linear&symbol="+pair+"&interval="+interval+"&limit="+limit,10000);if(d.retCode!==0)throw new Error(d.retMsg||"Bybit Linear");return hunter4hParse((d.result?.list||[]).slice().reverse());}
- ];
- let last;for(const load of urls){try{const rows=await load();if(rows.length>=25)return rows;}catch(e){last=e;}}throw last||new Error("تأیید تایم‌فریم "+interval+" دریافت نشد");
-}
-function hunterTfBias(rows,interval){
- const duration=(interval==="240"?240:interval==="60"?60:15)*60*1000,closed=(rows||[]).filter(x=>x.t+duration<=Date.now());
- if(closed.length<22)return null;
- const closes=closed.map(x=>x.c),ema=(a,p)=>{const k=2/(p+1);let v=a[0];for(let i=1;i<a.length;i++)v=a[i]*k+v*(1-k);return v;};
- const last=closed[closed.length-1],e20=ema(closes.slice(-Math.min(60,closes.length)),20),e50=ema(closes.slice(-Math.min(80,closes.length)),50);
- const changes=closed.slice(-15).map((x,i,a)=>i?x.c-a[i-1].c:0).slice(1),g=changes.reduce((a,v)=>a+Math.max(0,v),0)/Math.max(1,changes.length),l=changes.reduce((a,v)=>a+Math.max(0,-v),0)/Math.max(1,changes.length),rsi=l===0?100:100-100/(1+g/l);
- return {up:last.c>e20&&e20>e50&&rsi>=50,down:last.c<e20&&e20<e50&&rsi<=50,entryUp:last.c>e20&&rsi>=50,entryDown:last.c<e20&&rsi<=50};
-}
-function hunter4hTrendline(closed,side){
- const field=side==="high"?"h":"l",pivots=[];
- for(let i=3;i<closed.length-3;i++){
-  const value=closed[i][field],left=closed.slice(i-3,i),right=closed.slice(i+1,i+4);
-  if((side==="high"?left.every(x=>value>=x[field])&&right.every(x=>value>x[field]):left.every(x=>value<=x[field])&&right.every(x=>value<x[field])))pivots.push({i,value});
- }
- if(pivots.length<2)return null;
- const a=pivots[pivots.length-2],b=pivots[pivots.length-1],slope=(b.value-a.value)/(b.i-a.i);
- if(side==="high"&&slope>=0||side==="low"&&slope<=0)return null;
- const atLast=a.value+slope*(closed.length-1-a.i),atPrev=a.value+slope*(closed.length-2-a.i),last=closed[closed.length-1],prev=closed[closed.length-2];
- const crossed=side==="high"?prev.c<=atPrev&&last.c>atLast:prev.c>=atPrev&&last.c<atLast;
- return {value:atLast,slope,crossed,age:closed.length-1-b.i};
-}
-function hunter4hIndicators(rows,interval="60"){
- const duration=(interval==="240"?240:interval==="60"?60:15)*60*1000;
- const closed=rows.filter(x=>x.t+duration<=Date.now());
- if(closed.length<55)return null;
- const closes=closed.map(x=>x.c),ema=(values,period)=>{const k=2/(period+1);let out=values[0];for(let i=1;i<values.length;i++)out=values[i]*k+out*(1-k);return out;};
- const last=closed[closed.length-1],prev=closed[closed.length-2],ema20=ema(closes.slice(-65),20),ema50=ema(closes.slice(-85),50);
- const changes=[];for(let i=closed.length-14;i<closed.length;i++){const p=closed[i-1],q=closed[i];if(p&&q)changes.push(q.c-p.c);}
- const gains=changes.map(x=>Math.max(0,x)),losses=changes.map(x=>Math.max(0,-x)),avgG=gains.reduce((a,b)=>a+b,0)/Math.max(1,gains.length),avgL=losses.reduce((a,b)=>a+b,0)/Math.max(1,losses.length),rsi=avgL===0?100:100-100/(1+avgG/avgL);
- const prior=closed.slice(-21,-1),avgVol=prior.reduce((a,x)=>a+x.v,0)/Math.max(1,prior.length),volRatio=avgVol>0?last.v/avgVol:0;
- const tr=closed.slice(-15).map((x,i,a)=>{const p=a[i-1];return Math.max(x.h-x.l,p?Math.abs(x.h-p.c):0,p?Math.abs(x.l-p.c):0);}),atr=tr.reduce((a,b)=>a+b,0)/Math.max(1,tr.length);
- const recent=closed.slice(-7,-1),breakUp=last.c>Math.max(...recent.map(x=>x.h)),breakDown=last.c<Math.min(...recent.map(x=>x.l));
- const move=(last.c/prev.c-1)*100;
- const flowRows=closed.slice(-5),flow=flowRows.reduce((a,x)=>{
-  const quote=Number(x.quoteVol)>0?Number(x.quoteVol):x.v*x.c;
-  const buy=Number.isFinite(x.takerBuyQuote)&&quote>0?Math.max(0,Math.min(quote,x.takerBuyQuote)):quote*Math.max(0,Math.min(1,(x.c-x.l)/Math.max(1e-12,x.h-x.l)));
-  return {quote:a.quote+quote,buy:a.buy+buy,estimated:a.estimated||!Number.isFinite(x.takerBuyQuote)};
- },{quote:0,buy:0,estimated:false});
- const buyRatio=flow.quote>0?flow.buy/flow.quote:.5,netFlowRatio=(buyRatio-.5)*2,volumeSpike=volRatio>=1.15;
- const flowBull=buyRatio>=.53&&netFlowRatio>=.06&&volRatio>=.85,flowBear=buyRatio<=.47&&netFlowRatio<=-.06&&volRatio>=.85;
- const resistance=hunter4hTrendline(closed,"high"),support=hunter4hTrendline(closed,"low");
- const trendBreakUp=!!(resistance&&resistance.crossed),trendBreakDown=!!(support&&support.crossed);
- return {last,prev,ema20,ema50,rsi,volRatio,atr,breakUp,breakDown,move4:move,move,closedCount:closed.length,buyRatio,netFlowRatio,flowQuote:flow.quote,flowEstimated:flow.estimated,volumeSpike,flowBull,flowBear,trendBreakUp,trendBreakDown,resistance,support,interval};
-}
-function hunter4hSignal(rows,kind,confirm15m,confirm4h){
- const x=hunter4hIndicators(rows,"60");if(!x||!x.atr||!x.volRatio)return null;
- const m15=hunterTfBias(confirm15m,"15"),h4=hunterTfBias(confirm4h,"240");
- if(!m15)return null;
- const bullTrend=x.last.c>x.ema20&&x.ema20>x.ema50&&x.rsi>=42&&x.rsi<=82;
- const bearTrend=x.last.c<x.ema20&&x.ema20<x.ema50&&x.rsi>=18&&x.rsi<=58;
- const bullBreak=x.trendBreakUp||x.breakUp,bearBreak=x.trendBreakDown||x.breakDown;
- const bullFlow=x.flowBull&&(x.volumeSpike||bullBreak),bearFlow=x.flowBear&&(x.volumeSpike||bearBreak);
- const bull=bullTrend&&m15.entryUp&&!m15.entryDown&&(bullFlow||(bullBreak&&x.volRatio>=1.0));
- const bear=bearTrend&&m15.entryDown&&!m15.entryUp&&(bearFlow||(bearBreak&&x.volRatio>=1.0));
- let direction;if(kind==="spot"){if(!bull)return null;direction="spot";}else{if(!bull&&!bear)return null;direction=bull?"long":"short";}
- const aligned4h=direction==="short"?!!h4?.down:!!h4?.up,opposed4h=direction==="short"?!!h4?.up:!!h4?.down;
- const trendBreak=direction==="short"?x.trendBreakDown:x.trendBreakUp,rangeBreak=direction==="short"?x.breakDown:x.breakUp;
- const flowStrength=direction==="short"?(0.5-x.buyRatio):(x.buyRatio-0.5);
- const score=Math.max(55,Math.min(98,Math.round(58+Math.min(10,Math.abs(x.move)*7)+Math.min(9,Math.max(0,(x.volRatio-1)*7))+Math.max(0,flowStrength)*75+(trendBreak?10:0)+(rangeBreak?6:0)+(aligned4h?8:0)-(opposed4h?7:0))));
- if(score<60)return null;
- const entry=x.last.c,stop=direction==="short"?entry+x.atr*1.5:entry-x.atr*1.5,risk=Math.abs(entry-stop)/entry*100;
- return {direction,score,entry,stop,risk,rsi:x.rsi,volRatio:x.volRatio,move4:x.move,move1h:x.move,buyRatio:x.buyRatio,netFlowRatio:x.netFlowRatio,flowEstimated:x.flowEstimated,volumeSpike:x.volumeSpike,trendBreak,rangeBreak,candleTime:x.last.t,closeTime:x.last.t+60*60*1000,rows:x.closedCount,confirm4h:!h4?"نامشخص":aligned4h?"هم‌جهت":opposed4h?"مخالف":"خنثی",confirm4hAligned:aligned4h,confirm4hOpposed:opposed4h};
-}
-function hunter4hCard(coin,signal,market){
- const sym=String(coin.symbol||"").toUpperCase(),type=market==="spot"?"شکار اسپات | SPOT":signal.direction==="long"?"شکار فیوچرز | FUTURES · LONG":"شکار فیوچرز | FUTURES · SHORT";
- const venues=String(coin.hunterExchange||"").split(",").map(x=>x.trim()).filter(Boolean);
- const spotExchange=venues.find(name=>hunterTradeUrl(name,sym));
- const url=market==="spot"?(spotExchange?hunterTradeUrl(spotExchange,sym):""):"";
- const cls=signal.direction==="short"?"short":market==="spot"?"spot":"long",img=hunterCoinImage(coin);
- const mainSymbols=new Set((cachedCoinsData||[]).map(c=>String(c.symbol||"").toUpperCase()));
- const isExternal=!mainSymbols.has(sym);
- const originTag=isExternal?'<small class="hunter-origin-tag" title="این دارایی خارج از فهرست اصلی سایت کشف شده است">🎯 خارج از فهرست اصلی</small>':"";
- const venueLine='بازارهای شناسایی‌شده: '+(venues.length?venues.join("، "):"نامشخص")+' · منبع قیمت: '+String(coin.hunterPriceExchange||"نامشخص");
- const flowPct=(signal.buyRatio*100).toFixed(1),flowLabel=signal.flowEstimated?"فشار خرید تخمینی":"خرید تهاجمی واقعی";
- const flowColor=signal.buyRatio>=.5?"up":"down",breakLabel=signal.trendBreak?"شکست خط روند":signal.rangeBreak?"شکست محدوده":"بدون شکست خط روند";
- return '<article class="hunter-4h-card '+cls+'"><div class="hunter-4h-title"><div class="hunter-4h-coin"><img src="'+aiEscape(img)+'" alt="" loading="lazy" onerror="this.style.display=\'none\'"><span><b>'+aiEscape(coin.name||sym)+' '+originTag+'</b><small>'+aiEscape(sym)+'/USDT · ۱ساعته + ۱۵دقیقه · ۴ساعته کمکی</small><small class="hunter-source-line">'+aiEscape(venueLine)+'</small></span></div><span class="hunter-4h-type">'+type+'</span></div><div class="hunter-4h-levels"><div class="hunter-4h-level"><small>قیمت مرجع / ورود</small><b>'+hunterPrice(signal.entry)+'</b></div><div class="hunter-4h-level"><small>حد ضرر محاسباتی</small><b>'+hunterPrice(signal.stop)+'</b></div><div class="hunter-4h-level"><small>فاصله ریسک</small><b>'+signal.risk.toFixed(2)+'٪</b></div></div><div class="hunter-4h-meta"><span>قدرت شکار: <strong>'+signal.score+'/100</strong></span><span>RSI: <strong>'+signal.rsi.toFixed(1)+'</strong></span><span>حجم نسبی: <strong>'+signal.volRatio.toFixed(2)+'×</strong></span><span>حرکت ۱ساعته: <strong>'+signal.move1h.toFixed(2)+'٪</strong></span><span>سهم خرید: <strong class="'+flowColor+'">'+flowPct+'٪</strong></span><span>جریان پول: <strong>'+flowLabel+'</strong></span><span>ساختار قیمت: <strong>'+breakLabel+'</strong></span><span>تأیید ۴ساعته: <strong>'+(signal.confirm4h||"نامشخص")+'</strong></span></div><button type="button" class="hunter-detail-open" data-hunter-detail="'+aiEscape(sym)+'" data-hunter-market="'+market+'">مشاهده نمودار و تحلیل کامل این شکار</button>'+(url?'<a class="hunter-4h-link" href="'+url+'" target="_blank" rel="noopener noreferrer">بازکردن '+aiEscape(spotExchange)+' Spot ↗</a>':'<small class="hunter-4h-link hunter-market-note">برای معامله فیوچرز، وجود قرارداد فعال همین نماد را در صرافی بررسی کن.</small>')+'</article>';
-}
-function renderMarketHunter(){
  const spot=$("hunter-spot-feed"),fut=$("hunter-futures-feed");if(!spot||!fut)return;
- const dh=window.__mmpDigitalHunterSnapshot||{},signals=Array.isArray(dh.signals)?dh.signals.filter(x=>x&&x.confirmed===true&&x.trend==="bull"&&/^[A-Z0-9]{2,24}$/.test(String(x.symbol||""))):[];
- const digitalCard=s=>{
-  const flow=s.flow||{},coin=s.coin||{},symbol=String(s.symbol||"").toUpperCase(),price=Number(s.price)||Number(coin.current_price)||0;
-  const n=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString("en-US",{maximumFractionDigits:d}):"—";
-  const money=v=>Number(v)>0?"$"+n(v,price<1?8:4):"—",signed=v=>Number.isFinite(Number(v))?(Number(v)>0?"+":"")+n(v)+"٪":"—";
-  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const net=Number(flow.net5m);
-  return '<article class="hunter-card up"><div class="hunter-card-head"><div><b class="hunter-symbol">'+esc(symbol)+'</b><span class="hunter-direction">صعودی · خرید اسپات</span><small class="hunter-symbol-tag">'+esc(coin.name||symbol)+'/USDT</small></div><div class="hunter-score"><small>قدرت هوشمند</small><b>'+n(s.score,0)+'/100</b></div></div><div class="hunter-metrics"><div><small>قیمت چرخه اخیر</small><b>'+money(price)+'</b></div><div><small>تغییر ۵ دقیقه</small><b>'+signed(s.change5m)+'</b></div><div><small>حجم نسبی</small><b>'+n(s.volumeRatio)+'×</b></div><div><small>خالص جریان ۵ دقیقه</small><b>'+(Number.isFinite(net)?(net>=0?"+":"")+n(net,2)+" USDT":"—")+'</b></div></div><div class="hunter-card-foot"><span>کندل: '+esc(s.provider||"نامشخص")+'</span><span>جریان: '+esc(flow.provider||"نامشخص")+' · '+n(flow.tradeCount,0)+' معامله</span></div><div class="hunter-card-foot"><span>۱د '+signed(s.change1m)+' · ۳د '+signed(s.change3m)+' · ۱۵د '+signed(s.change15m)+'</span><span>تأیید جریان واقعی · '+(s.breakout?"شکست محدوده":"ساختار هم‌جهت")+'</span></div></article>';
+ const spotSnap=window.__mmpDigitalHunterSnapshot||{},futuresSnap=window.__mmpDigitalHunterFuturesSnapshot||{};
+ const clean=list=>Array.isArray(list)?list.filter(x=>x&&x.confirmed===true&&/^[A-Z0-9]{2,24}$/.test(String(x.symbol||""))):[];
+ const spotSignals=clean(spotSnap.signals).filter(x=>x.trend==="bull");
+ const futuresSignals=clean(futuresSnap.signals);
+ const n=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString("en-US",{maximumFractionDigits:d}):"—";
+ const money=(v,p)=>Number(v)>0?"$"+n(v,p<1?8:4):"—";
+ const signed=v=>Number.isFinite(Number(v))?(Number(v)>0?"+":"")+n(v)+"٪":"—";
+ const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+ const card=(s,market)=>{
+  const flow=s.flow||{},coin=s.coin||{},symbol=String(s.symbol||"").toUpperCase(),price=Number(s.price)||Number(coin.current_price)||0,bull=s.trend==="bull",direction=market==="spot"?"خرید اسپات":bull?"فیوچرز · LONG":"فیوچرز · SHORT",cls=bull?"up":"down",net=Number(flow.net5m),plan=s.tradePlan||{};
+  const planHtml=Number(plan.stopLoss)>0?'<div class="hunter-card-foot"><span>ورود مرجع: '+money(plan.entry,price)+'</span><span>حد ضرر: '+money(plan.stopLoss,price)+'</span><span>هدف ۱: '+money(plan.target1,price)+'</span><span>ریسک فاصله: '+n(plan.riskPercent,2)+'٪</span></div>':'';
+  return '<article class="hunter-card '+cls+'"><div class="hunter-card-head"><div><b class="hunter-symbol">'+esc(symbol)+'</b><span class="hunter-direction">'+direction+'</span><small class="hunter-symbol-tag">'+esc(coin.name||symbol)+'/USDT</small></div><div class="hunter-score"><small>قدرت هوشمند</small><b>'+n(s.score,0)+'/100</b></div></div><div class="hunter-metrics"><div><small>قیمت چرخه اخیر</small><b>'+money(price,price)+'</b></div><div><small>تغییر ۵ دقیقه</small><b>'+signed(s.change5m)+'</b></div><div><small>حجم نسبی</small><b>'+n(s.volumeRatio)+'×</b></div><div><small>خالص جریان ۵ دقیقه</small><b>'+(Number.isFinite(net)?(net>=0?"+":"")+n(net,2)+" USDT":"—")+'</b></div></div><div class="hunter-card-foot"><span>کندل: '+esc(s.provider||"نامشخص")+'</span><span>جریان: '+esc(flow.provider||"نامشخص")+' · '+n(flow.tradeCount,0)+' معامله</span></div><div class="hunter-card-foot"><span>۱د '+signed(s.change1m)+' · ۳د '+signed(s.change3m)+' · ۵د '+signed(s.change5m)+' · ۱۵د '+signed(s.change15m)+'</span><span>'+(s.breakout?"شکست محدوده":"ساختار هم‌جهت")+' · '+(flow.complete?"پوشش جریان کامل":"پوشش جریان محدود")+'</span></div>'+planHtml+'</article>';
  };
- const renderFutures=items=>{
-  if(!items.length)return '<div class="hunter-4h-empty">در این نوبت فرصت واجد شرایط فیوچرز پیدا نشد؛ پایش مستقل قراردادها ادامه دارد.</div>';
-  const limit=dualHunterState.visibleLimit||6,top=items.slice(0,limit),rest=items.slice(limit),main=top.map(x=>hunter4hCard(x.coin,x.signal,"futures")).join("");
-  const more=rest.length?'<details class="hunter-more-queue"><summary><span>مشاهده سایر فرصت‌های زنده</span><b>'+rest.length.toLocaleString("fa-IR")+' فرصت دیگر</b><i aria-hidden="true">⌄</i></summary><div class="hunter-more-grid">'+rest.map(x=>hunter4hCard(x.coin,x.signal,"futures")).join("")+'</div></details>':"";
-  return main+more;
- };
- spot.innerHTML=signals.length?signals.slice(0,100).map(digitalCard).join(""):'<div class="hunter-4h-empty">موتور Digital Hunter فعال است؛ در صف فعلی سیگنال خرید اسپات با تأیید جریان واقعی وجود ندارد. پایش چرخشی ادامه دارد.</div>';
- fut.innerHTML=renderFutures(dualHunterState.futures);
- if($("hunter-spot-count"))$("hunter-spot-count").textContent=signals.length.toLocaleString("fa-IR");
- if($("hunter-futures-count"))$("hunter-futures-count").textContent=dualHunterState.futures.length.toLocaleString("fa-IR");
-
- if($("hunter-dh-progress"))$("hunter-dh-progress").textContent=Number(dh.scanned_count||0).toLocaleString("fa-IR")+"/"+Number(dh.universe_count||0).toLocaleString("fa-IR");
- if($("hunter-dh-errors"))$("hunter-dh-errors").textContent=Number(dh.failed_count||0).toLocaleString("fa-IR");
+ const empty=(market,snapshot)=>'<div class="hunter-4h-empty">'+(snapshot.status==="online"?"موتور Digital Hunter فعال است؛ در چرخه اخیر سیگنال تأییدشده‌ای برای این بازار پیدا نشد. پایش چرخشی ادامه دارد.":"در انتظار دریافت داده موتور "+market+"…")+'</div>';
+ spot.innerHTML=spotSignals.length?spotSignals.slice(0,100).map(x=>card(x,"spot")).join(""):empty("Spot",spotSnap);
+ fut.innerHTML=futuresSignals.length?futuresSignals.slice(0,100).map(x=>card(x,"futures")).join(""):empty("Futures",futuresSnap);
+ if($("hunter-spot-count"))$("hunter-spot-count").textContent=spotSignals.length.toLocaleString("fa-IR");
+ if($("hunter-futures-count"))$("hunter-futures-count").textContent=futuresSignals.length.toLocaleString("fa-IR");
+ if($("hunter-dh-progress"))$("hunter-dh-progress").textContent=n(spotSnap.scanned_count,0)+"/"+n(spotSnap.universe_count,0)+" · "+n(futuresSnap.scanned_count,0)+"/"+n(futuresSnap.universe_count,0);
+ if($("hunter-dh-errors"))$("hunter-dh-errors").textContent=n(Number(spotSnap.failed_count||0)+Number(futuresSnap.failed_count||0),0);
+ if($("hunter-feed-status"))$("hunter-feed-status").textContent="Digital Hunter v2 · Spot: "+n(spotSnap.scanned_count,0)+"/"+n(spotSnap.universe_count,0)+" · Futures: "+n(futuresSnap.scanned_count,0)+"/"+n(futuresSnap.universe_count,0)+" · خطاها: "+n(Number(spotSnap.failed_count||0)+Number(futuresSnap.failed_count||0),0);
 }
 async function runDedicatedHunterScan(force=false){
- if(dualHunterState.busy)return;if(!force&&Date.now()-dualHunterState.lastScan<4*60*1000)return;
+ if(dualHunterState.busy)return;
+ if(!force&&Date.now()-dualHunterState.lastScan<4*60*1000)return;
  dualHunterState.busy=true;const status=$("hunter-feed-status"),button=$("hunter-refresh-btn");
- if(status)status.textContent="در حال بررسی ۱ ساعته و ماشه ۱۵ دقیقه‌ای؛ ۴ ساعت فقط امتیاز تأییدی…";
- if(button)button.disabled=true;
  try{
-  const universe=(await fetchHunterUniverse()).filter(c=>c?.hasUsdtMarket===true||c?.isDiscovery===true||!Array.isArray(c?.marketPairs));if(!universe.length)throw new Error("فهرست نمادهای دارای بازار USDT دریافت نشد");
-  const ranked=universe.slice().sort((a,b)=>(Number(b.total_volume)||0)-(Number(a.total_volume)||0));
-  const scanBatchSize=Math.min(universe.length,150);
-  const selected=[],selectedSymbols=new Set(),addCoin=coin=>{const key=String(coin?.symbol||"").toUpperCase();if(coin&&key&&!selectedSymbols.has(key)&&selected.length<scanBatchSize){selected.push(coin);selectedSymbols.add(key);}};
-  // اولویت اول: هشدارهای زنده و شکارهای فعال؛ سپس بازارهای پرحجم و در نهایت چرخش در کل فهرست.
-  [...hunterEarlyAlerts.values()].filter(x=>Date.now()-x.updatedAt<4*60*1000).sort((a,b)=>b.updatedAt-a.updatedAt).forEach(x=>addCoin(hunterSymbolIndex.get(x.symbol)));
-  for(const item of [...dualHunterState.spot,...dualHunterState.futures].sort((a,b)=>b.signal.score-a.signal.score).slice(0,25))addCoin(item.coin);
-  ranked.slice(0,35).forEach(addCoin);
-  let walked=0;while(selected.length<scanBatchSize&&walked<universe.length){const coin=universe[(dualHunterState.universeCursor+walked)%universe.length];addCoin(coin);walked++;}
-  dualHunterState.universeCursor=(dualHunterState.universeCursor+Math.max(1,walked))%universe.length;
-  let cursor=0,spot=[],futures=[],spotReady=0,futuresReady=0,dataIssues=0;
-  const workers=Array.from({length:8},async()=>{
-   while(cursor<selected.length){
-    const coin=selected[cursor++],symbol=hunterSafeSymbol(coin.symbol);if(!symbol||NON_TRADABLE_SYMBOLS.has(symbol))continue;
-    const cached=dualHunterState.cache.get(symbol),fresh=cached&&Date.now()-cached.checkedAt<3*60*1000;
-    if(fresh){
-     if(cached.futuresReady)futuresReady++;else dataIssues++;
-     if(cached.futures)futures.push({coin,signal:cached.futures});
-     continue;
-    }
-    const [fut1h,fut15m,fut4h]=await Promise.all([
-     hunterConfirmTf(symbol,"futures","60").catch(()=>null),
-     hunterConfirmTf(symbol,"futures","15").catch(()=>null),
-     hunter4hFutures(symbol).catch(()=>null)
-    ]);
-    const fr=!!(fut1h&&fut15m);
-    if(fr)futuresReady++;else dataIssues++;
-    const f=fr?hunter4hSignal(fut1h,"futures",fut15m,fut4h||[]):null;
-    dualHunterState.cache.set(symbol,{spot:null,futures:f,spotReady:false,futuresReady:fr,checkedAt:Date.now()});
-    if(f)futures.push({coin,signal:f});
-   }
-  });
-  await Promise.all(workers);
-  // سیگنال‌های نمادهای خارج از دسته این نوبت، تا وقتی داده‌شان تازه است در صف زنده می‌مانند.
-  const currentSymbols=new Set(selected.map(c=>String(c.symbol||"").toUpperCase()));
-  const freshSpot=[],freshFutures=[],universeBySymbol=new Map(universe.map(c=>[String(c.symbol||"").toUpperCase(),c]));
-  for(const [symbol,cached] of dualHunterState.cache){
-   if(currentSymbols.has(symbol)||Date.now()-cached.checkedAt>12*60*1000)continue;
-   const coin=universeBySymbol.get(symbol);if(!coin)continue;
-   
-   if(cached.futures&&Date.now()-Number(cached.futures.candleTime||0)<12*60*60*1000)freshFutures.push({coin,signal:cached.futures});
-  }
-  dualHunterState.spot=[];
-  dualHunterState.futures=[...futures,...freshFutures].sort((a,b)=>b.signal.score-a.signal.score);
-  dualHunterState.lastScan=Date.now();renderMarketHunter();
-  const mainSymbols=new Set((cachedCoinsData||[]).map(c=>String(c.symbol||"").toUpperCase()));const externalCount=universe.filter(c=>!mainSymbols.has(String(c.symbol||"").toUpperCase())).length;const summary="پایش "+selected.length.toLocaleString("fa-IR")+" نماد از "+universe.length.toLocaleString("fa-IR")+" دارایی کشف‌شده تمام شد · خارج از فهرست اصلی: "+externalCount.toLocaleString("fa-IR")+" · داده کامل فیوچرز: "+futuresReady.toLocaleString("fa-IR")+" · خطای دریافت داده: "+dataIssues.toLocaleString("fa-IR")+" · شکار اسپات: "+dualHunterState.spot.length.toLocaleString("fa-IR")+" · شکار فیوچرز: "+dualHunterState.futures.length.toLocaleString("fa-IR");
-  if(status)status.textContent=summary+(spotReady+futuresReady===0?" · منبع داده پاسخگو نیست؛ اتصال صرافی‌ها را بررسی کنید.":(spot.length+futures.length===0?" · داده دریافت شده اما فعلاً هیچ سیگنالی از فیلتر اعتبار عبور نکرده است.":" · فقط سیگنال‌های تأییدشده نمایش داده می‌شوند."))+" · اسکن خودکار هر ۵ دقیقه";
- }catch(error){if(status)status.textContent="پایش کامل نشد: "+(error?.message||"خطای دریافت داده")+" · لطفاً اتصال داده‌ها را بررسی کنید";}
- finally{dualHunterState.busy=false;if(button)button.disabled=false;}
+  const response=await fetch("https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/hunter-futures-run",{cache:"no-store"});
+  const snapshot=await response.json();if(!response.ok||snapshot.status==="error")throw new Error(snapshot.error||"Futures Hunter unavailable");
+  window.__mmpDigitalHunterFuturesSnapshot=snapshot;dualHunterState.lastScan=Date.now();renderMarketHunter();
+ }catch(error){if(status)status.textContent="به‌روزرسانی موتور Futures ناموفق بود: "+String(error?.message||error).slice(0,140);}
+ finally{dualHunterState.busy=false;if(button&&!button.classList.contains("is-refreshing"))button.disabled=false;}
 }
 document.addEventListener("click",function(event){
  const detail=event.target.closest("[data-hunter-detail]");if(detail){event.preventDefault();openHunterDetail(detail.getAttribute("data-hunter-detail"),detail.getAttribute("data-hunter-market")||"spot");return;}
@@ -4891,62 +4718,55 @@ window.mmpShareDownloadLink = async function () {
  function render(snapshot){
   window.__mmpDigitalHunterSnapshot=snapshot;
   const signals=Array.isArray(snapshot.signals)?snapshot.signals.filter(s=>s&&/^[A-Z0-9]{2,24}$/.test(String(s.symbol||"").toUpperCase())&&s.confirmed===true):[];
-  $("hunter-dh-progress").textContent=number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0);
-  
-  $("hunter-dh-errors").textContent=number(snapshot.failed_count||0,0);
-  
-  $("hunter-feed-status").textContent=(snapshot.engine||"Digital Hunter v2")+" · "+(snapshot.status==="online"?"موتور Spot فعال":"وضعیت: "+String(snapshot.status||"نامشخص"))+" · اسکن: "+number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0)+" · خطا: "+number(snapshot.failed_count||0,0)+" · آخرین چرخه: "+(snapshot.scanned_at?new Date(snapshot.scanned_at).toLocaleTimeString("fa-IR"):"در انتظار")+" · فقط سیگنال‌های دارای جریان واقعی نمایش داده می‌شوند.";
-  if(!signals.some(s=>s.trend==="bull")){
-   $("hunter-spot-feed").innerHTML='<div class="hunter-empty"><b>در این چرخه سیگنال خرید تأییدشده‌ای وجود ندارد</b><small>موتور فعال است؛ تا تأیید هم‌جهتی حرکت و جریان واقعی معاملات، سیگنال ساختگی نمایش داده نمی‌شود.</small></div>';
-   if(typeof renderMarketHunter==="function")renderMarketHunter();
-   return;
-  }
-  $("hunter-spot-feed").innerHTML=signals.filter(s=>s.trend==="bull").slice(0,100).map(s=>{
-   const symbol=String(s.symbol).toUpperCase(),bull=s.trend==="bull",flow=s.flow||{},change=bull?s.change5m:s.change5m;
-   const trend=bull?"صعودی · LONG":"نزولی · SHORT";
-   const net=Number(flow.net5m),netLabel=Number.isFinite(net)?(net>=0?"+":"")+number(net,2)+" USDT":"—";
-   const provider=esc(s.provider||"منبع کندل نامشخص"),flowProvider=esc(flow.provider||"جریان معاملات نامشخص");
-   return '<article class="hunter-card '+(bull?"up":"down")+'"><div class="hunter-card-head"><div><b class="hunter-symbol">'+symbol+'</b><span class="hunter-direction">'+trend+'</span></div><div class="hunter-score"><small>قدرت</small><b>'+number(s.score,0)+'</b></div></div><div class="hunter-metrics"><div><small>قیمت</small><b>'+money(s.price)+'</b></div><div><small>تغییر ۵ دقیقه</small><b>'+signed(change)+'</b></div><div><small>حجم نسبت به میانگین</small><b>'+number(s.volumeRatio,2)+'×</b></div><div><small>خالص جریان ۵ دقیقه</small><b>'+netLabel+'</b></div></div><div class="hunter-card-foot"><span>کندل: '+provider+'</span><span>جریان: '+flowProvider+' · '+number(flow.tradeCount,0)+' معامله</span></div><div class="hunter-card-foot"><span>۱دقیقه '+signed(s.change1m)+' · ۳دقیقه '+signed(s.change3m)+' · ۱۵دقیقه '+signed(s.change15m)+'</span><span>'+(s.confirmed?"تأیید چندلایه":"در انتظار تأیید")+'</span></div></article>';
-  }).join("");
+  const status=$("hunter-feed-status");
+  if(status)status.textContent=(snapshot.engine||"Digital Hunter v2")+" · Spot فعال · "+number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0)+" · خطا: "+number(snapshot.failed_count||0,0);
   if(typeof renderMarketHunter==="function")renderMarketHunter();
  }
- async function load(){
+ function renderFutures(snapshot){
+  window.__mmpDigitalHunterFuturesSnapshot=snapshot;
+  if(typeof renderMarketHunter==="function")renderMarketHunter();
+ } async function load(){
   if(busy)return;busy=true;
   const status=$("hunter-feed-status");
   try{
-   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
-   let response;
-   try{response=await fetch(API+"/hunter-snapshot",{cache:"no-store",signal:controller.signal});}
-   finally{clearTimeout(timer);}
-   if(!response.ok)throw new Error("HTTP "+response.status);
-   const snapshot=await response.json();
-   if(snapshot.status!=="online"&&snapshot.status!=="warming_up")throw new Error(snapshot.error||"موتور در دسترس نیست");
-   render(snapshot);
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+   let spotResponse,futuresResponse;
+   try{
+    [spotResponse,futuresResponse]=await Promise.all([
+     fetch(API+"/hunter-snapshot",{cache:"no-store",signal:controller.signal}),
+     fetch(API+"/hunter-futures-snapshot",{cache:"no-store",signal:controller.signal})
+    ]);
+   }finally{clearTimeout(timer);}
+   if(!spotResponse.ok)throw new Error("Spot HTTP "+spotResponse.status);
+   if(!futuresResponse.ok)throw new Error("Futures HTTP "+futuresResponse.status);
+   const [spotSnapshot,futuresSnapshot]=await Promise.all([spotResponse.json(),futuresResponse.json()]);
+   if(!["online","warming_up"].includes(spotSnapshot.status))throw new Error(spotSnapshot.error||"Spot engine unavailable");
+   if(!["online","warming_up"].includes(futuresSnapshot.status))throw new Error(futuresSnapshot.error||"Futures engine unavailable");
+   render(spotSnapshot);renderFutures(futuresSnapshot);
   }catch(error){
-   const feedStatus=$("hunter-feed-status");if(feedStatus)feedStatus.textContent="دریافت داده موتور Digital Hunter ناموفق بود: "+String(error?.message||error).slice(0,130)+" · تلاش خودکار ادامه دارد.";
+   if(status)status.textContent="دریافت وضعیت یکی از موتورهای شکار ناموفق بود: "+String(error?.message||error).slice(0,150)+" · تلاش خودکار ادامه دارد.";
   }finally{busy=false;}
- }
- async function refresh(){
+ } async function refresh(){
   if(busy)return;busy=true;
   const button=$("hunter-refresh-btn"),status=$("hunter-feed-status");
   if(button){button.disabled=true;const label=button.querySelector("span");if(label)label.textContent="در حال اجرای اسکن…";}
-  if(status)status.textContent="درخواست چرخه جدید Digital Hunter ارسال شد؛ چرخه موتور در حال اجراست.";
+  if(status)status.textContent="درخواست اجرای هر دو موتور Spot و Futures ارسال شد…";
   try{
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
-   let response;
-   try{response=await fetch(API+"/hunter-run",{cache:"no-store",signal:controller.signal});}
-   finally{clearTimeout(timer);}
-   const result=await response.json();
-   if(!response.ok||result.status==="error")throw new Error(result.error||"اجرای اسکن ناموفق بود");
-   render(result);
-  }catch(error){
-   if(status)status.textContent="اجرای اسکن ناموفق بود: "+String(error?.message||error).slice(0,150);
-  }finally{
-   busy=false;
-   if(button){button.disabled=false;const label=button.querySelector("span");if(label)label.textContent="بروزرسانی شکار";}
-  }
- }
- function init(){
+   let spotResponse,futuresResponse;
+   try{
+    [spotResponse,futuresResponse]=await Promise.all([
+     fetch(API+"/hunter-run",{cache:"no-store",signal:controller.signal}),
+     fetch(API+"/hunter-futures-run",{cache:"no-store",signal:controller.signal})
+    ]);
+   }finally{clearTimeout(timer);}
+   const [spotSnapshot,futuresSnapshot]=await Promise.all([spotResponse.json(),futuresResponse.json()]);
+   if(!spotResponse.ok||spotSnapshot.status==="error")throw new Error(spotSnapshot.error||"Spot scan failed");
+   if(!futuresResponse.ok||futuresSnapshot.status==="error")throw new Error(futuresSnapshot.error||"Futures scan failed");
+   render(spotSnapshot);renderFutures(futuresSnapshot);
+  }catch(error){if(status)status.textContent="اجرای یکی از موتورهای شکار ناموفق بود: "+String(error?.message||error).slice(0,150);}
+  finally{busy=false;if(button){button.disabled=false;const label=button.querySelector("span");if(label)label.textContent="بروزرسانی شکار";}}
+ } function init(){
   // Unified hunter refresh handler owns the single refresh button; this module only polls snapshots.
   load();setInterval(load,60000);
  }
