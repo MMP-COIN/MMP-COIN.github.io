@@ -3,10 +3,12 @@ name: Deploy MMP COIN AI root site
 on:
   push:
     branches: ["main"]
+  schedule:
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -16,17 +18,42 @@ concurrency:
 
 jobs:
   deploy:
+    if: github.actor != 'github-actions[bot]'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pages: write
       id-token: write
     steps:
-      - name: Checkout
+      - name: Checkout root-site mirror
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Checkout canonical application source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: MMP-COIN/MMP-COIN-AI
+          ref: main
+          path: canonical
+          persist-credentials: false
+      - name: Synchronize canonical Quantum UI and brand assets
+        run: |
+          set -euo pipefail
+          test -s canonical/www/index.html
+          test -s canonical/assets/mmp-coin-ai-icon.svg
+          test -s canonical/manifest.webmanifest
+          cp canonical/www/index.html ./index.html
+          mkdir -p assets
+          cp -R canonical/assets/. assets/
+          cp canonical/manifest.webmanifest ./manifest.webmanifest
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet -- index.html assets manifest.webmanifest; then
+            git add index.html assets manifest.webmanifest
+            git commit -m "Sync canonical Quantum UI from core [skip ci]"
+            git push
+          fi
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
         with:
