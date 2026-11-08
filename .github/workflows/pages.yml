@@ -41,16 +41,18 @@ jobs:
         run: |
           set -euo pipefail
           test -s canonical/www/index.html
+          test -s canonical/www/quantum-lab.html
           test -s canonical/assets/mmp-coin-ai-icon.svg
           test -s canonical/manifest.webmanifest
           cp canonical/www/index.html ./index.html
+          cp canonical/www/quantum-lab.html ./quantum-lab.html
           mkdir -p assets
           cp -R canonical/assets/. assets/
           cp canonical/manifest.webmanifest ./manifest.webmanifest
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- index.html assets manifest.webmanifest; then
-            git add index.html assets manifest.webmanifest
+          if ! git diff --quiet -- index.html quantum-lab.html assets manifest.webmanifest; then
+            git add index.html quantum-lab.html assets manifest.webmanifest
             git commit -m "Sync canonical Quantum UI from core [skip ci]"
             git push
           fi
