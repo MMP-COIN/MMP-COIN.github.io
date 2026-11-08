@@ -1344,6 +1344,19 @@ body.radar-detail-open{overflow:hidden}
  <div class="hunter-mode-panel hunter-spot-panel"><div class="hunter-mode-head"><div><b>🟢 شکار اسپات | SPOT</b><small>فقط موقعیت‌های خرید؛ محور تحلیل ۱ ساعته؛ تأیید ورود با ۱۵ دقیقه</small></div><span class="hunter-timeframe">1H CORE · 15M TRIGGER</span></div><div id="hunter-spot-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار اسپات</b><small>ورود پس از تأیید ساختار ۱ ساعته و ماشه ۱۵ دقیقه‌ای ارزیابی می‌شود.</small></div></div></div>
  <div class="hunter-mode-panel hunter-futures-panel"><div class="hunter-mode-head"><div><b>🟠 شکار فیوچرز | FUTURES</b><small>فرصت‌های مستقل LONG و SHORT بر اساس بازار قراردادهای دائمی</small></div><span class="hunter-timeframe">1H CORE · 15M TRIGGER</span></div><div id="hunter-futures-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار فیوچرز</b><small>سیگنال‌های لانگ و شورت جداگانه ارزیابی می‌شوند.</small></div></div></div>
  <p id="hunter-feed-status" class="sub hunter-footnote">در انتظار دریافت کندل‌های ۱ ساعته، ۱۵ دقیقه‌ای و تأیید کمکی ۴ ساعته…</p>
+ <style id="mmp-digital-hunter-v2-styles">
+ #mmp-digital-hunter-v2 .hunter-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+ #mmp-digital-hunter-v2 .hunter-symbol{font-size:17px;color:#f3d995;direction:ltr;display:inline-block}
+ #mmp-digital-hunter-v2 .hunter-direction{display:inline-block;margin-inline-start:10px;font-size:11px;color:#b6c1ce}
+ #mmp-digital-hunter-v2 .hunter-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ #mmp-digital-hunter-v2 .hunter-metrics>div{padding:9px;border:1px solid #ffffff12;border-radius:10px;background:#0b111a}
+ #mmp-digital-hunter-v2 .hunter-metrics small{display:block;color:#9da9b8;font-size:10px;margin-bottom:5px}
+ #mmp-digital-hunter-v2 .hunter-metrics b{font-size:12px;color:#e9e4d7;overflow-wrap:anywhere}
+ #mmp-digital-hunter-v2 .hunter-card-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:#98a6b6;font-size:10px;line-height:1.7}
+ #mmp-digital-hunter-v2 .hunter-card.up .hunter-direction{color:#62e3ba}
+ #mmp-digital-hunter-v2 .hunter-card.down .hunter-direction{color:#ff8795}
+ @media(max-width:620px){#mmp-digital-hunter-v2 .hunter-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#mmp-digital-hunter-v2 .hunter-card-foot{display:grid}}
+ </style>
  <div class="hunter-mode-panel" id="mmp-digital-hunter-v2">
   <div class="hunter-mode-head"><div><b>◈ موتور مستقل Digital Hunter v2</b><small>اسکن چرخشی ۹۶ نماد · کندل‌های ۱، ۳، ۵ و ۱۵ دقیقه · تأیید جریان واقعی معاملات</small></div><span class="hunter-timeframe">SERVER ENGINE</span></div>
   <div class="hunter-overview" style="margin:10px 0">
