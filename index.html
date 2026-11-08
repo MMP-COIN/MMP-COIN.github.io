@@ -1339,35 +1339,24 @@ body.radar-detail-open{overflow:hidden}
 <p class="sub radar-footnote">این بخش فقط یک موتور تصمیم‌گیری دارد. اسکن مستقل قدیمی از رادار حذف شده است؛ موتورهای موردنیاز شکارچی بازار و سایر بخش‌ها در جای خود باقی می‌مانند. سیگنال‌ها صرفاً غربالگر آماری هستند و توصیه قطعی معامله محسوب نمی‌شوند.</p></section></section>
 
 <section class="card market-hunter" id="market-hunter">
- <div class="hunter-topline"><div><div class="section-kicker">MMP · DUAL MARKET HUNTER</div><h2>شکارچی بازار</h2><p class="sub">شکار فرصت‌های اسپات و فیوچرز با محوریت روند ۱ ساعته، ماشه ۱۵ دقیقه‌ای و تأیید کمکی ۴ ساعته</p></div><div class="hunter-head-actions"><button class="radar-refresh-btn hunter-refresh-btn" id="hunter-refresh-btn" type="button" aria-label="بروزرسانی شکار اسپات و فیوچرز" title="دریافت دوباره داده‌ها و اجرای شکار"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6.5L20 12M4 12l2 5.5A7 7 0 0 0 18.4 15"/></svg><span>بروزرسانی شکار</span></button><div class="hunter-live-badge"><i></i><span>پایش خودکار</span></div></div></div>
- <div class="hunter-overview"><div class="hunter-stat"><small>کل فرصت‌های اسپات در صف</small><b id="hunter-spot-count">۰</b></div><div class="hunter-stat"><small>کل فرصت‌های فیوچرز در صف</small><b id="hunter-futures-count">۰</b></div><div class="hunter-stat"><small>آخرین پایش بازار</small><b id="hunter-last-scan">در انتظار داده</b></div></div>
- <div class="hunter-mode-panel hunter-spot-panel"><div class="hunter-mode-head"><div><b>🟢 شکار اسپات | SPOT</b><small>فقط موقعیت‌های خرید؛ محور تحلیل ۱ ساعته؛ تأیید ورود با ۱۵ دقیقه</small></div><span class="hunter-timeframe">1H CORE · 15M TRIGGER</span></div><div id="hunter-spot-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار اسپات</b><small>ورود پس از تأیید ساختار ۱ ساعته و ماشه ۱۵ دقیقه‌ای ارزیابی می‌شود.</small></div></div></div>
- <div class="hunter-mode-panel hunter-futures-panel"><div class="hunter-mode-head"><div><b>🟠 شکار فیوچرز | FUTURES</b><small>فرصت‌های مستقل LONG و SHORT بر اساس بازار قراردادهای دائمی</small></div><span class="hunter-timeframe">1H CORE · 15M TRIGGER</span></div><div id="hunter-futures-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار فیوچرز</b><small>سیگنال‌های لانگ و شورت جداگانه ارزیابی می‌شوند.</small></div></div></div>
+ <div class="hunter-topline"><div><div class="section-kicker">MMP · DIGITAL HUNTER CORE</div><h2>شکارچی بازار</h2><p class="sub">هسته هوشمند واحد برای شکار اسپات با اسکن چرخشی چندتایم‌فریمی و جریان واقعی معاملات؛ فیوچرز با تحلیل اختصاصی بازار قراردادها</p></div><div class="hunter-head-actions"><button class="radar-refresh-btn hunter-refresh-btn" id="hunter-refresh-btn" type="button" aria-label="بروزرسانی شکار اسپات و فیوچرز" title="دریافت دوباره داده‌ها و اجرای شکار"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6.5L20 12M4 12l2 5.5A7 7 0 0 0 18.4 15"/></svg><span>بروزرسانی شکار</span></button><div class="hunter-live-badge"><i></i><span>پایش خودکار</span></div></div></div>
+ <div class="hunter-overview"><div class="hunter-stat"><small>فرصت‌های تأییدشده اسپات</small><b id="hunter-spot-count">۰</b></div><div class="hunter-stat"><small>فرصت‌های مستقل فیوچرز</small><b id="hunter-futures-count">۰</b></div><div class="hunter-stat"><small>اسکن Digital Hunter / کل صف</small><b id="hunter-dh-progress">—</b></div><div class="hunter-stat"><small>خطاهای چرخه اخیر</small><b id="hunter-dh-errors">—</b></div></div>
+ <div class="hunter-mode-panel hunter-spot-panel"><div class="hunter-mode-head"><div><b>🟢 شکار اسپات | DIGITAL HUNTER v2</b><small>کندل‌های ۱، ۳، ۵ و ۱۵ دقیقه · تأیید جریان واقعی خرید · فقط موقعیت‌های خرید</small></div><span class="hunter-timeframe">1M · 3M · 5M · 15M CORE</span></div><div id="hunter-spot-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار اسپات</b><small>ورود پس از تأیید ساختار ۱ ساعته و ماشه ۱۵ دقیقه‌ای ارزیابی می‌شود.</small></div></div></div>
+ <div class="hunter-mode-panel hunter-futures-panel"><div class="hunter-mode-head"><div><b>🟠 شکار فیوچرز | FUTURES</b><small>تحلیل مستقل LONG و SHORT با داده اختصاصی قراردادهای دائمی؛ موتور Spot به‌جای Futures استفاده نمی‌شود</small></div><span class="hunter-timeframe">1H CORE · 15M TRIGGER</span></div><div id="hunter-futures-feed" class="hunter-feed"><div class="hunter-empty"><b>در انتظار بررسی بازار فیوچرز</b><small>سیگنال‌های لانگ و شورت جداگانه ارزیابی می‌شوند.</small></div></div></div>
  <p id="hunter-feed-status" class="sub hunter-footnote">در انتظار دریافت کندل‌های ۱ ساعته، ۱۵ دقیقه‌ای و تأیید کمکی ۴ ساعته…</p>
- <style id="mmp-digital-hunter-v2-styles">
- #mmp-digital-hunter-v2 .hunter-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
- #mmp-digital-hunter-v2 .hunter-symbol{font-size:17px;color:#f3d995;direction:ltr;display:inline-block}
- #mmp-digital-hunter-v2 .hunter-direction{display:inline-block;margin-inline-start:10px;font-size:11px;color:#b6c1ce}
- #mmp-digital-hunter-v2 .hunter-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
- #mmp-digital-hunter-v2 .hunter-metrics>div{padding:9px;border:1px solid #ffffff12;border-radius:10px;background:#0b111a}
- #mmp-digital-hunter-v2 .hunter-metrics small{display:block;color:#9da9b8;font-size:10px;margin-bottom:5px}
- #mmp-digital-hunter-v2 .hunter-metrics b{font-size:12px;color:#e9e4d7;overflow-wrap:anywhere}
- #mmp-digital-hunter-v2 .hunter-card-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:#98a6b6;font-size:10px;line-height:1.7}
- #mmp-digital-hunter-v2 .hunter-card.up .hunter-direction{color:#62e3ba}
- #mmp-digital-hunter-v2 .hunter-card.down .hunter-direction{color:#ff8795}
- @media(max-width:620px){#mmp-digital-hunter-v2 .hunter-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#mmp-digital-hunter-v2 .hunter-card-foot{display:grid}}
+ <style id="market-hunter-digital-core-styles">
+ #market-hunter .hunter-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+ #market-hunter .hunter-symbol{font-size:17px;color:#f3d995;direction:ltr;display:inline-block}
+ #market-hunter .hunter-direction{display:inline-block;margin-inline-start:10px;font-size:11px;color:#b6c1ce}
+ #market-hunter .hunter-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ #market-hunter .hunter-metrics>div{padding:9px;border:1px solid #ffffff12;border-radius:10px;background:#0b111a}
+ #market-hunter .hunter-metrics small{display:block;color:#9da9b8;font-size:10px;margin-bottom:5px}
+ #market-hunter .hunter-metrics b{font-size:12px;color:#e9e4d7;overflow-wrap:anywhere}
+ #market-hunter .hunter-card-foot{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:10px;color:#98a6b6;font-size:10px;line-height:1.7}
+ #market-hunter .hunter-card.up .hunter-direction{color:#62e3ba}
+ #market-hunter .hunter-card.down .hunter-direction{color:#ff8795}
+ @media(max-width:620px){#market-hunter .hunter-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}#market-hunter .hunter-card-foot{display:grid}}
  </style>
- <div class="hunter-mode-panel" id="mmp-digital-hunter-v2">
-  <div class="hunter-mode-head"><div><b>◈ موتور مستقل Digital Hunter v2</b><small>اسکن چرخشی ۹۶ نماد · کندل‌های ۱، ۳، ۵ و ۱۵ دقیقه · تأیید جریان واقعی معاملات</small></div><span class="hunter-timeframe">SERVER ENGINE</span></div>
-  <div class="hunter-overview" style="margin:10px 0">
-   <div class="hunter-stat"><small>نمادهای بررسی‌شده در چرخه اخیر</small><b id="mmp-dh-scanned">—</b></div>
-   <div class="hunter-stat"><small>کل نمادهای صف پایش</small><b id="mmp-dh-universe">—</b></div>
-   <div class="hunter-stat"><small>خطاهای چرخه اخیر</small><b id="mmp-dh-errors">—</b></div>
-  </div>
-  <div class="hunter-feed-head"><b>سیگنال‌های تأییدشده موتور مستقل</b><span id="mmp-dh-updated">در انتظار دریافت داده</span><button class="btn secondary" id="mmp-dh-refresh" type="button">⟳ به‌روزرسانی موتور</button></div>
-  <div id="mmp-dh-feed" class="hunter-feed"><div class="hunter-empty"><b>در حال اتصال به موتور مستقل…</b><small>خروجی موتور سرور جدا از شکار Spot/Futures نمایش داده می‌شود.</small></div></div>
-  <p class="sub hunter-footnote" id="mmp-dh-status">در حال دریافت آخرین Snapshot موتور سرور…</p>
- </div>
 </section>
 
 <section class="card ai-terminal" id="ai-section">
@@ -3157,17 +3146,28 @@ function hunter4hCard(coin,signal,market){
 }
 function renderMarketHunter(){
  const spot=$("hunter-spot-feed"),fut=$("hunter-futures-feed");if(!spot||!fut)return;
- const render=(items,market)=>{
-  if(!items.length)return '<div class="hunter-4h-empty">در این نوبت فرصت واجد شرایط پیدا نشد؛ پایش ادامه دارد و با شناسایی فرصت تازه، این صف به‌روزرسانی می‌شود.</div>';
-  const limit=dualHunterState.visibleLimit||6,top=items.slice(0,limit),rest=items.slice(limit);
-  const main=top.map(x=>hunter4hCard(x.coin,x.signal,market)).join("");
-  const more=rest.length?'<details class="hunter-more-queue"><summary><span>مشاهده سایر فرصت‌های زنده</span><b>'+rest.length.toLocaleString("fa-IR")+' فرصت دیگر</b><i aria-hidden="true">⌄</i></summary><div class="hunter-more-grid">'+rest.map(x=>hunter4hCard(x.coin,x.signal,market)).join("")+'</div></details>':"";
+ const dh=window.__mmpDigitalHunterSnapshot||{},signals=Array.isArray(dh.signals)?dh.signals.filter(x=>x&&x.confirmed===true&&x.trend==="bull"&&/^[A-Z0-9]{2,24}$/.test(String(x.symbol||""))):[];
+ const digitalCard=s=>{
+  const flow=s.flow||{},coin=s.coin||{},symbol=String(s.symbol||"").toUpperCase(),price=Number(s.price)||Number(coin.current_price)||0;
+  const n=(v,d=2)=>Number.isFinite(Number(v))?Number(v).toLocaleString("en-US",{maximumFractionDigits:d}):"—";
+  const money=v=>Number(v)>0?"$"+n(v,price<1?8:4):"—",signed=v=>Number.isFinite(Number(v))?(Number(v)>0?"+":"")+n(v)+"٪":"—";
+  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const net=Number(flow.net5m);
+  return '<article class="hunter-card up"><div class="hunter-card-head"><div><b class="hunter-symbol">'+esc(symbol)+'</b><span class="hunter-direction">صعودی · خرید اسپات</span><small class="hunter-symbol-tag">'+esc(coin.name||symbol)+'/USDT</small></div><div class="hunter-score"><small>قدرت هوشمند</small><b>'+n(s.score,0)+'/100</b></div></div><div class="hunter-metrics"><div><small>قیمت چرخه اخیر</small><b>'+money(price)+'</b></div><div><small>تغییر ۵ دقیقه</small><b>'+signed(s.change5m)+'</b></div><div><small>حجم نسبی</small><b>'+n(s.volumeRatio)+'×</b></div><div><small>خالص جریان ۵ دقیقه</small><b>'+(Number.isFinite(net)?(net>=0?"+":"")+n(net,2)+" USDT":"—")+'</b></div></div><div class="hunter-card-foot"><span>کندل: '+esc(s.provider||"نامشخص")+'</span><span>جریان: '+esc(flow.provider||"نامشخص")+' · '+n(flow.tradeCount,0)+' معامله</span></div><div class="hunter-card-foot"><span>۱د '+signed(s.change1m)+' · ۳د '+signed(s.change3m)+' · ۱۵د '+signed(s.change15m)+'</span><span>تأیید جریان واقعی · '+(s.breakout?"شکست محدوده":"ساختار هم‌جهت")+'</span></div></article>';
+ };
+ const renderFutures=items=>{
+  if(!items.length)return '<div class="hunter-4h-empty">در این نوبت فرصت واجد شرایط فیوچرز پیدا نشد؛ پایش مستقل قراردادها ادامه دارد.</div>';
+  const limit=dualHunterState.visibleLimit||6,top=items.slice(0,limit),rest=items.slice(limit),main=top.map(x=>hunter4hCard(x.coin,x.signal,"futures")).join("");
+  const more=rest.length?'<details class="hunter-more-queue"><summary><span>مشاهده سایر فرصت‌های زنده</span><b>'+rest.length.toLocaleString("fa-IR")+' فرصت دیگر</b><i aria-hidden="true">⌄</i></summary><div class="hunter-more-grid">'+rest.map(x=>hunter4hCard(x.coin,x.signal,"futures")).join("")+'</div></details>':"";
   return main+more;
  };
- spot.innerHTML=render(dualHunterState.spot,"spot");fut.innerHTML=render(dualHunterState.futures,"futures");
- if($("hunter-spot-count"))$("hunter-spot-count").textContent=dualHunterState.spot.length.toLocaleString("fa-IR");
+ spot.innerHTML=signals.length?signals.slice(0,100).map(digitalCard).join(""):'<div class="hunter-4h-empty">موتور Digital Hunter فعال است؛ در صف فعلی سیگنال خرید اسپات با تأیید جریان واقعی وجود ندارد. پایش چرخشی ادامه دارد.</div>';
+ fut.innerHTML=renderFutures(dualHunterState.futures);
+ if($("hunter-spot-count"))$("hunter-spot-count").textContent=signals.length.toLocaleString("fa-IR");
  if($("hunter-futures-count"))$("hunter-futures-count").textContent=dualHunterState.futures.length.toLocaleString("fa-IR");
- if($("hunter-last-scan"))$("hunter-last-scan").textContent=dualHunterState.lastScan?new Date(dualHunterState.lastScan).toLocaleTimeString("fa-IR"):"در انتظار داده";
+ if($("hunter-last-scan"))$("hunter-last-scan").textContent=dh.scanned_at?new Date(dh.scanned_at).toLocaleTimeString("fa-IR"):dualHunterState.lastScan?new Date(dualHunterState.lastScan).toLocaleTimeString("fa-IR"):"در انتظار داده";
+ if($("hunter-dh-progress"))$("hunter-dh-progress").textContent=Number(dh.scanned_count||0).toLocaleString("fa-IR")+"/"+Number(dh.universe_count||0).toLocaleString("fa-IR");
+ if($("hunter-dh-errors"))$("hunter-dh-errors").textContent=Number(dh.failed_count||0).toLocaleString("fa-IR");
 }
 async function runDedicatedHunterScan(force=false){
  if(dualHunterState.busy)return;if(!force&&Date.now()-dualHunterState.lastScan<4*60*1000)return;
@@ -3191,23 +3191,20 @@ async function runDedicatedHunterScan(force=false){
     const coin=selected[cursor++],symbol=hunterSafeSymbol(coin.symbol);if(!symbol||NON_TRADABLE_SYMBOLS.has(symbol))continue;
     const cached=dualHunterState.cache.get(symbol),fresh=cached&&Date.now()-cached.checkedAt<3*60*1000;
     if(fresh){
-     if(cached.spotReady)spotReady++;else dataIssues++;
      if(cached.futuresReady)futuresReady++;else dataIssues++;
-     if(cached.spot)spot.push({coin,signal:cached.spot});if(cached.futures)futures.push({coin,signal:cached.futures});
+     if(cached.futures)futures.push({coin,signal:cached.futures});
      continue;
     }
-    const [spot1h,fut1h,spot15m,fut15m,spot4h,fut4h]=await Promise.all([
-     hunterConfirmTf(symbol,"spot","60").catch(()=>null),hunterConfirmTf(symbol,"futures","60").catch(()=>null),
-     hunterConfirmTf(symbol,"spot","15").catch(()=>null),hunterConfirmTf(symbol,"futures","15").catch(()=>null),
-     hunter4hSpot(symbol).catch(()=>null),hunter4hFutures(symbol).catch(()=>null)
+    const [fut1h,fut15m,fut4h]=await Promise.all([
+     hunterConfirmTf(symbol,"futures","60").catch(()=>null),
+     hunterConfirmTf(symbol,"futures","15").catch(()=>null),
+     hunter4hFutures(symbol).catch(()=>null)
     ]);
-    const sr=!!(spot1h&&spot15m),fr=!!(fut1h&&fut15m);
-    if(sr)spotReady++;else dataIssues++;
+    const fr=!!(fut1h&&fut15m);
     if(fr)futuresReady++;else dataIssues++;
-    const s=sr?hunter4hSignal(spot1h,"spot",spot15m,spot4h||[]):null;
     const f=fr?hunter4hSignal(fut1h,"futures",fut15m,fut4h||[]):null;
-    dualHunterState.cache.set(symbol,{spot:s,futures:f,spotReady:sr,futuresReady:fr,checkedAt:Date.now()});
-    if(s)spot.push({coin,signal:s});if(f)futures.push({coin,signal:f});
+    dualHunterState.cache.set(symbol,{spot:null,futures:f,spotReady:false,futuresReady:fr,checkedAt:Date.now()});
+    if(f)futures.push({coin,signal:f});
    }
   });
   await Promise.all(workers);
@@ -3217,13 +3214,13 @@ async function runDedicatedHunterScan(force=false){
   for(const [symbol,cached] of dualHunterState.cache){
    if(currentSymbols.has(symbol)||Date.now()-cached.checkedAt>12*60*1000)continue;
    const coin=universeBySymbol.get(symbol);if(!coin)continue;
-   if(cached.spot&&Date.now()-Number(cached.spot.candleTime||0)<12*60*60*1000)freshSpot.push({coin,signal:cached.spot});
+   
    if(cached.futures&&Date.now()-Number(cached.futures.candleTime||0)<12*60*60*1000)freshFutures.push({coin,signal:cached.futures});
   }
-  dualHunterState.spot=[...spot,...freshSpot].sort((a,b)=>b.signal.score-a.signal.score);
+  dualHunterState.spot=[];
   dualHunterState.futures=[...futures,...freshFutures].sort((a,b)=>b.signal.score-a.signal.score);
   dualHunterState.lastScan=Date.now();renderMarketHunter();
-  const mainSymbols=new Set((cachedCoinsData||[]).map(c=>String(c.symbol||"").toUpperCase()));const externalCount=universe.filter(c=>!mainSymbols.has(String(c.symbol||"").toUpperCase())).length;const summary="پایش "+selected.length.toLocaleString("fa-IR")+" نماد از "+universe.length.toLocaleString("fa-IR")+" دارایی کشف‌شده تمام شد · خارج از فهرست اصلی: "+externalCount.toLocaleString("fa-IR")+" · داده کامل اسپات: "+spotReady.toLocaleString("fa-IR")+" · داده کامل فیوچرز: "+futuresReady.toLocaleString("fa-IR")+" · خطای دریافت داده: "+dataIssues.toLocaleString("fa-IR")+" · شکار اسپات: "+dualHunterState.spot.length.toLocaleString("fa-IR")+" · شکار فیوچرز: "+dualHunterState.futures.length.toLocaleString("fa-IR");
+  const mainSymbols=new Set((cachedCoinsData||[]).map(c=>String(c.symbol||"").toUpperCase()));const externalCount=universe.filter(c=>!mainSymbols.has(String(c.symbol||"").toUpperCase())).length;const summary="پایش "+selected.length.toLocaleString("fa-IR")+" نماد از "+universe.length.toLocaleString("fa-IR")+" دارایی کشف‌شده تمام شد · خارج از فهرست اصلی: "+externalCount.toLocaleString("fa-IR")+" · داده کامل فیوچرز: "+futuresReady.toLocaleString("fa-IR")+" · خطای دریافت داده: "+dataIssues.toLocaleString("fa-IR")+" · شکار اسپات: "+dualHunterState.spot.length.toLocaleString("fa-IR")+" · شکار فیوچرز: "+dualHunterState.futures.length.toLocaleString("fa-IR");
   if(status)status.textContent=summary+(spotReady+futuresReady===0?" · منبع داده پاسخگو نیست؛ اتصال صرافی‌ها را بررسی کنید.":(spot.length+futures.length===0?" · داده دریافت شده اما فعلاً هیچ سیگنالی از فیلتر اعتبار عبور نکرده است.":" · فقط سیگنال‌های تأییدشده نمایش داده می‌شوند."))+" · اسکن خودکار هر ۵ دقیقه";
  }catch(error){if(status)status.textContent="پایش کامل نشد: "+(error?.message||"خطای دریافت داده")+" · لطفاً اتصال داده‌ها را بررسی کنید";}
  finally{dualHunterState.busy=false;if(button)button.disabled=false;}
@@ -3372,7 +3369,13 @@ $("market-refresh-btn")?.addEventListener("click",()=>refreshAll());
   const status=$("hunter-feed-status"),last=$("hunter-last-scan");
   if(status)status.textContent="در حال دریافت تازه‌ترین فهرست نمادها و اجرای شکار دوباره…";
   if(last)last.textContent="در حال بروزرسانی";
-  try{await runDedicatedHunterScan(true);}
+  try{
+   const API="https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev";
+   const response=await fetch(API+"/hunter-run",{cache:"no-store"}),snapshot=await response.json();
+   if(!response.ok||snapshot.status==="error")throw new Error(snapshot.error||"اجرای موتور Spot ناموفق بود");
+   window.__mmpDigitalHunterSnapshot=snapshot;if(typeof renderMarketHunter==="function")renderMarketHunter();
+   await runDedicatedHunterScan(true);
+  }catch(error){if(status)status.textContent="بروزرسانی شکار کامل نشد: "+String(error?.message||error).slice(0,160);}
   finally{if(button){button.disabled=false;button.classList.remove("is-refreshing");if(label)label.textContent="بروزرسانی شکار";}}
  });
  $("risk-calc")?.addEventListener("click",calcRisk);
@@ -4886,27 +4889,29 @@ window.mmpShareDownloadLink = async function () {
  const signed=value=>{const n=Number(value);return Number.isFinite(n)?(n>0?"+":"")+number(n,2)+"%":"—";};
  const money=value=>{const n=Number(value);if(!Number.isFinite(n)||n<=0)return "—";return "$"+number(n,n<1?8:4);};
  function render(snapshot){
+  window.__mmpDigitalHunterSnapshot=snapshot;
   const signals=Array.isArray(snapshot.signals)?snapshot.signals.filter(s=>s&&/^[A-Z0-9]{2,24}$/.test(String(s.symbol||"").toUpperCase())&&s.confirmed===true):[];
-  $("mmp-dh-scanned").textContent=number(snapshot.scanned_count||0,0);
-  $("mmp-dh-universe").textContent=number(snapshot.universe_count||0,0);
-  $("mmp-dh-errors").textContent=number(snapshot.failed_count||0,0);
-  $("mmp-dh-updated").textContent=snapshot.scanned_at?"آخرین چرخه: "+new Date(snapshot.scanned_at).toLocaleTimeString("fa-IR"):"در انتظار چرخه";
-  $("mmp-dh-status").textContent=(snapshot.engine||"Digital Hunter v2")+" · "+(snapshot.status==="online"?"موتور فعال":"وضعیت: "+String(snapshot.status||"نامشخص"))+" · نامزدها: "+number(snapshot.candidate_count||signals.length,0)+" · منبع کندل و جریان معاملات در هر سیگنال درج شده است.";
-  if(!signals.length){
-   $("mmp-dh-feed").innerHTML='<div class="hunter-empty"><b>در این چرخه سیگنال تأییدشده‌ای وجود ندارد</b><small>موتور فعال است؛ تا تأیید هم‌جهتی تایم‌فریم‌ها و جریان واقعی معاملات، سیگنال ساختگی نمایش داده نمی‌شود.</small></div>';
+  $("hunter-dh-progress").textContent=number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0);
+  
+  $("hunter-dh-errors").textContent=number(snapshot.failed_count||0,0);
+  $("hunter-last-scan").textContent=snapshot.scanned_at?new Date(snapshot.scanned_at).toLocaleTimeString("fa-IR"):"در انتظار چرخه";
+  $("hunter-feed-status").textContent=(snapshot.engine||"Digital Hunter v2")+" · "+(snapshot.status==="online"?"موتور Spot فعال":"وضعیت: "+String(snapshot.status||"نامشخص"))+" · اسکن: "+number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0)+" · خطا: "+number(snapshot.failed_count||0,0)+" · فقط سیگنال‌های دارای جریان واقعی نمایش داده می‌شوند.";
+  if(!signals.some(s=>s.trend==="bull")){
+   $("hunter-spot-feed").innerHTML='<div class="hunter-empty"><b>در این چرخه سیگنال تأییدشده‌ای وجود ندارد</b><small>موتور فعال است؛ تا تأیید هم‌جهتی تایم‌فریم‌ها و جریان واقعی معاملات، سیگنال ساختگی نمایش داده نمی‌شود.</small></div>';
    return;
   }
-  $("mmp-dh-feed").innerHTML=signals.slice(0,8).map(s=>{
+  $("hunter-spot-feed").innerHTML=signals.filter(s=>s.trend==="bull").slice(0,100).map(s=>{
    const symbol=String(s.symbol).toUpperCase(),bull=s.trend==="bull",flow=s.flow||{},change=bull?s.change5m:s.change5m;
    const trend=bull?"صعودی · LONG":"نزولی · SHORT";
    const net=Number(flow.net5m),netLabel=Number.isFinite(net)?(net>=0?"+":"")+number(net,2)+" USDT":"—";
    const provider=esc(s.provider||"منبع کندل نامشخص"),flowProvider=esc(flow.provider||"جریان معاملات نامشخص");
    return '<article class="hunter-card '+(bull?"up":"down")+'"><div class="hunter-card-head"><div><b class="hunter-symbol">'+symbol+'</b><span class="hunter-direction">'+trend+'</span></div><div class="hunter-score"><small>قدرت</small><b>'+number(s.score,0)+'</b></div></div><div class="hunter-metrics"><div><small>قیمت</small><b>'+money(s.price)+'</b></div><div><small>تغییر ۵ دقیقه</small><b>'+signed(change)+'</b></div><div><small>حجم نسبت به میانگین</small><b>'+number(s.volumeRatio,2)+'×</b></div><div><small>خالص جریان ۵ دقیقه</small><b>'+netLabel+'</b></div></div><div class="hunter-card-foot"><span>کندل: '+provider+'</span><span>جریان: '+flowProvider+' · '+number(flow.tradeCount,0)+' معامله</span></div><div class="hunter-card-foot"><span>۱دقیقه '+signed(s.change1m)+' · ۳دقیقه '+signed(s.change3m)+' · ۱۵دقیقه '+signed(s.change15m)+'</span><span>'+(s.confirmed?"تأیید چندلایه":"در انتظار تأیید")+'</span></div></article>';
   }).join("");
+  if(typeof renderMarketHunter==="function")renderMarketHunter();
  }
  async function load(){
   if(busy)return;busy=true;
-  const status=$("mmp-dh-status");
+  const status=$("hunter-feed-status");
   try{
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
    let response;
@@ -4917,14 +4922,14 @@ window.mmpShareDownloadLink = async function () {
    if(snapshot.status!=="online"&&snapshot.status!=="warming_up")throw new Error(snapshot.error||"موتور در دسترس نیست");
    render(snapshot);
   }catch(error){
-   if(status)status.textContent="دریافت Snapshot ناموفق بود: "+String(error?.message||error).slice(0,130)+" · تلاش مجدد خودکار ادامه دارد.";
+   const feedStatus=$("hunter-feed-status");if(feedStatus)feedStatus.textContent="دریافت داده موتور Digital Hunter ناموفق بود: "+String(error?.message||error).slice(0,130)+" · تلاش خودکار ادامه دارد.";
   }finally{busy=false;}
  }
  async function refresh(){
   if(busy)return;busy=true;
-  const button=$("mmp-dh-refresh"),status=$("mmp-dh-status");
-  if(button){button.disabled=true;button.textContent="در حال اجرای اسکن…";}
-  if(status)status.textContent="درخواست چرخه جدید به موتور سرور ارسال شد؛ ممکن است تا ۶۵ ثانیه زمان ببرد.";
+  const button=$("hunter-refresh-btn"),status=$("hunter-feed-status");
+  if(button){button.disabled=true;const label=button.querySelector("span");if(label)label.textContent="در حال اجرای اسکن…";}
+  if(status)status.textContent="درخواست چرخه جدید Digital Hunter ارسال شد؛ چرخه موتور در حال اجراست.";
   try{
    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
    let response;
@@ -4937,11 +4942,11 @@ window.mmpShareDownloadLink = async function () {
    if(status)status.textContent="اجرای اسکن ناموفق بود: "+String(error?.message||error).slice(0,150);
   }finally{
    busy=false;
-   if(button){button.disabled=false;button.textContent="⟳ به‌روزرسانی موتور";}
+   if(button){button.disabled=false;const label=button.querySelector("span");if(label)label.textContent="بروزرسانی شکار";}
   }
  }
  function init(){
-  const button=$("mmp-dh-refresh");if(button)button.addEventListener("click",refresh);
+  const button=$("hunter-refresh-btn");if(button)button.addEventListener("click",refresh);
   load();setInterval(load,60000);
  }
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
