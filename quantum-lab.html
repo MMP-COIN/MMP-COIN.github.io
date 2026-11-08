@@ -115,10 +115,16 @@ async function scan(){
   });
   const candidates=state.rows.filter(x=>x.score>=55&&x.direction!=="neutral").sort((a,b)=>b.score-a.score).slice(0,35);
   await pool(candidates,3,async row=>{const d=await getDepth(row.symbol);if(d){row.book={bids:d.bids.reduce((s,x)=>s+(+x[0]*+x[1]),0),asks:d.asks.reduce((s,x)=>s+(+x[0]*+x[1]),0)};const total=row.book.bids+row.book.asks;row.book.imbalance=total?(row.book.bids-row.book.asks)/total:0;row.completeness=Math.min(1,row.completeness+.1);row.score=Math.round(Math.min(100,row.score+Math.abs(row.book.imbalance)*4));row.evidence.push("دفتر سفارش زنده");}});
-  state.rows.sort((a,b)=>b.score-a.score);$("health").textContent=Math.round((state.done-state.errors)/Math.max(1,state.done)*100)+"٪";$("opps").textContent=state.rows.filter(x=>x.score>=70&&x.direction!=="neutral").length.toLocaleString("fa-IR");
+  state.rows.sort((a,b)=>b.score-a.score);publishSnapshot(btcTrend);$("health").textContent=Math.round((state.done-state.errors)/Math.max(1,state.done)*100)+"٪";$("opps").textContent=state.rows.filter(x=>x.score>=70&&x.direction!=="neutral").length.toLocaleString("fa-IR");
   const st=Array(12).fill("ready");st[4]=candidates.length?"ready":"partial";st[7]="partial";st[8]="ready";st[9]="partial";renderEngines(st);renderRows();setStatus("اسکن پایان یافت · "+state.done+" ارز بررسی شد · "+state.errors+" خطای داده","ok");log("پایان اسکن؛ فرصت‌های امتیاز ۷۰+: "+$("opps").textContent+" · خطا: "+state.errors);
  }catch(e){setStatus("خطا در دریافت بازار: "+e.message,"bad");log("خطای اصلی: "+e.message)}
  finally{state.busy=false;$("scan").disabled=false;$("scan").textContent="اجرای دوباره اسکن کامل"}
+}
+function publishSnapshot(btcTrend){
+ const snapshot={version:"QIE-2.0.0",generatedAt:Date.now(),universe:state.universe.length,scanned:state.done,errors:state.errors,btcTrend:btcTrend||"نامشخص",opportunities:state.rows.slice(0,50).map(x=>({symbol:x.symbol,price:x.last,change24h:x.change,quoteVolume:x.quoteVolume,direction:x.direction,score:x.score,explosion:x.explosion,atrPct:x.atrPct,evidence:x.evidence.slice(0,5),quality:x.completeness}))};
+ try{localStorage.setItem("mmp_quantum_snapshot_v1",JSON.stringify(snapshot));}catch(e){}
+ try{if("BroadcastChannel"in window){const channel=new BroadcastChannel("mmp-quantum-core");channel.postMessage(snapshot);channel.close();}}catch(e){}
+ window.dispatchEvent(new CustomEvent("mmp-quantum-snapshot",{detail:snapshot}));
 }
 function renderRows(){
  const q=$("filter").value.trim().toUpperCase(),d=$("direction").value,sort=$("sort").value;
