@@ -27,7 +27,6 @@ window.MMPQuantumCore={
  getOpportunities:()=>((snapshot||read())?.opportunities||[]),
  subscribe:fn=>{if(typeof fn!=="function")return()=>{};subscribers.add(fn);return()=>subscribers.delete(fn)}
 };
-window.addEventListener("mmp-quantum-snapshot",e=>publish(e.detail));
 window.addEventListener("storage",e=>{if(e.key==="mmp_quantum_snapshot_v1")publish(read())});
 try{if("BroadcastChannel"in window){const ch=new BroadcastChannel("mmp-quantum-core");ch.onmessage=e=>publish(e.data)}}catch(e){}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",mount,{once:true});else mount();
