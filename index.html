@@ -3165,7 +3165,7 @@ function renderMarketHunter(){
  fut.innerHTML=renderFutures(dualHunterState.futures);
  if($("hunter-spot-count"))$("hunter-spot-count").textContent=signals.length.toLocaleString("fa-IR");
  if($("hunter-futures-count"))$("hunter-futures-count").textContent=dualHunterState.futures.length.toLocaleString("fa-IR");
- if($("hunter-last-scan"))$("hunter-last-scan").textContent=dh.scanned_at?new Date(dh.scanned_at).toLocaleTimeString("fa-IR"):dualHunterState.lastScan?new Date(dualHunterState.lastScan).toLocaleTimeString("fa-IR"):"در انتظار داده";
+
  if($("hunter-dh-progress"))$("hunter-dh-progress").textContent=Number(dh.scanned_count||0).toLocaleString("fa-IR")+"/"+Number(dh.universe_count||0).toLocaleString("fa-IR");
  if($("hunter-dh-errors"))$("hunter-dh-errors").textContent=Number(dh.failed_count||0).toLocaleString("fa-IR");
 }
@@ -4894,8 +4894,8 @@ window.mmpShareDownloadLink = async function () {
   $("hunter-dh-progress").textContent=number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0);
   
   $("hunter-dh-errors").textContent=number(snapshot.failed_count||0,0);
-  $("hunter-last-scan").textContent=snapshot.scanned_at?new Date(snapshot.scanned_at).toLocaleTimeString("fa-IR"):"در انتظار چرخه";
-  $("hunter-feed-status").textContent=(snapshot.engine||"Digital Hunter v2")+" · "+(snapshot.status==="online"?"موتور Spot فعال":"وضعیت: "+String(snapshot.status||"نامشخص"))+" · اسکن: "+number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0)+" · خطا: "+number(snapshot.failed_count||0,0)+" · فقط سیگنال‌های دارای جریان واقعی نمایش داده می‌شوند.";
+  
+  $("hunter-feed-status").textContent=(snapshot.engine||"Digital Hunter v2")+" · "+(snapshot.status==="online"?"موتور Spot فعال":"وضعیت: "+String(snapshot.status||"نامشخص"))+" · اسکن: "+number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0)+" · خطا: "+number(snapshot.failed_count||0,0)+" · آخرین چرخه: "+(snapshot.scanned_at?new Date(snapshot.scanned_at).toLocaleTimeString("fa-IR"):"در انتظار")+" · فقط سیگنال‌های دارای جریان واقعی نمایش داده می‌شوند.";
   if(!signals.some(s=>s.trend==="bull")){
    $("hunter-spot-feed").innerHTML='<div class="hunter-empty"><b>در این چرخه سیگنال خرید تأییدشده‌ای وجود ندارد</b><small>موتور فعال است؛ تا تأیید هم‌جهتی حرکت و جریان واقعی معاملات، سیگنال ساختگی نمایش داده نمی‌شود.</small></div>';
    if(typeof renderMarketHunter==="function")renderMarketHunter();
