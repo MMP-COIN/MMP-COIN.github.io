@@ -4946,7 +4946,7 @@ window.mmpShareDownloadLink = async function () {
   }
  }
  function init(){
-  const button=$("hunter-refresh-btn");if(button)button.addEventListener("click",refresh);
+  // Unified hunter refresh handler owns the single refresh button; this module only polls snapshots.
   load();setInterval(load,60000);
  }
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
