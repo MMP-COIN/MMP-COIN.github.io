@@ -1,4 +1,5 @@
 name: Deploy MMP COIN AI root site
+# Re-sync after the canonical main-header and Quantum Lab integration updates.
 
 on:
   push:
