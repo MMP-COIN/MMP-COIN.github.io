@@ -107,16 +107,6 @@ button{cursor:pointer}
 .menu-section-label{padding:12px 16px 7px;color:#a88d5a;font-size:10px;font-weight:800}
 .menu-divider{height:1px;background:#80683f66;margin:5px 12px}
 .dropdown-menu a.menu-admin-link{margin:8px;padding:13px 14px;min-height:54px;justify-content:space-between;border:1px solid #a98b50;border-radius:11px;background:linear-gradient(120deg,#a77c35,#e8cd8c);color:#17130a;font-weight:900}
-.dropdown-menu a.menu-quantum-link{position:relative;display:grid;grid-template-columns:34px 1fr 18px;grid-template-rows:auto auto;column-gap:10px;row-gap:2px;margin:8px;padding:12px;border:1px solid #b99755;border-radius:13px;background:radial-gradient(ellipse at 0 0,#d9b66d24,transparent 60%),linear-gradient(125deg,#252014,#121b27 72%);box-shadow:inset 0 1px #ffffff12,0 7px 20px #0005;color:#f5dda2}
-.dropdown-menu a.menu-quantum-link>span{grid-row:1/3;align-self:center;display:grid;place-items:center;width:32px;height:32px;border:1px solid #d9b66d88;border-radius:50%;font-size:19px;color:#f5dda2;background:#d9b66d13}
-.dropdown-menu a.menu-quantum-link strong{font-size:12px;color:#ffe5ac}
-.dropdown-menu a.menu-quantum-link small{font-size:9px;color:#aeb9c8}
-.dropdown-menu a.menu-quantum-link>b{grid-column:3;grid-row:1/3;align-self:center;font-size:18px;color:#e5c77f}
-.side-link.side-quantum-link{margin:7px 8px;padding:11px 12px;border:1px solid #a9874b;border-radius:12px;background:radial-gradient(ellipse at 0 0,#d9b66d22,transparent 65%),linear-gradient(120deg,#211d15,#111a25);color:#f5dda2;box-shadow:inset 0 1px #ffffff10,0 7px 18px #0003}
-.side-link.side-quantum-link i{color:#f4d58e}
-.side-link.side-quantum-link span{font-weight:900;color:#ffe5ac}
-.side-link.side-quantum-link em{color:#d7b46a;font-size:9px}
-html.mmp-native-app .native-app-menu a.native-quantum-link{margin:6px 0;padding:13px 12px;border:1px solid #b99755;border-radius:12px;background:radial-gradient(ellipse at 0 0,#d9b66d24,transparent 65%),linear-gradient(120deg,#252014,#121b27);color:#ffe5ac;font-weight:900;box-shadow:inset 0 1px #ffffff12,0 6px 16px #0004}
 .dropdown-menu a.menu-admin-link span{font-size:22px;line-height:1}
 
 @media(max-width:900px){
@@ -1406,7 +1396,6 @@ body.radar-detail-open{overflow:hidden}
   <a href="#opportunities">📡 رادار هوشمند بازار</a>
   <a href="#market-hunter">🎯 شکارچی کوانتومی بازار</a>
   <a href="#ai-section">✧ تحلیلگر هوشمند AI</a>
-  <a class="menu-quantum-link" href="/quantum-lab.html"><span aria-hidden="true">◈</span><strong>ورود به مرکز کوانتومی MMP</strong><small>۱۲ موتور هوشمند بازار</small><b aria-hidden="true">←</b></a>
   <a href="#boom-hunter">◉ آزمایشگاه کوانتومی Boom Hunter</a>
   <a href="#chart-section">▥ نمودار حرفه‌ای</a>
   <a href="#trading-tools">⌗ ابزارهای معامله</a>
@@ -1422,7 +1411,6 @@ body.radar-detail-open{overflow:hidden}
   <a class="side-link" href="#opportunities"><i>⌖</i><span>رادار صعودی و نزولی</span><em>02</em></a>
   <a class="side-link hunter-nav-link" href="#market-hunter"><i>🎯</i><span>شکارچی بازار</span><em>03</em></a>
   <a class="side-link" href="#ai-section"><i>✧</i><span>تحلیلگر هوشمند AI</span><em>04</em></a>
-  <a class="side-link side-quantum-link" href="/quantum-lab.html"><i>◈</i><span>مرکز کوانتومی MMP</span><em>۱۲ موتور</em></a>
   <a class="side-link" href="#boom-hunter"><i>◉</i><span>آزمایشگاه Boom Hunter</span><em>05</em></a>
   <a class="side-link" href="#chart-section"><i>⌁</i><span>نمودار حرفه‌ای</span><em>06</em></a>
   <a class="side-link" href="#market-intelligence"><i>◉</i><span>مرکز هوشمندی بازار</span><em>07</em></a>
@@ -3504,7 +3492,7 @@ html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!i
   document.addEventListener("DOMContentLoaded",function(){
    if(document.querySelector(".native-appbar"))return;
    var header=document.createElement("header");header.className="native-appbar";
-   header.innerHTML='<div class="native-brand"><div class="native-mark"><img src="assets/mmp-coin-mark.svg?v=20261108-qcoin2" alt="MMP QUANTUM"></div><div><b>MMP QUANTUM</b><small>QUANTUM INTELLIGENCE</small></div></div><div class="native-appbar-actions"><div class="native-currency-switch" role="group" aria-label="واحد نمایش قیمت"><button type="button" id="native-currency-irt" class="active" aria-pressed="true" onclick="setCurrency(\'IRT\')">تومان</button><button type="button" id="native-currency-usdt" aria-pressed="false" onclick="setCurrency(\'USDT\')">تتر</button></div><button type="button" class="native-update-check-btn" id="native-update-check-btn" aria-label="بررسی به‌روزرسانی داخلی" title="بررسی نسخه جدید">⇧</button><button type="button" class="native-refresh-btn" id="native-refresh-btn" aria-label="بروزرسانی بازار" title="دریافت دوباره قیمت‌ها و وضعیت اتصال منابع داده">⟳<span class="native-refresh-label">تازه‌سازی داده‌ها</span></button><button type="button" class="native-menu-toggle" id="native-menu-toggle" aria-label="منوی اپلیکیشن" aria-expanded="false">☰</button></div><nav class="native-app-menu" id="native-app-menu" aria-label="منوی اپلیکیشن"><a href="#opportunities">📡 رادار هوشمند بازار</a><a href="#market-hunter">🎯 شکارچی بازار</a><a href="#ai-section">✧ تحلیلگر هوشمند AI</a><a class="native-quantum-link" href="/quantum-lab.html">◈ ورود به مرکز کوانتومی MMP · ۱۲ موتور</a><a href="#boom-hunter">◉ آزمایشگاه Boom Hunter</a><a href="#chart-section">▥ نمودار تریدینگ‌ویو</a><a href="#trading-tools">⌗ ابزارهای معامله</a><a class="native-admin-link" href="https://mmp-coin.github.io/admin.html">⚙ ورود به پنل مدیریت</a><div class="native-menu-version" id="native-menu-version">نسخه فعلی اپ · 1.0.0</div><button type="button" id="native-share-app">↗ ارسال اپلیکیشن برای دوستان</button></nav>';
+   header.innerHTML='<div class="native-brand"><div class="native-mark"><img src="assets/mmp-coin-mark.svg?v=20261108-qcoin2" alt="MMP QUANTUM"></div><div><b>MMP QUANTUM</b><small>QUANTUM INTELLIGENCE</small></div></div><div class="native-appbar-actions"><div class="native-currency-switch" role="group" aria-label="واحد نمایش قیمت"><button type="button" id="native-currency-irt" class="active" aria-pressed="true" onclick="setCurrency(\'IRT\')">تومان</button><button type="button" id="native-currency-usdt" aria-pressed="false" onclick="setCurrency(\'USDT\')">تتر</button></div><button type="button" class="native-update-check-btn" id="native-update-check-btn" aria-label="بررسی به‌روزرسانی داخلی" title="بررسی نسخه جدید">⇧</button><button type="button" class="native-refresh-btn" id="native-refresh-btn" aria-label="بروزرسانی بازار" title="دریافت دوباره قیمت‌ها و وضعیت اتصال منابع داده">⟳<span class="native-refresh-label">تازه‌سازی داده‌ها</span></button><button type="button" class="native-menu-toggle" id="native-menu-toggle" aria-label="منوی اپلیکیشن" aria-expanded="false">☰</button></div><nav class="native-app-menu" id="native-app-menu" aria-label="منوی اپلیکیشن"><a href="#opportunities">📡 رادار هوشمند بازار</a><a href="#market-hunter">🎯 شکارچی بازار</a><a href="#ai-section">✧ تحلیلگر هوشمند AI</a><a href="#boom-hunter">◉ آزمایشگاه Boom Hunter</a><a href="#chart-section">▥ نمودار تریدینگ‌ویو</a><a href="#trading-tools">⌗ ابزارهای معامله</a><a class="native-admin-link" href="https://mmp-coin.github.io/admin.html">⚙ ورود به پنل مدیریت</a><div class="native-menu-version" id="native-menu-version">نسخه فعلی اپ · 1.0.0</div><button type="button" id="native-share-app">↗ ارسال اپلیکیشن برای دوستان</button></nav>';
    document.body.insertBefore(header,document.body.firstChild);
    var menuToggle=header.querySelector("#native-menu-toggle"),appMenu=header.querySelector("#native-app-menu");
    var nativeVersionLabel=header.querySelector("#native-menu-version");if(nativeVersionLabel)nativeVersionLabel.textContent="نسخه فعلی اپ · "+(document.querySelector('meta[name="mmp-app-version"]')?.content||"1.0.0");
