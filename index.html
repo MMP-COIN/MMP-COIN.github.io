@@ -1816,11 +1816,11 @@ body:before{opacity:.23;background-size:34px 34px}
 .heatmap-summary span,.performance-summary>div{padding:10px;border:1px solid #30394b;border-radius:10px;background:#101722;color:#9aa7b7;font-size:10px}
 .heatmap-summary b,.performance-summary b{display:block;color:#f4d58d;font-size:15px;margin-top:5px;font-variant-numeric:tabular-nums}
 .market-heatmap-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:minmax(72px,auto);gap:7px}
-.heat-tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-width:0;min-height:74px;padding:9px;border:1px solid #ffffff20;border-radius:11px;overflow:hidden;background:linear-gradient(145deg,#15392f,#10251f);box-shadow:inset 0 0 22px #ffffff08;transition:transform .2s,border-color .2s}
+.heat-tile{grid-column:span var(--heat-col,1);grid-row:span var(--heat-row,1);position:relative;display:flex;flex-direction:column;justify-content:space-between;min-width:0;min-height:74px;padding:9px;border:1px solid #ffffff20;border-radius:11px;overflow:hidden;background:linear-gradient(145deg,#15392f,#10251f);box-shadow:inset 0 0 22px #ffffff08;transition:transform .2s,border-color .2s}
 .heat-tile:hover{transform:translateY(-2px);border-color:#f4d58d99}
 .heat-tile.negative{background:linear-gradient(145deg,#49232d,#27151d)}
 .heat-tile.neutral{background:linear-gradient(145deg,#34313a,#1b1c24)}
-.heat-tile.major{grid-column:span 2;grid-row:span 2;min-height:155px;padding:13px}
+.heat-tile.major{min-height:155px;padding:13px}
 .heat-tile b{font-size:13px;color:#fff;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis}
 .heat-tile strong{font-size:clamp(15px,2vw,22px);color:#fff;direction:ltr;text-align:left;font-variant-numeric:tabular-nums}
 .heat-tile small{font-size:9px;color:#ffffffb8;direction:ltr;text-align:left;white-space:nowrap}
@@ -1851,7 +1851,7 @@ body:before{opacity:.23;background-size:34px 34px}
 .performance-engine-row small{display:block;color:#94a1b2;font-size:8px;margin-bottom:3px}
 .performance-status{margin-top:9px;color:#9aa7b7;font-size:9px;line-height:1.8}
 @media(max-width:760px){.market-heatmap-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.heat-tile.major{min-height:125px}.performance-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.performance-engine-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:420px){.heatmap-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.market-heatmap-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(65px,auto)}.heat-tile.major{grid-column:span 2;grid-row:span 1;min-height:95px}.liquidity-depth-map{grid-template-columns:1fr}.performance-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.heatmap-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.market-heatmap-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(65px,auto)}.heat-tile.major{grid-column:span 2!important;grid-row:span 1!important;min-height:95px}.liquidity-depth-map{grid-template-columns:1fr}.performance-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body class="mmp-app-mode">
@@ -5171,7 +5171,8 @@ body:before{opacity:.23;background-size:34px 34px}
    if(!assets.length)throw new Error("بازارهای معتبر از منبع دریافت نشد");
    const sum=assets.reduce((n,x)=>n+x.volume,0),up=assets.filter(x=>x.change>0).length,down=assets.filter(x=>x.change<0).length,top=assets[0];
    if(summary)summary.innerHTML='<span>نمادهای بررسی‌شده <b>'+assets.length+'</b></span><span>مثبت <b>'+up+'</b></span><span>منفی <b>'+down+'</b></span><span>گردش ۳۰ نماد برتر <b>'+usd(sum)+'</b></span>';
-   host.innerHTML=assets.map((x,i)=>'<div class="heat-tile '+(x.change>0.05?'positive':x.change<-.05?'negative':'neutral')+' '+(i<4?'major':'')+'"><b>'+x.symbol+'/USDT</b><strong>'+(x.change>0?'+':'')+fmt(x.change,2)+'٪</strong><small>'+usd(x.price)+'</small><span class="heat-volume">حجم ۲۴ساعت '+usd(x.volume)+'</span></div>').join("");
+   const maxVolume=assets[0].volume||1;
+   host.innerHTML=assets.map((x,i)=>{const ratio=x.volume/maxVolume,col=ratio>=.18?2:1,row=ratio>=.45?2:1,share=x.volume/sum*100,major=col>1||row>1;return '<div class="heat-tile '+(x.change>0.05?'positive':x.change<-.05?'negative':'neutral')+' '+(major?'major':'')+'" style="--heat-col:'+col+';--heat-row:'+row+'"><b>'+x.symbol+'/USDT</b><strong>'+(x.change>0?'+':'')+fmt(x.change,2)+'٪</strong><small>'+usd(x.price)+'</small><span class="heat-volume">سهم گردش '+fmt(share,1)+'٪ · حجم '+usd(x.volume)+'</span></div>';}).join("");
    const stamp=Math.max(...assets.map(x=>x.time));if(status)status.textContent="منبع: Binance Spot · "+assets.length+" نماد برتر بر پایه گردش ۲۴ساعته · آخرین زمان تیکر "+(stamp?new Date(stamp).toLocaleTimeString("fa-IR"):"نامشخص")+" · تمرکز حجم به‌معنای ورود خالص پول نیست.";
   }catch(e){host.innerHTML='<div class="heatmap-empty">نقشه حرارتی به‌روزرسانی نشد: '+String(e.message||e)+'</div>';if(status)status.textContent="داده معتبر در دسترس نیست؛ نمایش آخرین ارقام به‌عنوان زنده متوقف شد.";}
   finally{if(button){button.disabled=false;button.textContent="↻ تازه‌سازی نقشه";}}
