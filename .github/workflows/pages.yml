@@ -65,7 +65,7 @@ jobs:
         with:
           enablement: true
       - name: Upload root site
-        uses: actions/upload-pages-artifact@56afc609ac5ed86f2b6aedba0e8f6dda462b719fa # v3
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: .
       - name: Deploy root site
