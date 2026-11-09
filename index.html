@@ -3119,6 +3119,7 @@ async function loadUnifiedRadarSnapshot(){
    note:"چرخه "+Number(snapshot.cycle_number||1).toLocaleString("fa-IR")+" · بررسی یکتا: "+done.toLocaleString("fa-IR")+" از "+total.toLocaleString("fa-IR")+" نماد · این نوبت: "+Number(snapshot.scanned_count||0).toLocaleString("fa-IR")+" · نامزد کندلی: "+Number(snapshot.valid_count||0).toLocaleString("fa-IR")+" · بررسی جریان: "+Number(snapshot.flow_checked_count||0).toLocaleString("fa-IR")+" · تأیید جریان: "+Number(snapshot.flow_confirmed_count||0).toLocaleString("fa-IR")+" · منبع: "+sourceLabel
   };
   renderUnifiedRadarProgress();
+  renderOpportunities();
   const status=$("radar-updated");
   if(status)status.textContent=(fresh?"موتور مرکزی · ":"داده قدیمی · ")+getVisibleRadarSignalCount().toLocaleString("fa-IR")+" فرصت معتبر · آخرین اسکن "+new Date(snapshotAt).toLocaleTimeString("fa-IR");
   return snapshot;
