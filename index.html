@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="c4e03d85de886a9467c07d87848fc8c722080e4c">
+<meta name="mmp-web-build" content="__MMP_WEB_BUILD_ID__">
 <meta name="mmp-quantum-engine" content="QIE-2.0.0">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
@@ -1919,6 +1919,17 @@ header.top .brand small{white-space:nowrap}
  header.top .brand small{display:none!important}
  header.top .top-actions #refresh-all-btn{display:none!important}
 }
+
+<style id="mmp-top-transition-spacing-fix-20261109">
+/* Keep the main header/menu intact; remove the oversized blank strip before page content. */
+@media(max-width:900px){
+ html body.mmp-app-mode .wrap{padding-top:5px!important}
+ html body.mmp-app-mode .wrap>.hero:first-child{margin-top:5px!important}
+}
+@media(min-width:901px){
+ html body.mmp-app-mode .wrap{padding-top:10px!important}
+}
+</style>
 </style>
 </head>
 <body class="mmp-app-mode">
@@ -6123,7 +6134,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="c4e03d85de886a9467c07d87848fc8c722080e4c")return;
+ if(!pageBuild||pageBuild==="__MMP_WEB_BUILD_ID__")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
