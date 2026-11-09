@@ -3059,7 +3059,7 @@ const FAST_RADAR_SERVER_ENDPOINT = "https://mmp-coin-ai-radar.mehrdadmohammadi19
 const unifiedRadarSignals = new Map();
 let unifiedRadarSnapshotAt = 0;
 let unifiedRadarSnapshotBusy = false;
-let unifiedRadarProgress = {completed:0,total:0,failed:0,candidates:0,percent:0,state:"در انتظار اتصال به موتور هوشمند"};
+let unifiedRadarProgress = {completed:0,total:0,failed:0,candidates:0,flowChecked:0,flowConfirmed:0,qualityPass:0,percent:0,state:"در انتظار اتصال به موتور هوشمند"};
 const RADAR_MIN_DISPLAY_SCORE=69;
 function radarSignalPassesDisplayThreshold(signal){
  const score=Number(signal?.score),weakScans=Number(signal?.weakScans)||0;
@@ -3114,7 +3114,7 @@ async function loadUnifiedRadarSnapshot(){
   const ageMs=Math.max(0,Date.now()-snapshotAt),fresh=ageMs<=180000;
   const sourceLabel=snapshot.universe_source==="cached"?"فهرست نمادها از حافظه موقت":"داده زنده";
   unifiedRadarProgress={
-   completed:done,total,failed:Number(snapshot.failed_count)||0,candidates:Number(snapshot.valid_count)||0,percent,
+   completed:done,total,failed:Number(snapshot.failed_count)||0,candidates:Number(snapshot.valid_count)||0,flowChecked:Number(snapshot.flow_checked_count)||0,flowConfirmed:Number(snapshot.flow_confirmed_count)||0,qualityPass:Number(snapshot.quality_pass_count)||0,percent,
    state:!fresh?"آخرین چرخه قدیمی است · منتظر اسکن تازه":snapshot.universe_source==="cached"?"اسکن فعال · "+sourceLabel:"اسکن زنده · چرخه "+Number(snapshot.cycle_number||1).toLocaleString("fa-IR"),
    note:"چرخه "+Number(snapshot.cycle_number||1).toLocaleString("fa-IR")+" · بررسی یکتا: "+done.toLocaleString("fa-IR")+" از "+total.toLocaleString("fa-IR")+" نماد · این نوبت: "+Number(snapshot.scanned_count||0).toLocaleString("fa-IR")+" · نامزد کندلی: "+Number(snapshot.valid_count||0).toLocaleString("fa-IR")+" · بررسی جریان: "+Number(snapshot.flow_checked_count||0).toLocaleString("fa-IR")+" · تأیید جریان: "+Number(snapshot.flow_confirmed_count||0).toLocaleString("fa-IR")+" · منبع: "+sourceLabel
   };
@@ -3990,7 +3990,7 @@ function renderOpportunities(){
   const remainingHtml=remaining.length?'<div class="signal-drawer"><button type="button" class="signal-drawer-toggle" aria-expanded="false" data-scroll-drawer-toggle><span class="signal-drawer-icon">⌄</span><span class="signal-drawer-copy"><b>نمایش همه فرصت‌ها</b><small>فهرست کامل با پیمایش مستقل</small></span><strong>'+remaining.length.toLocaleString("fa-IR")+' نماد</strong></button><div class="signal-drawer-panel" data-scroll-drawer-panel hidden><div class="signal-drawer-panel-head"><span>سایر نامزدهای '+title+'</span><small>برای مشاهده، داخل این پنجره اسکرول کنید</small></div><div class="radar-list radar-overflow-list" tabindex="0" aria-label="فهرست اسکرولی '+title+'">'+remaining.map(card).join("")+'</div></div></div>':'';
   return '<section class="radar-group radar-side '+(up?"radar-group-bull":"radar-group-bear")+'"><div class="section-head radar-group-head"><div class="radar-group-title"><span class="radar-group-icon">'+symbol+'</span><span><b>'+title+'</b><small>حداقل قدرت ۶۹ · سه گزینه قدرتمند در نمای اصلی · مرتب‌شده بر اساس امتیاز</small></span></div><span class="radar-group-count">'+items.length.toLocaleString("fa-IR")+' نامزد</span></div><div class="radar-list radar-featured-list">'+featuredHtml+'</div>'+remainingHtml+'</section>';
  };
- if(!active.length){el.innerHTML='<div class="ai-empty">موتور هوشمند مرکزی فعال است؛ در انتظار ارزیابی معتبر نمادها. سیگنال‌های قبلی تا اعلام افت تأییدشده حفظ می‌شوند.</div>';return;}
+ if(!active.length){const p=unifiedRadarProgress;el.innerHTML='<div class="ai-empty">هنوز فرصت نهایی تأیید نشده است. در چرخه فعلی '+Number(p.completed||0).toLocaleString("fa-IR")+' از '+Number(p.total||0).toLocaleString("fa-IR")+' نماد بررسی شده؛ نامزدهای کندلی: '+Number(p.candidates||0).toLocaleString("fa-IR")+'، بررسی جریان معاملات: '+Number(p.flowChecked||0).toLocaleString("fa-IR")+'، تأیید جریان: '+Number(p.flowConfirmed||0).toLocaleString("fa-IR")+'، عبور از فیلتر نهایی: '+Number(p.qualityPass||0).toLocaleString("fa-IR")+' . فقط فرصت‌های دارای تأیید واقعی نمایش داده می‌شوند.</div>';return;}
  el.innerHTML=group(bullish,"bull")+group(bearish,"bear");
 }
 function calcRisk(){const capital=Number($("risk-capital").value),pct=Number($("risk-percent").value),entry=Number($("risk-entry").value),stop=Number($("risk-stop").value);const out=$("risk-result");if(!(capital>0&&pct>0&&pct<=100&&entry>0&&stop>0)){out.textContent="سرمایه، درصد ریسک، قیمت ورود و قیمت حد ضرر را کامل و معتبر وارد کنید.";return;}if(entry===stop){out.textContent="قیمت ورود و قیمت حد ضرر نباید برابر باشند.";return;}const risk=capital*pct/100,dist=Math.abs(entry-stop)/entry,notional=risk/dist,qty=notional/entry;out.innerHTML="<div><b>مبلغ ورود به معامله:</b> "+money(notional,2)+" USDT</div><div><b>ضرر احتمالی در صورت برخورد به حد ضرر:</b> "+money(risk,2)+" USDT</div><div><b>فاصله تا حد ضرر:</b> "+(dist*100).toFixed(2)+"%</div><div><b>مقدار دارایی:</b> "+money(qty,6)+"</div><small>مبلغ ورود، ارزش کل معامله است و با اهرم می‌تواند از مارجین پرداختی بیشتر باشد. کارمزد و لغزش قیمت محاسبه نشده‌اند.</small>";}
