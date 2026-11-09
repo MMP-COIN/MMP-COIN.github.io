@@ -13,6 +13,7 @@ on:
 permissions:
   contents: write
   pages: write
+  deployments: write
   id-token: write
 
 concurrency:
@@ -29,6 +30,7 @@ jobs:
     permissions:
       contents: write
       pages: write
+      deployments: write
       id-token: write
     steps:
       - name: Checkout root-site mirror
@@ -39,6 +41,10 @@ jobs:
           repository: MMP-COIN/MMP-COIN-AI
           ref: main
           path: canonical
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+        with:
+          enablement: true
       - name: Synchronize canonical Quantum UI and brand assets
         run: |
           set -euo pipefail
@@ -60,14 +66,15 @@ jobs:
             git commit -m "Sync canonical Quantum UI from core [skip ci]"
             git push
           fi
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
-        with:
-          enablement: true
       - name: Upload root site
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: .
+      - name: Inspect active Pages deployments before publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api "repos/${GITHUB_REPOSITORY}/pages/deployments?per_page=10" --jq '.[] | [.id, .sha, .environment, .created_at, .status_url] | @tsv'
       - name: Deploy root site
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
