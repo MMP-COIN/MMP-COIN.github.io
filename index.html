@@ -1382,6 +1382,17 @@ body.radar-detail-open{overflow:hidden}
 #quantum-center-entry .quantum-engine-matrix>a.quantum-engine-link small{font-size:9px;line-height:1.7;color:#b8c0ca}
 @media(max-width:760px){#quantum-center-entry .quantum-engine-matrix>a.quantum-engine-link{flex-basis:164px;width:164px;min-height:55px}}
 @media(max-width:420px){#quantum-center-entry .quantum-engine-matrix>a.quantum-engine-link{flex-basis:148px;width:148px;min-height:52px}}
+
+/* One command-center control contains the 12 specialist engines; collapsed by default. */
+#quantum-center-entry details.quantum-engine-board{grid-column:1/-1;}
+#quantum-center-entry .quantum-engine-board>summary{list-style:none;cursor:pointer;user-select:none;min-height:44px;margin:0;padding:2px 2px;}
+#quantum-center-entry .quantum-engine-board>summary::-webkit-details-marker{display:none}
+#quantum-center-entry .quantum-engine-board>summary>span{display:flex;align-items:center;gap:9px}
+#quantum-center-entry .engine-toggle-chevron{display:inline-block;font-size:16px;transition:transform .18s ease}
+#quantum-center-entry .quantum-engine-board[open] .engine-toggle-chevron{transform:rotate(180deg)}
+#quantum-center-entry .quantum-engine-board:not([open]) .quantum-engine-matrix,
+#quantum-center-entry .quantum-engine-board:not([open]) .quantum-engine-links{display:none}
+#quantum-center-entry .quantum-engine-board[open] .quantum-engine-matrix{margin-top:10px}
 </style><style id="mmp-global-readable-layout">
 /* Global layout safety: keep every label and value inside its own card. */
 *,*::before,*::after{box-sizing:border-box}
@@ -1903,8 +1914,8 @@ body:before{opacity:.23;background-size:34px 34px}
   <div class="quantum-hero-actions"><a class="quantum-enter-btn" href="/quantum-lab.html"><span>ورود به مرکز کوانتومی</span><b>←</b></a><a class="quantum-run-compact" href="/quantum-lab.html?run-engines=1" aria-label="ورود و اجرای مجدد هر ۱۲ موتور"><span>⟳ اجرای مجدد ۱۲ موتور</span><small>اسکن واقعی بازار</small></a><span class="badge">مرکز یکپارچه تحلیل بازار</span></div>
  </div>
  <div class="quantum-hero-art" aria-label="نشان سه‌بعدی کوانتومی MMP"><div class="quantum-art-grid"></div><div class="quantum-art-orbit orbit-one"></div><div class="quantum-art-orbit orbit-two"></div><div class="quantum-art-orbit orbit-three"></div><div class="quantum-art-core mmp-quantum-emblem"><img src="assets/mmp-coin-mark.svg?v=20261109-hero" alt="نشان اصلی سکه MMP"></div><i class="quantum-node node-one"></i><i class="quantum-node node-two"></i><i class="quantum-node node-three"></i><div class="quantum-art-caption">QUANTUM COMMAND<small>MMP MARKET INTELLIGENCE</small></div></div>
- <div class="quantum-engine-board" aria-label="معماری ۱۲ موتور فرماندهی">
-  <div class="quantum-engine-board-head"><div><b>دسترسی به ۱۲ موتور فرماندهی</b><small>۱۲ ابزار تخصصی از این مرکز قابل دسترسی‌اند؛ وضعیت اجرا فقط داخل هر موتور و بر اساس داده تأییدشده اعلام می‌شود</small></div><span>ENGINE DIRECTORY</span></div>
+ <details class="quantum-engine-board" aria-label="مرکز دسترسی به ۱۲ موتور تخصصی">
+  <summary class="quantum-engine-board-head"><div><b>یک موتور مرکزی · ۱۲ قابلیت تخصصی</b><small>برای مشاهده ابزارهای داخلی، این مرکز فرماندهی را باز کن؛ وضعیت هر قابلیت فقط با داده معتبر اعلام می‌شود</small></div><span>نمایش ۱۲ موتور <b class="engine-toggle-chevron" aria-hidden="true">⌄</b></span></summary><div><b>دسترسی به ۱۲ موتور فرماندهی</b><small>۱۲ ابزار تخصصی از این مرکز قابل دسترسی‌اند؛ وضعیت اجرا فقط داخل هر موتور و بر اساس داده تأییدشده اعلام می‌شود</small></div><span>ENGINE DIRECTORY</span>
   <div class="quantum-engine-matrix">
    <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-01" aria-label="ورود به موتور هوشمندی بازار"><i>01</i><b>هوشمندی بازار</b><small>رژیم بازار، جهت BTC و همبستگی</small></a>
    <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-02" aria-label="ورود به موتور شناسایی حرکت انفجاری"><i>02</i><b>شناسایی حرکت انفجاری</b><small>فشردگی قیمت، حجم و شتاب اولیه</small></a>
@@ -1920,7 +1931,7 @@ body:before{opacity:.23;background-size:34px 34px}
    <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-12" aria-label="ورود به موتور موتور تصمیم کوانتومی"><i>12</i><b>موتور تصمیم کوانتومی</b><small>ترکیب شواهد، کیفیت داده و رتبه‌بندی</small></a>
   </div>
   <div class="quantum-engine-links"><span>رادار فرصت‌ها</span><b>←</b><span>شکارچی بازار</span><b>←</b><span>تحلیلگر هوشمند</span><b>←</b><span>جریان سفارش و سناریو</span></div>
- </div>
+ </details>
  <div class="quantum-hero-foot"><span>اسکن پویا جفت‌های واجد شرایط USDT Spot</span><span>۱۲ موتور تحلیل و تصمیم</span><span>داده ناموجود = بدون امتیازسازی جعلی</span></div>
 </section>
 
