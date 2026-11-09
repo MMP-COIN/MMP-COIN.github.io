@@ -5288,6 +5288,17 @@ window.mmpShareDownloadLink = async function () {
  document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
 })();
 </script>
+
+<style id="mmp-home-hero-render-fix">
+/* Stable homepage hero/cards rendering: avoid Android GPU gradient/mask artifacts. */
+#hero>.hero{background-color:#142433!important;background-image:none!important;border:1px solid #52677a!important;isolation:isolate;opacity:1!important;visibility:visible!important;filter:none!important;}
+#hero>.hero:before,#hero>.hero:after{content:none!important;display:none!important;animation:none!important;}
+#hero>.hero>div,#hero>.hero h1,#hero>.hero p,#hero>.hero .eyebrow{opacity:1!important;visibility:visible!important;}
+#market-snapshot.grid{opacity:1!important;visibility:visible!important;filter:none!important;}
+#market-snapshot.grid>.card{background-color:#172838!important;background-image:none!important;border:1px solid #52677a!important;box-shadow:0 10px 24px rgba(0,0,0,.28)!important;opacity:1!important;visibility:visible!important;filter:none!important;transform:none!important;}
+#market-snapshot.grid>.card:before,#market-snapshot.grid>.card:after{content:none!important;display:none!important;}
+#market-snapshot.grid>.card>*{position:relative;z-index:1;opacity:1!important;visibility:visible!important;}
+</style>
 </body>
 
 <!-- mmp-deploy-retry-20261107: trigger GitHub Pages deployment -->
