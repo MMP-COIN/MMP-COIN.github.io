@@ -48,6 +48,8 @@ jobs:
           cp canonical/www/quantum-lab.html ./quantum-lab.html
           mkdir -p assets
           cp -R canonical/assets/. assets/
+          test -s canonical/www/assets/mmp-quantum-lab-integration.js
+          cp canonical/www/assets/mmp-quantum-lab-integration.js assets/mmp-quantum-lab-integration.js
           cp canonical/manifest.webmanifest ./manifest.webmanifest
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
