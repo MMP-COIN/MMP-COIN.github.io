@@ -3068,16 +3068,18 @@ function radarSignalPassesDisplayThreshold(signal){
 function getVisibleRadarSignalCount(){return [...unifiedRadarSignals.values()].filter(radarSignalPassesDisplayThreshold).length;}
 function renderUnifiedRadarProgress(){
  const p=unifiedRadarProgress,put=(id,value)=>{const el=$(id);if(el)el.textContent=String(value);};
- put("radar-core-live-state",p.state||"هسته آماده دریافت داده زنده");
- put("radar-scan-state",p.state||"رصد بازار");
+ put("radar-core-live-state",p.state||"در انتظار داده واقعی");
+ put("radar-scan-state",p.state||"در انتظار داده واقعی");
  put("radar-scan-percent",Number(p.percent||0).toLocaleString("fa-IR")+"٪");
  put("radar-scan-done",Number(p.completed||0).toLocaleString("fa-IR"));
  put("radar-scan-total",Number(p.total||0).toLocaleString("fa-IR"));
  put("radar-scan-candidates",Number(p.candidates||0).toLocaleString("fa-IR"));
  put("radar-scan-errors",Number(p.failed||0).toLocaleString("fa-IR"));
  const bar=$("radar-scan-bar");if(bar)bar.style.width=Math.max(0,Math.min(100,Number(p.percent)||0))+"%";
- const score=$("radar-core-live-score"),visibleCount=getVisibleRadarSignalCount();if(score)score.textContent=visibleCount?String(visibleCount).padStart(2,"0"):"CORE";
- const note=$("radar-scan-persistence");if(note)note.textContent="تحلیل و اسکن روی موتور مرکزی MMP انجام می‌شود؛ این صفحه فقط خروجی معتبر را دریافت می‌کند.";
+ const score=$("radar-core-live-score"),visibleCount=getVisibleRadarSignalCount();if(score)score.textContent=String(visibleCount).padStart(2,"0");
+ const note=$("radar-scan-persistence");if(note)note.textContent=p.note||"آمار چرخه از گزارش ثبت‌شده موتور مرکزی دریافت می‌شود.";
+ const stateEl=$("radar-core-live-state"),stateWrap=stateEl?.closest(".radar-core-state");
+ if(stateWrap){stateWrap.classList.toggle("is-offline",/قطع|ناموفق|قدیمی|خطا/.test(p.state||""));stateWrap.classList.toggle("is-cached",/حافظه موقت/.test(p.state||""));}
 }
 async function loadUnifiedRadarSnapshot(){
  if(unifiedRadarSnapshotBusy)return null;
@@ -3088,7 +3090,7 @@ async function loadUnifiedRadarSnapshot(){
   if(!response.ok)throw new Error("HTTP "+response.status);
   const snapshot=await response.json();
   if(snapshot.status!=="online")throw new Error(snapshot.message||"سرویس رادار هنوز آماده نیست");
-  const snapshotAt=Date.parse(snapshot.scanned_at||"")||Date.now();
+  const snapshotAt=Date.parse(snapshot.scanned_at||"");\n  if(!Number.isFinite(snapshotAt)||snapshotAt<=0)throw new Error("زمان Snapshot معتبر نیست");
   if(snapshotAt>unifiedRadarSnapshotAt||unifiedRadarSignals.size===0){
    unifiedRadarSnapshotAt=Math.max(unifiedRadarSnapshotAt,snapshotAt);
    (Array.isArray(snapshot.signals)?snapshot.signals:[]).forEach(signal=>{
@@ -3105,18 +3107,21 @@ async function loadUnifiedRadarSnapshot(){
    for(const [id,signal] of unifiedRadarSignals){if(Date.now()-Number(signal.updatedAt||0)>5*60*1000)unifiedRadarSignals.delete(id);}
    renderOpportunities();
   }
-  const total=Number(snapshot.universe_count)||0,done=Number(snapshot.next_cursor)||0;
+  const total=Number(snapshot.cycle_total||snapshot.universe_count)||0,done=Math.max(0,Number(snapshot.cycle_scanned_count)||0);
+  const percent=Math.max(0,Math.min(100,Number(snapshot.cycle_percent)||0));
+  const ageMs=Math.max(0,Date.now()-snapshotAt),fresh=ageMs<=180000;
+  const sourceLabel=snapshot.universe_source==="cached"?"فهرست نمادها از حافظه موقت":"داده زنده";
   unifiedRadarProgress={
-   completed:done,total,failed:Number(snapshot.failed_count)||0,candidates:getVisibleRadarSignalCount(),
-   percent:total?Math.round(done/total*100):0,
-   state:"موتور هوشمند فعال · اسکن چرخشی "+Number(snapshot.batch_size||36).toLocaleString("fa-IR")+" نماد در هر نوبت"
+   completed:done,total,failed:Number(snapshot.failed_count)||0,candidates:Number(snapshot.valid_count)||0,percent,
+   state:!fresh?"آخرین چرخه قدیمی است · منتظر اسکن تازه":snapshot.universe_source==="cached"?"اسکن فعال · "+sourceLabel:"اسکن زنده · چرخه "+Number(snapshot.cycle_number||1).toLocaleString("fa-IR"),
+   note:"چرخه "+Number(snapshot.cycle_number||1).toLocaleString("fa-IR")+" · بررسی یکتا: "+done.toLocaleString("fa-IR")+" از "+total.toLocaleString("fa-IR")+" نماد · این نوبت: "+Number(snapshot.scanned_count||0).toLocaleString("fa-IR")+" · نامزد کندلی: "+Number(snapshot.valid_count||0).toLocaleString("fa-IR")+" · بررسی جریان: "+Number(snapshot.flow_checked_count||0).toLocaleString("fa-IR")+" · تأیید جریان: "+Number(snapshot.flow_confirmed_count||0).toLocaleString("fa-IR")+" · منبع: "+sourceLabel
   };
   renderUnifiedRadarProgress();
   const status=$("radar-updated");
-  if(status)status.textContent="موتور هوشمند مرکزی · "+getVisibleRadarSignalCount().toLocaleString("fa-IR")+" سیگنال واجد شرایط · آخرین دریافت "+new Date(snapshotAt).toLocaleTimeString("fa-IR");
+  if(status)status.textContent=(fresh?"موتور مرکزی · ":"داده قدیمی · ")+getVisibleRadarSignalCount().toLocaleString("fa-IR")+" فرصت معتبر · آخرین اسکن "+new Date(snapshotAt).toLocaleTimeString("fa-IR");
   return snapshot;
  }catch(error){
-  unifiedRadarProgress={...unifiedRadarProgress,state:"اتصال به موتور هوشمند برقرار نشد · تلاش مجدد خودکار"};
+  unifiedRadarProgress={...unifiedRadarProgress,state:"اتصال به موتور هوشمند برقرار نشد · تلاش مجدد خودکار",note:"دریافت Snapshot ناموفق بود؛ اعداد قبلی فقط آخرین آمار ثبت‌شده‌اند و اسکن زنده تأیید نمی‌شود."};
   renderUnifiedRadarProgress();
   const status=$("radar-updated");if(status)status.textContent="دریافت داده از موتور مرکزی ناموفق بود؛ تلاش مجدد ادامه دارد.";
   console.warn("Unified radar snapshot:",error?.message||error);
