@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="8cfe92c7b00ad70288f9ad5b6ee96ce9275b24fc">
+<meta name="mmp-web-build" content="6d74a0ebc54ab9972bbd47ab72f22fb070f0bcc5">
 <meta name="mmp-quantum-engine" content="QIE-2.0.0">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
@@ -1317,6 +1317,15 @@ body.radar-detail-open{overflow:hidden}
 @keyframes signalDrawerIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:600px){.signal-drawer-toggle{min-height:54px;padding:9px}.signal-drawer-panel{padding:8px}.signal-drawer-panel-head small{font-size:8px}.signal-drawer-panel .radar-overflow-list{max-height:52vh}}
 @media(prefers-reduced-motion:reduce){.signal-drawer-panel{animation:none}.signal-drawer-icon{transition:none}}
+</style>
+<style id="mmp-hunter-heading-emphasis">
+/* تأکید بصری فقط روی نشان و عنوان فارسی شکارچی بازار */
+#market-hunter .hunter-heading-copy .section-kicker,#market-hunter .hunter-heading-wrap .section-kicker,#market-hunter .hunter-topline .section-kicker,[data-quantum-module="hunter"] .section-kicker{display:none!important}
+#market-hunter .hunter-quantum-mark{width:64px;height:64px;flex-basis:64px;border-width:2px;box-shadow:0 0 24px #d9b66d44,inset 0 0 16px #d9b66d33}
+#market-hunter .hunter-target-symbol{font-size:29px;font-weight:900}
+#market-hunter .hunter-heading-copy h2{font-size:clamp(23px,3vw,29px)!important;font-weight:900!important;letter-spacing:0!important;color:#f2d18a;text-shadow:0 1px 12px #d9b66d33}
+#market-hunter .hunter-heading-copy .sub{font-weight:400}
+@media(max-width:600px){#market-hunter .hunter-quantum-mark{width:58px;height:58px;flex-basis:58px}#market-hunter .hunter-heading-copy h2{font-size:23px!important}}
 </style>
 <style id="mmp-compact-quantum-section-heads">
 /* نشان کوانتومی اختصاصی شکارچی؛ نشان اصلی سکه M سایت بدون تغییر می‌ماند */
@@ -3938,6 +3947,20 @@ function hunter4hParse(payload){
 let hunterDetailState={symbol:"",market:"spot",coin:null,signal:null,interval:"60",busy:false,rows:[]};
 function hunterDetailPrice(v){return hunterPrice(v);}
 async function hunterDetailFetch(symbol,market,interval){
+ // اول از تجمیع‌گر اصلی کندل استفاده کن؛ این مسیر نمادهای واقعی هر صرافی را
+ // بررسی می‌کند و برای جفت‌هایی که در Binance/Bybit/OKX نیستند به WhiteBIT و منابع جایگزین می‌رود.
+ const workerIntervals={"15":"15m","60":"1h","240":"4h","D":"1d"};
+ const workerInterval=workerIntervals[String(interval)]||"1h";
+ try{
+  const workerUrl=AI_ANALYSIS_ENDPOINT+"/market-candles?symbol="+encodeURIComponent(String(symbol).toUpperCase()+"USDT")+"&interval="+workerInterval+"&market="+(market==="futures"?"futures":"spot");
+  const payload=await hunterFetchJson(workerUrl,16000);
+  const source=Array.isArray(payload?.candles)?payload.candles:[];
+  const rows=hunter4hParse(source.map(c=>[Number(c.time)*1000,c.open,c.high,c.low,c.close,c.volume]));
+  if(rows.length>=30)return rows;
+  throw new Error(payload?.detail||"کندل معتبر کافی از تجمیع‌گر دریافت نشد");
+ }catch(error){
+  console.warn("MMP candle aggregator unavailable for "+symbol+"; trying direct exchange fallbacks:",error?.message||error);
+ }
  const map={15:{binance:"15m",bybit:"15",okx:"15m"},60:{binance:"1h",bybit:"60",okx:"1H"},240:{binance:"4h",bybit:"240",okx:"4H"},D:{binance:"1d",bybit:"D",okx:"1D"}},tf=map[interval]||map[60],pair=symbol.toUpperCase()+"USDT",limit=interval==="D"?220:220;
  const urls=market==="spot"?[
   async()=>hunter4hParse(await hunterFetchJson("https://api.binance.com/api/v3/klines?symbol="+pair+"&interval="+tf.binance+"&limit="+limit,12000)),
@@ -6134,7 +6157,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="8cfe92c7b00ad70288f9ad5b6ee96ce9275b24fc")return;
+ if(!pageBuild||pageBuild==="6d74a0ebc54ab9972bbd47ab72f22fb070f0bcc5")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
