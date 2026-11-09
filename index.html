@@ -3079,7 +3079,8 @@ function renderUnifiedRadarProgress(){
  const score=$("radar-core-live-score"),visibleCount=getVisibleRadarSignalCount();if(score)score.textContent=String(visibleCount).padStart(2,"0");
  const note=$("radar-scan-persistence");if(note)note.textContent=p.note||"آمار چرخه از گزارش ثبت‌شده موتور مرکزی دریافت می‌شود.";
  const stateEl=$("radar-core-live-state"),stateWrap=stateEl?.closest(".radar-core-state");
- if(stateWrap){stateWrap.classList.toggle("is-offline",/قطع|ناموفق|قدیمی|خطا/.test(p.state||""));stateWrap.classList.toggle("is-cached",/حافظه موقت/.test(p.state||""));}\n const progressWrap=$("radar-scan-bar")?.closest(".radar-scan-progress");if(progressWrap){progressWrap.classList.toggle("is-offline",/قطع|ناموفق|قدیمی|خطا/.test(p.state||""));progressWrap.classList.toggle("is-cached",/حافظه موقت/.test(p.state||""));}
+ if(stateWrap){stateWrap.classList.toggle("is-offline",/قطع|ناموفق|قدیمی|خطا/.test(p.state||""));stateWrap.classList.toggle("is-cached",/حافظه موقت/.test(p.state||""));}
+ const progressWrap=$("radar-scan-bar")?.closest(".radar-scan-progress");if(progressWrap){progressWrap.classList.toggle("is-offline",/قطع|ناموفق|قدیمی|خطا/.test(p.state||""));progressWrap.classList.toggle("is-cached",/حافظه موقت/.test(p.state||""));}
 }
 async function loadUnifiedRadarSnapshot(){
  if(unifiedRadarSnapshotBusy)return null;
@@ -3090,7 +3091,8 @@ async function loadUnifiedRadarSnapshot(){
   if(!response.ok)throw new Error("HTTP "+response.status);
   const snapshot=await response.json();
   if(snapshot.status!=="online")throw new Error(snapshot.message||"سرویس رادار هنوز آماده نیست");
-  const snapshotAt=Date.parse(snapshot.scanned_at||"");\n  if(!Number.isFinite(snapshotAt)||snapshotAt<=0)throw new Error("زمان Snapshot معتبر نیست");
+  const snapshotAt=Date.parse(snapshot.scanned_at||"");
+  if(!Number.isFinite(snapshotAt)||snapshotAt<=0)throw new Error("زمان Snapshot معتبر نیست");
   if(snapshotAt>unifiedRadarSnapshotAt||unifiedRadarSignals.size===0){
    unifiedRadarSnapshotAt=Math.max(unifiedRadarSnapshotAt,snapshotAt);
    (Array.isArray(snapshot.signals)?snapshot.signals:[]).forEach(signal=>{
