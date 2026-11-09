@@ -2146,9 +2146,14 @@ body:before{opacity:.23;background-size:34px 34px}
    <div class="intel-foot" id="orderflow-status">در انتظار دریافت دفتر سفارش و معاملات واقعی…</div>
   </article>
   
-  <article class="intel-panel" id="candle-intelligence" aria-disabled="true">
-   <div class="intel-panel-head"><div><small>CANDLE INTELLIGENCE · TEMPORARILY PAUSED</small><h3>آزمایشگاه سناریوهای کندلی</h3></div><span class="badge">موقتاً غیرفعال</span></div>
-   <div class="intel-foot" role="status">این بخش تا زمان رفع خطای دریافت کندل از منبع بازار، هیچ برآورد یا سناریوی قیمتی تولید نمی‌کند. پس از تأیید دریافت کندل‌های واقعی و بسته‌شده و آزمون محاسبات، دوباره فعال خواهد شد.</div>
+  <article class="intel-panel" id="candle-intelligence">
+   <div class="intel-panel-head"><div><small>CANDLE INTELLIGENCE · 15M</small><h3>آزمایشگاه سناریوهای کندلی</h3></div><button class="intel-refresh" id="forecast-run" type="button">تحلیل کندل‌ها</button></div>
+   <div class="intel-forecast-summary" id="forecast-summary">پس از دریافت کندل‌های واقعی، دامنه‌های برآوردی ۱، ۳ و ۵ کندل آینده محاسبه می‌شوند.</div>
+   <div class="intel-forecast-grid" id="forecast-grid"><div><small>۱ کندل بعد</small><b>—</b><span>—</span></div><div><small>۳ کندل بعد</small><b>—</b><span>—</span></div><div><small>۵ کندل بعد</small><b>—</b><span>—</span></div></div>
+   
+   <div class="intel-backtest-bar"><button class="intel-refresh" id="historical-backtest" type="button">اجرای بک‌تست ۲۵۰ کندل</button><span id="backtest-status">آزمون پایه EMA 20/50 با حد ضرر مبتنی بر ATR</span></div>
+   <div class="intel-backtest-results" id="backtest-results"><div>پس از اجرای آزمون، نرخ برد، بازده R، افت سرمایه و معاملات ثبت‌شده نمایش داده می‌شود.</div></div>
+<div class="intel-foot">این خروجی برآورد آماری دامنه و امتداد روند است، نه احتمال قطعی سود؛ اعتبارسنجی تاریخی به‌تدریج با دفتر سیگنال تکمیل می‌شود.</div>
   </article>
   <article class="intel-panel" id="whale-panel">
    <div class="intel-panel-head"><div><small>BITCOIN · PUBLIC MEMPOOL</small><h3>پایش انتقال‌های بزرگ بیت‌کوین</h3></div><span class="intel-status-live">منبع عمومی</span></div>
@@ -3032,6 +3037,28 @@ async function checkConnections(){
    }catch(directError){wallexCheck.error="اتصال مستقیم: "+String(directError?.message||"خطای شبکه").slice(0,80);}
    finally{clearTimeout(wallexTimer);}
   }
+  const probeDirectFallback=async(check,urls,valid,purpose)=>{
+   if(!check||check.status!=="down")return;
+   const started=Date.now(),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),6500);
+   try{
+    const attempts=await Promise.allSettled(urls.map(async url=>{
+     const response=await fetch(url,{cache:"no-store",signal:controller.signal,headers:{"Accept":"application/json"}});
+     if(!response.ok)throw new Error("HTTP "+response.status);
+     const data=await response.json();if(!valid(data))throw new Error("پاسخ معتبر نبود");return data;
+    }));
+    const success=attempts.find(x=>x.status==="fulfilled");
+    if(!success)throw new Error(String(attempts.find(x=>x.status==="rejected")?.reason?.message||"همه مسیرهای جایگزین ناموفق بودند"));
+    check.status=Date.now()-started>2500?"slow":"ok";check.ping=Date.now()-started;check.error=null;check.purpose=purpose+" · مسیر جایگزین مرورگر";
+   }catch(error){check.error="مسیر جایگزین مرورگر: "+String(error?.message||"خطای شبکه").slice(0,90);}
+   finally{clearTimeout(timer);}
+  };
+  await Promise.all([
+   probeDirectFallback(checks.get("binance spot"),["https://api1.binance.com/api/v3/ticker/price?symbol=BTCUSDT","https://api2.binance.com/api/v3/ticker/price?symbol=BTCUSDT","https://data-api.binance.vision/api/v3/ticker/price?symbol=BTCUSDT"],d=>Number(d?.price)>0,"قیمت لحظه‌ای Spot"),
+   probeDirectFallback(checks.get("okx spot"),["https://us.okx.com/api/v5/market/ticker?instId=BTC-USDT","https://openapi.okx.com/api/v5/market/ticker?instId=BTC-USDT"],d=>d?.code==="0"&&Number(d?.data?.[0]?.last)>0,"قیمت لحظه‌ای Spot"),
+   probeDirectFallback(checks.get("gate.io spot"),["https://api.gate.us/api/v4/spot/tickers?currency_pair=BTC_USDT"],d=>Array.isArray(d)&&Number(d?.[0]?.last)>0,"قیمت لحظه‌ای Spot"),
+   probeDirectFallback(checks.get("kucoin spot"),["https://api.kucoin.tr/api/v1/market/orderbook/level1?symbol=BTC-USDT"],d=>d?.code==="200000"&&Number(d?.data?.price)>0,"قیمت لحظه‌ای Spot"),
+   probeDirectFallback(checks.get("nobitex"),["https://api.nobitex.ir/market/stats?srcCurrency=usdt&dstCurrency=rls"],d=>d?.status==="ok"&&Number(d?.stats?.["usdt-rls"]?.latest)>0,"نرخ تتر به تومان")
+  ]);
   const ordered=expected.map(name=>checks.get(name)).filter(Boolean);
   if(ordered.length!==expected.length)throw new Error("پاسخ بررسی اتصال کامل نیست");
 
@@ -5812,7 +5839,89 @@ window.mmpShareDownloadLink = async function () {
  }
  refresh();setInterval(refresh,20000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh();});
 })();
-</script></body>
+</script><style id="mmp-home-engine-live-style">
+#quantum-center-entry .quantum-engine-link{position:relative;overflow:hidden}
+#quantum-center-entry .quantum-engine-link .engine-live-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:3px;font-size:8px;color:#aeb9c8}
+#quantum-center-entry .quantum-engine-link .engine-live-state{display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+#quantum-center-entry .quantum-engine-link .engine-live-dot{width:6px;height:6px;border-radius:50%;background:#83909e;flex:none}
+#quantum-center-entry .quantum-engine-link.is-live .engine-live-dot{background:#43d7a0;box-shadow:0 0 9px #43d7a0;animation:mmpEngineDot 1.25s ease-in-out infinite}
+#quantum-center-entry .quantum-engine-link.is-live:before{content:"";position:absolute;inset:0 auto 0 -45%;width:35%;background:linear-gradient(90deg,transparent,#d9b66d20,transparent);transform:skewX(-18deg);animation:mmpEngineSweep 3.2s linear infinite;pointer-events:none}
+#quantum-center-entry .quantum-engine-link.is-live .engine-live-state{color:#75dfb7}
+#quantum-center-entry .quantum-engine-link.is-stale .engine-live-state{color:#e1b96d}
+#quantum-center-entry .quantum-engine-link .engine-live-track{height:3px;border-radius:8px;background:#ffffff12;overflow:hidden;margin-top:5px}
+#quantum-center-entry .quantum-engine-link .engine-live-track span{display:block;height:100%;width:0;background:linear-gradient(90deg,#98713a,#f1d48f);border-radius:8px;transition:width .7s ease}
+#quantum-center-entry .quantum-engine-link.is-live .engine-live-track span{box-shadow:0 0 8px #e4c47788}
+#quantum-center-entry .quantum-engine-link .engine-live-row b{color:#e7d3a7;font-variant-numeric:tabular-nums}
+@keyframes mmpEngineDot{50%{opacity:.35;transform:scale(.78)}}
+@keyframes mmpEngineSweep{0%{left:-45%}100%{left:125%}}
+@media(prefers-reduced-motion:reduce){#quantum-center-entry .quantum-engine-link:before,#quantum-center-entry .quantum-engine-link .engine-live-dot{animation:none!important}}
+</style><script id="mmp-home-engine-live-monitor">
+(function(){
+ const root=document.querySelector("#quantum-center-entry .quantum-engine-matrix");
+ if(!root||root.dataset.liveMonitor==="1")return;
+ root.dataset.liveMonitor="1";
+ const API="https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev";
+ const defs=[
+  ["داده‌های بازار","داده معتبر",s=>s.filter(x=>Number(x.price||x.coin?.current_price)>0).length],
+  ["حرکت انفجاری","نامزد انفجاری",s=>s.filter(x=>Number(x.explosionScore)>=.55).length],
+  ["فرصت‌یابی","فرصت شناسایی‌شده",s=>s.length],
+  ["جریان پول","جریان کامل",s=>s.filter(x=>x.flow?.complete===true).length],
+  ["نقدینگی","عمق تأییدشده",s=>s.filter(x=>x.depth?.confirmed===true).length],
+  ["تایم‌فریم‌ها","هم‌جهتی روند",s=>s.filter(x=>x.trend5&&x.trend1&&x.trend5===x.trend1).length],
+  ["نوسان","ATR معتبر",s=>s.filter(x=>Number(x.atrPct)>0).length],
+  ["رفتار بازار","نشانه جهت",s=>s.filter(x=>["bull","bear"].includes(x.trend)).length],
+  ["سناریوسازی","برنامه معامله",s=>s.filter(x=>x.tradePlan&&Object.keys(x.tradePlan).length).length],
+  ["یادگیری","پیش‌بینی ثبت‌شده",s=>Number(window.__mmpQuantumLedgerCount||0)],
+  ["مدیریت ریسک","حد ریسک معتبر",s=>s.filter(x=>Number(x.tradePlan?.riskPercent)>0).length],
+  ["تصمیم نهایی","گیت کیفیت",s=>s.filter(x=>x.confirmed===true&&x.multiExchangeConfirmed===true&&x.quantum?.qualityGate===true).length]
+ ];
+ const cards=[...root.querySelectorAll("a.quantum-engine-link")];
+ cards.forEach((card,i)=>{
+  if(card.querySelector(".engine-live-row"))return;
+  const row=document.createElement("div");row.className="engine-live-row";
+  row.innerHTML='<span class="engine-live-state"><i class="engine-live-dot"></i><span>در انتظار داده</span></span><b>—</b>';
+  const track=document.createElement("div");track.className="engine-live-track";track.innerHTML="<span></span>";
+  card.append(row,track);
+ });
+ function paint(snap){
+  const signals=Array.isArray(snap.signals)?snap.signals:[];
+  const total=Math.max(0,Number(snap.universe_count)||0),done=Math.max(0,Number(snap.scanned_count)||0);
+  const stamp=Date.parse(snap.checked_at||snap.scanned_at||"");
+  const live=snap.status==="online"&&done>0&&Number.isFinite(stamp)&&Date.now()-stamp<120000;
+  const cyclePct=total?Math.max(0,Math.min(100,Math.round(done/total*100))):0;
+  cards.forEach((card,i)=>{
+   const row=card.querySelector(".engine-live-row"),track=card.querySelector(".engine-live-track span");
+   if(!row||!track)return;
+   const [label,metric,fn]=defs[i]||defs[0];
+   let value=0;try{value=fn(signals)}catch(e){}
+   const active=live&&(i===0?signals.length>0:i===1?done>0:i===2?signals.length>0:i===3?signals.some(x=>x.flow?.complete===true):i===4?signals.some(x=>x.depth?.confirmed===true):i===5?signals.some(x=>x.trend5&&x.trend1):i===6?signals.some(x=>Number(x.atrPct)>0):i===7?signals.some(x=>x.trend):i===8?signals.some(x=>x.tradePlan):i===9?Number(window.__mmpQuantumLedgerCount||0)>0:i===10?signals.some(x=>Number(x.tradePlan?.riskPercent)>0):signals.some(x=>x.confirmed===true&&x.multiExchangeConfirmed===true&&x.quantum?.qualityGate===true));
+   card.classList.toggle("is-live",active);card.classList.toggle("is-stale",!live);
+   const stateText=!live?"مکث · داده کهنه":active?"در حال پایش":"داده ناکافی";
+   row.querySelector(".engine-live-state span").textContent=stateText;
+   row.querySelector("b").textContent=value.toLocaleString("fa-IR")+" · "+metric;
+   track.style.width=(active?Math.max(4,cyclePct):Math.min(100,cyclePct))+"%";
+   card.setAttribute("aria-label",card.querySelector("b")?.textContent+" · "+stateText+" · "+value+" "+metric);
+   card.dataset.engineMetric=label;
+  });
+  const badge=document.querySelector("#quantum-center-entry .quantum-engine-board-head>span");
+  if(badge)badge.textContent=live?"● LIVE · "+done.toLocaleString("fa-IR")+"/"+total.toLocaleString("fa-IR"):"◷ WAITING FOR SNAPSHOT";
+ }
+ async function refresh(){
+  try{
+   const response=await fetch(API+"/hunter-snapshot",{cache:"no-store",headers:{Accept:"application/json"}});
+   if(!response.ok)throw new Error("snapshot "+response.status);
+   const snap=await response.json();window.__mmpQuantumHomeSnapshot=snap;paint(snap);
+  }catch(e){
+   cards.forEach(card=>{card.classList.remove("is-live");card.classList.add("is-stale");const t=card.querySelector(".engine-live-state span");if(t)t.textContent="اتصال ناموفق"}); 
+   const badge=document.querySelector("#quantum-center-entry .quantum-engine-board-head>span");if(badge)badge.textContent="◷ CONNECTION WAIT";
+  }
+ }
+ refresh();if(window.__mmpHomeEngineTimer)clearInterval(window.__mmpHomeEngineTimer);
+ window.__mmpHomeEngineTimer=setInterval(refresh,15000);
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
+})();
+</script>
+</body>
 </html>
 
 <style id="mmp-whale-dashboard-visual-v4">
