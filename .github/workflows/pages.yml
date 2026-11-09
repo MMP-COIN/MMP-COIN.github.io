@@ -1,6 +1,6 @@
 name: Deploy MMP COIN AI root site
 # Publish restored original 3D M-coin homepage header.
-# Re-sync after the canonical main-header and Quantum Lab integration updates.
+# Re-sync after the canonical main-header, Quantum Lab integration, and quantum-core visual redesign updates.
 
 on:
   push:
