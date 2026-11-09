@@ -2120,7 +2120,7 @@ body:before{opacity:.23;background-size:34px 34px}
    <div class="intel-foot" id="derivatives-status">برای دریافت داده زنده، نماد را بررسی کن.</div>
   </article>
   <article class="intel-panel" id="orderflow-panel">
-   <div class="intel-panel-head"><div><small>ORDER FLOW · LIQUIDITY</small><h3>جریان سفارش و نقدشوندگی</h3></div><button class="intel-refresh" id="orderflow-refresh" type="button">↻ تازه‌سازی</button></div>
+   <div class="intel-panel-head"><div><small>ORDER FLOW · LIQUIDITY</small><h3>ردیاب نقدینگی و شکار استاپ</h3><p class="sub">دیوارهای واقعی دفتر سفارش، عمق خرید و فروش و نزدیک‌ترین خوشه نقدینگی قابل مشاهده.</p></div><button class="intel-refresh" id="orderflow-refresh" type="button">↻ تازه‌سازی</button></div>
    <div class="intel-symbol-row"><label for="orderflow-market">بازار داده</label><select id="orderflow-market" aria-label="انتخاب بازار جریان سفارش"><option value="spot">Spot · اسپات</option><option value="futures">Futures · فیوچرز</option></select></div>
    <div class="intel-metrics two" id="orderflow-metrics">
     <div><small>عمق خرید ۱٪</small><b>—</b><em>Bid liquidity</em></div><div><small>عمق فروش ۱٪</small><b>—</b><em>Ask liquidity</em></div><div><small>عدم‌تعادل دفتر سفارش</small><b>—</b><em>Order-book imbalance</em></div><div><small>جریان خالص معاملات ۵ دقیقه</small><b>—</b><em>Executed Trade Flow · 5m</em></div>
@@ -5154,7 +5154,7 @@ body:before{opacity:.23;background-size:34px 34px}
   if(!depth?.available||(!bids.length&&!asks.length)){host.innerHTML='<div class="heatmap-empty">سطوح دفتر سفارش از منبع فعلی دریافت نشد؛ دیوار یا محدوده تخمینی جایگزین نشده است.</div>';return;}
   const all=[...bids,...asks],max=Math.max(1,...all.map(x=>Number(x.notional_usdt)||0));
   const side=(rows,kind,title)=>'<div class="liquidity-side '+kind+'"><h4>'+title+'</h4>'+(rows.length?rows.slice(0,14).map(x=>{const p=Number(x.price),v=Number(x.notional_usdt)||0;return '<div class="liquidity-level '+(x.is_wall?'wall':'')+'" style="--depth-width:'+Math.max(2,v/max*100)+'%"><span>'+fmt(p,p<1?6:2)+'</span><b>'+usd(v)+'</b></div>';}).join(""):'<div class="heatmap-empty">داده موجود نیست</div>')+'</div>';
-  const meta=$("liquidity-map-meta");if(meta)meta.textContent=(depth.source||"منبع نامشخص")+" · "+(depth.level_count||all.length)+" سطح · اسپرد "+(depth.spread_pct==null?"—":fmt(depth.spread_pct,4)+"٪");
+  const meta=$("liquidity-map-meta"),mid=Number(depth.mid_price)||0,near=(Array.isArray(depth.walls)?depth.walls:[]).filter(x=>Number(x.price)>0).sort((a,b)=>Math.abs(Number(a.price)-mid)-Math.abs(Number(b.price)-mid))[0],nearText=near&&mid?" · نزدیک‌ترین دیوار "+(near.side==="bid"?"خرید ":"فروش ")+fmt(Number(near.price),Number(near.price)<1?6:2)+" ("+fmt(Math.abs(Number(near.price)-mid)/mid*100,2)+"٪ فاصله)":"";if(meta)meta.textContent=(depth.source||"منبع نامشخص")+" · "+(depth.level_count||all.length)+" سطح · اسپرد "+(depth.spread_pct==null?"—":fmt(depth.spread_pct,4)+"٪")+nearText;
   host.innerHTML=side(bids,"bids","دیوارهای خرید / BID")+side(asks,"asks","دیوارهای فروش / ASK");
  }
  async function loadMarketHeatmap(){
