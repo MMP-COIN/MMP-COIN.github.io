@@ -1,6 +1,6 @@
 name: Deploy MMP COIN AI root site
 # Publish restored original 3D M-coin homepage header.
-# Re-sync after compact status-only quantum engine cards and the 4+8 collapsible layout.
+# Re-sync after compact status-only quantum engine cards, accurate readiness labels, and 4+8 layout.
 
 on:
   push:
