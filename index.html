@@ -4683,8 +4683,17 @@ body:before{opacity:.23;background-size:34px 34px}
  const usd=v=>Number.isFinite(Number(v))?"$"+fmt(v,Number(v)<1?6:2):"—";
  async function getJson(url,timeout=9000){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeout);
-  try{const r=await fetch(url,{cache:"no-store",signal:controller.signal});if(!r.ok)throw new Error("HTTP "+r.status);return await r.json();}
-  finally{clearTimeout(timer);}
+  try{
+   const r=await fetch(url,{cache:"no-store",signal:controller.signal});
+   const raw=await r.text();let payload=null;
+   try{payload=JSON.parse(raw);}catch{payload=null;}
+   if(!r.ok){
+    const detail=payload?.detail||payload?.error||payload?.message||raw.slice(0,220);
+    throw new Error("HTTP "+r.status+(detail?" · "+detail:""));
+   }
+   if(!payload||typeof payload!=="object")throw new Error("پاسخ منبع داده معتبر نیست.");
+   return payload;
+  }finally{clearTimeout(timer);}
  }
  async function loadDerivatives(){
   const symbol=safeSymbol(byId("intel-symbol")?.value||"BTC")||"BTC";
@@ -4745,10 +4754,16 @@ body:before{opacity:.23;background-size:34px 34px}
   if(button){button.disabled=true;button.textContent="در حال محاسبه…";}
   if(summary)summary.textContent="در حال دریافت کندل‌های ۱۵ دقیقه‌ای "+symbol+"…";
   try{
-   const data=await getJson(api()+"/market-candles?symbol="+symbol+"&interval=15m",20000);
-   const rows=Array.isArray(data.candles)?data.candles:[];
-   const closes=rows.map(x=>Number(x.close)).filter(x=>x>0);
-   if(closes.length<35)throw new Error("تعداد کندل معتبر برای محاسبه کافی نیست.");
+   if(!api())throw new Error("نشانی موتور داده تنظیم نشده است؛ تحلیل اجرا نشد.");
+   const data=await getJson(api()+"/market-candles?symbol="+symbol+"&interval=15m",25000);
+   if(!data.provider||!Array.isArray(data.candles))throw new Error("پاسخ کندلی فاقد منبع یا آرایه OHLCV معتبر است.");
+   const now=Math.floor(Date.now()/1000);
+   const rows=data.candles.filter(x=>{
+    const t=Number(x?.time),o=Number(x?.open),hi=Number(x?.high),lo=Number(x?.low),c=Number(x?.close),v=Number(x?.volume);
+    return Number.isFinite(t)&&t+900<=now&&o>0&&hi>=Math.max(o,c)&&lo<=Math.min(o,c)&&lo>0&&c>0&&Number.isFinite(v)&&v>=0;
+   }).sort((a,b)=>Number(a.time)-Number(b.time));
+   const closes=rows.map(x=>Number(x.close));
+   if(closes.length<35)throw new Error("کمتر از ۳۵ کندل ۱۵ دقیقه‌ای بسته‌شده و معتبر دریافت شد؛ "+rows.length+" کندل قابل استفاده بود.");
    const n=closes.length,ys=closes.slice(-30),mean=ys.reduce((a,b)=>a+b,0)/ys.length;
    let sx=0,sy=0,sxx=0,sxy=0;
    ys.forEach((v,i)=>{sx+=i;sy+=v;sxx+=i*i;sxy+=i*v;});
