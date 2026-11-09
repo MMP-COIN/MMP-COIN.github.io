@@ -99,3 +99,45 @@ jobs:
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$WORKER_URL/health" -o /tmp/mmp-worker-health.json
           jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true' /tmp/mmp-worker-health.json >/dev/null
           echo "Published site, manifest, icon, Quantum Lab, version marker and Worker health all verified."
+      - name: Browser smoke test desktop and mobile
+        timeout-minutes: 10
+        run: |
+          set -euo pipefail
+          npm install --prefix /tmp/mmp-playwright --no-save playwright
+          PLAYWRIGHT_BROWSERS_PATH=/tmp/mmp-browsers /tmp/mmp-playwright/node_modules/.bin/playwright install --with-deps chromium
+          SITE_URL="${{ steps.deployment.outputs.page_url }}"
+          NODE_PATH=/tmp/mmp-playwright/node_modules PLAYWRIGHT_BROWSERS_PATH=/tmp/mmp-browsers SITE_URL="$SITE_URL" node <<'NODE'
+          const { chromium } = require("playwright");
+          (async () => {
+            const browser = await chromium.launch({ headless: true });
+            const failures = [];
+            try {
+              for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile",width:390,height:844}]) {
+                const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+                page.on("pageerror", error => failures.push(viewport.name + ": " + error.message));
+                const response = await page.goto(process.env.SITE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
+                if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
+                await page.waitForTimeout(7000);
+                const title = await page.title();
+                const bodyText = await page.locator("body").innerText();
+                if (!title.includes("MMP QUANTUM")) throw new Error(viewport.name + " homepage title is missing");
+                if (bodyText.trim().length < 200) throw new Error(viewport.name + " homepage rendered almost no content");
+                for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
+                  if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
+                }
+                await page.close();
+              }
+              const lab = await browser.newPage({ viewport: { width: 390, height: 844 } });
+              lab.on("pageerror", error => failures.push("Quantum Lab: " + error.message));
+              const labResponse = await lab.goto(new URL("quantum-lab.html", process.env.SITE_URL).toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
+              if (!labResponse || !labResponse.ok()) throw new Error("Quantum Lab HTTP response is not successful");
+              await lab.waitForTimeout(5000);
+              if ((await lab.locator("body").innerText()).trim().length < 150) throw new Error("Quantum Lab rendered almost no content");
+              await lab.close();
+              if (failures.length) throw new Error("Uncaught browser errors: " + failures.join(" | "));
+              console.log("Desktop homepage, mobile homepage and mobile Quantum Lab rendered without uncaught JavaScript errors.");
+            } finally {
+              await browser.close();
+            }
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
