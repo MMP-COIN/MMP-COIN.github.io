@@ -1809,7 +1809,51 @@ body:before{opacity:.23;background-size:34px 34px}
 #mmp-command-progress.is-error .mcp-head b{color:#e6a5a5}
 @media(max-width:560px){#mmp-command-progress{padding:11px}#mmp-command-progress .mcp-head strong{font-size:19px}#mmp-command-progress .mcp-metrics{gap:5px 12px}}
 @media(prefers-reduced-motion:reduce){#mmp-command-progress .mcp-track i{transition:none}}
-</style></head>
+</style><style id="mmp-market-intelligence-v3">
+.market-heatmap-panel{grid-column:1/-1;position:relative;overflow:hidden}
+.market-heatmap-panel:before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,#d9b66d,#25d695,#d9b66d,transparent);opacity:.8}
+.heatmap-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.heatmap-summary span,.performance-summary>div{padding:10px;border:1px solid #30394b;border-radius:10px;background:#101722;color:#9aa7b7;font-size:10px}
+.heatmap-summary b,.performance-summary b{display:block;color:#f4d58d;font-size:15px;margin-top:5px;font-variant-numeric:tabular-nums}
+.market-heatmap-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:minmax(72px,auto);gap:7px}
+.heat-tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;min-width:0;min-height:74px;padding:9px;border:1px solid #ffffff20;border-radius:11px;overflow:hidden;background:linear-gradient(145deg,#15392f,#10251f);box-shadow:inset 0 0 22px #ffffff08;transition:transform .2s,border-color .2s}
+.heat-tile:hover{transform:translateY(-2px);border-color:#f4d58d99}
+.heat-tile.negative{background:linear-gradient(145deg,#49232d,#27151d)}
+.heat-tile.neutral{background:linear-gradient(145deg,#34313a,#1b1c24)}
+.heat-tile.major{grid-column:span 2;grid-row:span 2;min-height:155px;padding:13px}
+.heat-tile b{font-size:13px;color:#fff;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis}
+.heat-tile strong{font-size:clamp(15px,2vw,22px);color:#fff;direction:ltr;text-align:left;font-variant-numeric:tabular-nums}
+.heat-tile small{font-size:9px;color:#ffffffb8;direction:ltr;text-align:left;white-space:nowrap}
+.heat-tile .heat-volume{font-size:9px;color:#ffffffa8}
+.heatmap-empty{padding:20px;text-align:center;border:1px dashed #384456;border-radius:11px;color:#9aa7b7;font-size:11px;grid-column:1/-1}
+.liquidity-map-head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin:15px 0 8px;font-size:11px;color:#f2d58e}
+.liquidity-map-head small{font-size:9px;color:#9aa7b7}
+.liquidity-depth-map{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.liquidity-side{min-width:0;padding:9px;border:1px solid #30394b;border-radius:10px;background:#0b111a}
+.liquidity-side h4{font-size:10px;margin:0 0 8px}
+.liquidity-side.bids h4{color:#48d6a6}.liquidity-side.asks h4{color:#ff8795}
+.liquidity-level{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px;padding:5px 4px;margin:3px 0;border-radius:5px;overflow:hidden;font-size:9px;direction:ltr}
+.liquidity-level:before{content:"";position:absolute;inset:0 auto 0 0;width:var(--depth-width);opacity:.22;background:#25d695}
+.liquidity-side.asks .liquidity-level:before{background:#ff6576}
+.liquidity-level.wall{outline:1px solid #d9b66d99;background:#d9b66d0c}
+.liquidity-level.wall:after{content:"WALL";position:absolute;right:4px;top:3px;color:#f4d58d;font-size:7px;letter-spacing:.5px}
+.liquidity-level span,.liquidity-level b{position:relative;z-index:1}
+.liquidity-level b{font-variant-numeric:tabular-nums;color:#fff}
+.liquidity-map-note{font-size:9px;line-height:1.8;color:#a5afbd;margin:8px 0;padding:8px 10px;border-right:2px solid #c49d54;background:#ffffff05;border-radius:6px}
+.server-performance-panel{margin:12px 0 16px;padding:14px;border:1px solid #78633b88;border-radius:14px;background:radial-gradient(ellipse at 100% 0,#d9b66d12,transparent 45%),linear-gradient(145deg,#151c27,#0b1119)}
+.server-performance-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.server-performance-head b{display:block;color:#f4d58d;font-size:13px}
+.server-performance-head small{display:block;color:#9aa7b7;font-size:9px;margin-top:4px}
+.performance-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:12px 0}
+.performance-engine-list{display:grid;gap:7px}
+.performance-engine-row{display:grid;grid-template-columns:minmax(0,1.2fr) repeat(4,minmax(0,.7fr));gap:8px;align-items:center;padding:9px;border:1px solid #30394b;border-radius:9px;background:#0e1520;font-size:10px}
+.performance-engine-row b{color:#f4d58d}
+.performance-engine-row small{display:block;color:#94a1b2;font-size:8px;margin-bottom:3px}
+.performance-status{margin-top:9px;color:#9aa7b7;font-size:9px;line-height:1.8}
+@media(max-width:760px){.market-heatmap-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.heat-tile.major{min-height:125px}.performance-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.performance-engine-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.heatmap-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.market-heatmap-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(65px,auto)}.heat-tile.major{grid-column:span 2;grid-row:span 1;min-height:95px}.liquidity-depth-map{grid-template-columns:1fr}.performance-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
 <body class="mmp-app-mode">
 
 <header class="top">
@@ -2082,7 +2126,16 @@ body:before{opacity:.23;background-size:34px 34px}
     <div><small>عمق خرید ۱٪</small><b>—</b><em>Bid liquidity</em></div><div><small>عمق فروش ۱٪</small><b>—</b><em>Ask liquidity</em></div><div><small>عدم‌تعادل دفتر سفارش</small><b>—</b><em>Order-book imbalance</em></div><div><small>جریان خالص معاملات ۵ دقیقه</small><b>—</b><em>Executed Trade Flow · 5m</em></div>
    </div>
    <div class="intel-flow-track"><span id="orderflow-buy-bar"></span><span id="orderflow-sell-bar"></span></div>
+   <div class="liquidity-map-head"><b>دفتر سفارش زنده · Order Book Heatmap</b><small id="liquidity-map-meta">در انتظار داده معتبر</small></div>
+   <div id="orderflow-depth-map" class="liquidity-depth-map"><div class="heatmap-empty">پس از دریافت دفتر سفارش واقعی، سطوح خرید و فروش و دیوارهای قابل مشاهده نمایش داده می‌شوند.</div></div>
+   <div class="liquidity-map-note">دیوارها سفارش‌های Limit قابل مشاهده در لحظه دریافت‌اند و ممکن است لغو شوند. سفارش‌های حدضرر پنهان در دفتر سفارش عمومی دیده نمی‌شوند؛ محدوده‌های احتمالی استاپ، تخمین‌اند نه داده قطعی.</div>
    <div class="intel-foot" id="orderflow-status">در انتظار دریافت دفتر سفارش و معاملات واقعی…</div>
+  </article>
+  <article class="intel-panel market-heatmap-panel" id="market-heatmap-panel">
+   <div class="intel-panel-head"><div><small>MARKET BREADTH · LIVE TURNOVER</small><h3>نقشه حرارتی بازار</h3><p class="sub">اندازه کارت‌ها بر پایه گردش ۲۴ساعته و رنگ آن‌ها بر پایه تغییر قیمت واقعی است.</p></div><button class="intel-refresh" id="market-heatmap-refresh" type="button">↻ تازه‌سازی نقشه</button></div>
+   <div class="heatmap-summary" id="market-heatmap-summary"><span>بازارهای بررسی‌شده <b>—</b></span><span>نمادهای مثبت <b>—</b></span><span>نمادهای منفی <b>—</b></span><span>گردش سرمایه <b>—</b></span></div>
+   <div id="market-heatmap-grid" class="market-heatmap-grid"><div class="heatmap-empty">در انتظار دریافت تیکرهای واقعی بازار…</div></div>
+   <div class="intel-foot" id="market-heatmap-status">منبع: تیکر ۲۴ساعته Binance Spot · اندازه کارت‌ها نماینده گردش معاملات است، نه ارزش بازار یا جریان ورود پول.</div>
   </article>
   <article class="intel-panel" id="candle-intelligence" aria-disabled="true">
    <div class="intel-panel-head"><div><small>CANDLE INTELLIGENCE · TEMPORARILY PAUSED</small><h3>آزمایشگاه سناریوهای کندلی</h3></div><span class="badge">موقتاً غیرفعال</span></div>
@@ -2096,6 +2149,12 @@ body:before{opacity:.23;background-size:34px 34px}
 </section>
 <section class="intel-panel journal-panel" id="signal-journal" data-quantum-module="learning">
  <div class="intel-panel-head"><div><small>TRADE JOURNAL · BACKTEST & CALIBRATION</small><h3>دفتر ثبت سیگنال و ارزیابی عملکرد</h3><p class="sub">سیگنال‌ها روی همین دستگاه ذخیره می‌شوند؛ نتیجه فقط با رسیدن قیمت واقعی به حد سود یا حد ضرر بسته می‌شود.</p></div><span class="journal-local-tag">ذخیره محلی</span></div>
+ <div class="server-performance-panel" id="server-performance-panel">
+  <div class="server-performance-head"><div><b>سنجش اعتبار موتورهای تحلیل</b><small>کارنامه سروری · فقط نتایج بسته‌شده و قابل‌ردیابی</small></div><button class="intel-refresh" id="performance-refresh" type="button">↻ تازه‌سازی آمار</button></div>
+  <div class="performance-summary" id="performance-summary"><div><small>نمونه‌های ثبت‌شده</small><b>—</b></div><div><small>نتایج قطعی</small><b>—</b></div><div><small>موفق</small><b>—</b></div><div><small>ناموفق</small><b>—</b></div><div><small>نرخ موفقیت</small><b>—</b></div><div><small>میانگین R</small><b>—</b></div></div>
+  <div class="performance-engine-list" id="performance-engine-list"><div class="heatmap-empty">در انتظار دریافت کارنامه سرور…</div></div>
+  <div class="performance-status" id="performance-status">نتایج مبهم، منقضی و بدون معامله از نرخ موفقیت حذف می‌شوند. تا تشکیل نمونه کافی، نرخ موفقیت نمایش داده نخواهد شد.</div>
+ </div>
  <div class="journal-form">
   <label>نماد<input id="journal-symbol" value="BTC" maxlength="15" placeholder="BTC"></label>
   <label>جهت معامله<select id="journal-side"><option value="LONG">خرید / LONG</option><option value="SHORT">فروش / SHORT</option></select></label>
@@ -5089,12 +5148,56 @@ body:before{opacity:.23;background-size:34px 34px}
  $("derivatives-load")?.addEventListener("click",()=>{loadDerivativesViaWorker();loadOrderflowViaWorker();});
  $("derivatives-refresh")?.addEventListener("click",loadDerivativesViaWorker);
  $("intel-symbol")?.addEventListener("change",loadDerivativesViaWorker);
+ function renderLiquidityDepth(depth){
+  const host=$("orderflow-depth-map");if(!host)return;
+  const levels=depth?.levels||{},bids=Array.isArray(levels.bids)?levels.bids:[],asks=Array.isArray(levels.asks)?levels.asks:[];
+  if(!depth?.available||(!bids.length&&!asks.length)){host.innerHTML='<div class="heatmap-empty">سطوح دفتر سفارش از منبع فعلی دریافت نشد؛ دیوار یا محدوده تخمینی جایگزین نشده است.</div>';return;}
+  const all=[...bids,...asks],max=Math.max(1,...all.map(x=>Number(x.notional_usdt)||0));
+  const side=(rows,kind,title)=>'<div class="liquidity-side '+kind+'"><h4>'+title+'</h4>'+(rows.length?rows.slice(0,14).map(x=>{const p=Number(x.price),v=Number(x.notional_usdt)||0;return '<div class="liquidity-level '+(x.is_wall?'wall':'')+'" style="--depth-width:'+Math.max(2,v/max*100)+'%"><span>'+fmt(p,p<1?6:2)+'</span><b>'+usd(v)+'</b></div>';}).join(""):'<div class="heatmap-empty">داده موجود نیست</div>')+'</div>';
+  const meta=$("liquidity-map-meta");if(meta)meta.textContent=(depth.source||"منبع نامشخص")+" · "+(depth.level_count||all.length)+" سطح · اسپرد "+(depth.spread_pct==null?"—":fmt(depth.spread_pct,4)+"٪");
+  host.innerHTML=side(bids,"bids","دیوارهای خرید / BID")+side(asks,"asks","دیوارهای فروش / ASK");
+ }
+ async function loadMarketHeatmap(){
+  const host=$("market-heatmap-grid"),status=$("market-heatmap-status"),summary=$("market-heatmap-summary"),button=$("market-heatmap-refresh");
+  if(!host)return;if(button){button.disabled=true;button.textContent="در حال دریافت…";}
+  if(status)status.textContent="در حال دریافت تیکرهای ۲۴ساعته Binance Spot…";
+  try{
+   const rows=await get(api()+"/market-proxy?source=binance-tickers",20000);
+   if(!Array.isArray(rows))throw new Error("ساختار تیکر بازار معتبر نیست");
+   const stable=new Set(["USDC","FDUSD","TUSD","USDP","DAI","USDE","EUR","BUSD"]);
+   const assets=rows.filter(x=>String(x.symbol||"").endsWith("USDT")&&!stable.has(String(x.symbol).replace(/USDT$/,""))&&Number(x.lastPrice)>0&&Number.isFinite(Number(x.priceChangePercent))&&Number(x.quoteVolume)>0)
+    .map(x=>({symbol:String(x.symbol).replace(/USDT$/,""),price:Number(x.lastPrice),change:Number(x.priceChangePercent),volume:Number(x.quoteVolume),time:Number(x.closeTime)||0}))
+    .sort((a,b)=>b.volume-a.volume).slice(0,30);
+   if(!assets.length)throw new Error("بازارهای معتبر از منبع دریافت نشد");
+   const sum=assets.reduce((n,x)=>n+x.volume,0),up=assets.filter(x=>x.change>0).length,down=assets.filter(x=>x.change<0).length,top=assets[0];
+   if(summary)summary.innerHTML='<span>نمادهای بررسی‌شده <b>'+assets.length+'</b></span><span>مثبت <b>'+up+'</b></span><span>منفی <b>'+down+'</b></span><span>گردش ۳۰ نماد برتر <b>'+usd(sum)+'</b></span>';
+   host.innerHTML=assets.map((x,i)=>'<div class="heat-tile '+(x.change>0.05?'positive':x.change<-.05?'negative':'neutral')+' '+(i<4?'major':'')+'"><b>'+x.symbol+'/USDT</b><strong>'+(x.change>0?'+':'')+fmt(x.change,2)+'٪</strong><small>'+usd(x.price)+'</small><span class="heat-volume">حجم ۲۴ساعت '+usd(x.volume)+'</span></div>').join("");
+   const stamp=Math.max(...assets.map(x=>x.time));if(status)status.textContent="منبع: Binance Spot · "+assets.length+" نماد برتر بر پایه گردش ۲۴ساعته · آخرین زمان تیکر "+(stamp?new Date(stamp).toLocaleTimeString("fa-IR"):"نامشخص")+" · تمرکز حجم به‌معنای ورود خالص پول نیست.";
+  }catch(e){host.innerHTML='<div class="heatmap-empty">نقشه حرارتی به‌روزرسانی نشد: '+String(e.message||e)+'</div>';if(status)status.textContent="داده معتبر در دسترس نیست؛ نمایش آخرین ارقام به‌عنوان زنده متوقف شد.";}
+  finally{if(button){button.disabled=false;button.textContent="↻ تازه‌سازی نقشه";}}
+ }
+ async function loadPublicPerformance(){
+  const summary=$("performance-summary"),list=$("performance-engine-list"),status=$("performance-status"),button=$("performance-refresh");
+  if(!summary||!list)return;if(button){button.disabled=true;button.textContent="در حال دریافت…";}
+  if(status)status.textContent="در حال دریافت کارنامه ثبت‌شده از پایگاه داده سرور…";
+  try{
+   const response=await fetch(MMP_ANALYTICS_ENDPOINT+"/analytics/public-performance?days=90",{cache:"no-store",headers:{Accept:"application/json"}});
+   if(!response.ok)throw new Error("HTTP "+response.status);
+   const data=await response.json(),o=data.overall||{},rate=o.win_rate==null?"—":fmt(o.win_rate,1)+"٪",avg=o.avg_r==null?"—":(Number(o.avg_r)>0?"+":"")+fmt(o.avg_r,2)+"R";
+   summary.innerHTML=[["نمونه‌های ثبت‌شده",o.total],["نتایج قطعی",o.resolved],["موفق",o.wins],["ناموفق",o.losses],["نرخ موفقیت",rate],["میانگین R",avg]].map(x=>'<div><small>'+x[0]+'</small><b>'+((x[1]===null||x[1]===undefined)?"—":x[1])+'</b></div>').join("");
+   const engines=Array.isArray(data.engines)?data.engines:[];
+   list.innerHTML=engines.length?engines.map(x=>'<div class="performance-engine-row"><div><b>'+String(x.engine||"موتور نامشخص")+'</b><small>کل '+Number(x.total||0)+' · نمونه قطعی '+Number(x.resolved||0)+'</small></div><div><small>موفق</small><b>'+Number(x.wins||0)+'</b></div><div><small>ناموفق</small><b>'+Number(x.losses||0)+'</b></div><div><small>نرخ موفقیت</small><b>'+(x.win_rate==null?"—":fmt(x.win_rate,1)+"٪")+'</b></div><div><small>میانگین R</small><b>'+(x.avg_r==null?"—":fmt(x.avg_r,2)+"R")+'</b></div></div>').join(""):'<div class="heatmap-empty">هنوز سیگنال قابل ارزیابی ثبت نشده است.</div>';
+   if(status)status.textContent=(data.methodology||"نرخ موفقیت فقط از معاملات بسته‌شده محاسبه می‌شود.")+" · بازه "+data.days+" روز · آخرین به‌روزرسانی "+(data.as_of?new Date(data.as_of).toLocaleString("fa-IR"):"نامشخص")+(Number(o.resolved||0)<30?" · نمونه قطعی کمتر از ۳۰ مورد است و برای قضاوت آماری کافی نیست.":"");
+  }catch(e){summary.innerHTML='<div class="heatmap-empty">آمار سرور دریافت نشد.</div>';list.innerHTML="";if(status)status.textContent="کارنامه سرور در دسترس نیست: "+String(e.message||e);}
+  finally{if(button){button.disabled=false;button.textContent="↻ تازه‌سازی آمار";}}
+ }
  async function loadOrderflowViaWorker(){
   const symbol=safe($("intel-symbol")?.value||"BTC")||"BTC",market=$("orderflow-market")?.value==="futures"?"futures":"spot",status=$("orderflow-status"),box=$("orderflow-metrics");
   if(status)status.textContent="در حال دریافت دفتر سفارش و معاملات واقعی "+(market==="futures"?"Futures":"Spot")+"…";
   if(orderButton){orderButton.disabled=true;orderButton.textContent="در حال دریافت…";}
   try{
    const d=await get(api()+"/market-orderflow?symbol="+encodeURIComponent(symbol)+"&market="+market,22000),depth=d.depth||{},flow=d.flow||{};
+   renderLiquidityDepth(depth);
    const values=[depth.available?usd(depth.bid_usdt):"دریافت نشد",depth.available?usd(depth.ask_usdt):"دریافت نشد",depth.imbalance_pct==null?"دریافت نشد":fmt(depth.imbalance_pct,1)+"٪",flow.available&&flow.cvd_usdt!=null?(flow.cvd_usdt>=0?"+":"")+usd(flow.cvd_usdt):"دریافت نشد"];
    if(box)box.innerHTML=values.map((v,i)=>'<div><small>'+["عمق خرید ۱٪","عمق فروش ۱٪","عدم‌تعادل دفتر سفارش","جریان خالص معاملات ۵ دقیقه"][i]+'</small><b>'+v+'</b><em>'+["Bid liquidity","Ask liquidity","Order-book imbalance","Executed Trade Flow · 5m"][i]+'</em></div>').join("");
    const total=(Number(flow.buy_usdt)||0)+(Number(flow.sell_usdt)||0),bp=total?Number(flow.buy_usdt)/total*100:50;
@@ -5104,6 +5207,9 @@ body:before{opacity:.23;background-size:34px 34px}
   }catch(e){if(box)box.innerHTML=["عمق خرید ۱٪","عمق فروش ۱٪","عدم‌تعادل دفتر سفارش","جریان خالص معاملات ۵ دقیقه"].map(label=>'<div><small>'+label+'</small><b>دریافت نشد</b><em>منبع در دسترس نیست</em></div>').join("");if($("orderflow-buy-bar"))$("orderflow-buy-bar").style.width="50%";if($("orderflow-sell-bar"))$("orderflow-sell-bar").style.width="50%";if(status)status.textContent="جریان سفارش دریافت نشد: "+(e.message||"خطای اتصال")+" · داده‌های قبلی پاک شدند."; }
   finally{if(orderButton){orderButton.disabled=false;orderButton.textContent="↻ تازه‌سازی";}}
  }
+ $("market-heatmap-refresh")?.addEventListener("click",loadMarketHeatmap);
+ $("performance-refresh")?.addEventListener("click",loadPublicPerformance);
+ loadMarketHeatmap();loadPublicPerformance();
  orderButton?.addEventListener("click",loadOrderflowViaWorker);
  derivButton?.addEventListener("click",loadOrderflowViaWorker);
  $("intel-symbol")?.addEventListener("change",loadOrderflowViaWorker);
