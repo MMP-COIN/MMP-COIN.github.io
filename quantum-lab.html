@@ -469,5 +469,44 @@ renderEngines(null);renderLedger();renderQuantumCharts();loadIndependentCatalog(
 .engine-capability .engine-live-meta{display:flex;justify-content:space-between;gap:7px;margin-top:7px;color:var(--muted);font-size:9px}
 @media(max-width:720px){.super-engine-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.super-engine-capability-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.super-engine-capability-grid{grid-template-columns:1fr}.super-engine-capability-head b{font-size:10px}}
+
+/* Final layout: one full-width card, dense inside, no empty side column */
+#quantum-engines{display:block!important;width:100%;min-width:0}
+#quantum-engines>.engines{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%;gap:0}
+#quantum-engines .super-engine-card{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ grid-template-areas:"head" "desc" "stats" "drawer"!important;
+ width:100%!important;max-width:none!important;min-width:0;
+ padding:12px 14px!important;gap:9px!important;box-sizing:border-box
+}
+#quantum-engines .super-engine-card>.engine-top{grid-area:head;width:100%;min-width:0}
+#quantum-engines .super-engine-card>p{grid-area:desc;width:100%;margin:0!important;font-size:10px;line-height:1.75}
+#quantum-engines .super-engine-card>.super-engine-stats{
+ grid-area:stats;width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ gap:7px!important;margin:0!important
+}
+#quantum-engines .super-engine-stats>div{min-width:0;padding:8px 9px!important}
+#quantum-engines .super-engine-stats small{font-size:9px;line-height:1.5}
+#quantum-engines .super-engine-stats b{font-size:16px;margin-top:3px}
+#quantum-engines .super-engine-card>.super-engine-capabilities{grid-area:drawer;width:100%;margin:0!important;min-width:0}
+#quantum-engines .super-engine-capabilities summary{padding:9px 11px;font-size:11px;min-height:36px}
+#quantum-engines .super-engine-capability-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:7px!important;padding:8px!important}
+#quantum-engines .engine-capability{min-width:0;padding:8px!important}
+#quantum-engines .engine-capability-head{gap:5px;align-items:flex-start;flex-wrap:wrap}
+#quantum-engines .engine-capability-head b{font-size:10px;line-height:1.5}
+#quantum-engines .engine-capability p{font-size:9px;line-height:1.65;min-height:0;margin:5px 0}
+#quantum-engines .engine-capability .engine-live-meta{font-size:8px;gap:4px;flex-wrap:wrap}
+@media(max-width:720px){
+ #quantum-engines .super-engine-card{padding:10px!important}
+ #quantum-engines .super-engine-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #quantum-engines .super-engine-capability-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:380px){
+ #quantum-engines .super-engine-stats{gap:5px!important}
+ #quantum-engines .super-engine-stats>div{padding:7px 6px!important}
+ #quantum-engines .super-engine-stats small{font-size:8px}
+ #quantum-engines .super-engine-stats b{font-size:14px}
+ #quantum-engines .super-engine-capability-grid{grid-template-columns:minmax(0,1fr)!important}
+}
 </style>
 </body></html>
