@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="8782bd294d4401ef6f0307dfe9e946b134094352">
+<meta name="mmp-web-build" content="5aee9b4f21b5d5f352a0a998665d50e104f7cc68">
 <meta name="mmp-quantum-engine" content="QIE-2.0.0">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
@@ -6015,7 +6015,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="8782bd294d4401ef6f0307dfe9e946b134094352")return;
+ if(!pageBuild||pageBuild==="5aee9b4f21b5d5f352a0a998665d50e104f7cc68")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
