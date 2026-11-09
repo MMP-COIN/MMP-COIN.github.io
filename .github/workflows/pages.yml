@@ -74,3 +74,28 @@ jobs:
       - name: Deploy root site
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+      - name: Verify published site and live services
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
+        run: |
+          set -euo pipefail
+          SITE_URL="${SITE_URL%/}"
+          curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 5 --max-time 25 "$SITE_URL/" -o /tmp/mmp-home.html
+          grep -q 'MMP QUANTUM' /tmp/mmp-home.html
+          grep -q 'mmp-web-build' /tmp/mmp-home.html
+          ! grep -q '__MMP_WEB_BUILD_ID__' /tmp/mmp-home.html
+          ! grep -q 'QUANTUM HUNTER CORE · UNIFIED ENGINE' /tmp/mmp-home.html
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/manifest.webmanifest" -o /tmp/mmp-manifest.json
+          jq -e '.name and .icons and (.icons | length > 0)' /tmp/mmp-manifest.json >/dev/null
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/assets/mmp-coin-ai-icon.svg" -o /tmp/mmp-icon.svg
+          grep -q '<svg' /tmp/mmp-icon.svg
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/quantum-lab.html" -o /tmp/mmp-lab.html
+          grep -q 'MMP QUANTUM' /tmp/mmp-lab.html
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/version.json" -o /tmp/mmp-version.json
+          BUILD_ID="$(jq -r '.build // empty' /tmp/mmp-version.json)"
+          test -n "$BUILD_ID"
+          grep -q "$BUILD_ID" /tmp/mmp-home.html
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$WORKER_URL/health" -o /tmp/mmp-worker-health.json
+          jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true' /tmp/mmp-worker-health.json >/dev/null
+          echo "Published site, manifest, icon, Quantum Lab, version marker and Worker health all verified."
