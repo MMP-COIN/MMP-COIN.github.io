@@ -57,10 +57,13 @@ jobs:
           test -s canonical/www/assets/mmp-quantum-lab-integration.js
           cp canonical/www/assets/mmp-quantum-lab-integration.js assets/mmp-quantum-lab-integration.js
           cp canonical/manifest.webmanifest ./manifest.webmanifest
+          BUILD_ID="$(git -C canonical rev-parse HEAD)"
+          sed -i "s/__MMP_WEB_BUILD_ID__/${BUILD_ID}/g" index.html
+          printf '{"build":"%s","updatedAt":"%s"}\\n' "$BUILD_ID" "$(date -u +%FT%TZ)" > version.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- index.html quantum-lab.html assets manifest.webmanifest; then
-            git add index.html quantum-lab.html assets manifest.webmanifest
+          if ! git diff --quiet -- index.html quantum-lab.html assets manifest.webmanifest version.json; then
+            git add index.html quantum-lab.html assets manifest.webmanifest version.json
             git commit -m "Sync canonical Quantum UI from core [skip ci]"
             git push
           fi
