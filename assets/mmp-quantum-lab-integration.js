@@ -7,14 +7,13 @@ function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,ch=>({"&":"&amp;"
 function render(data){
  const host=document.getElementById("mmp-quantum-live-opportunities");if(!host)return;
  const valid=!!(data&&Array.isArray(data.opportunities)&&Number.isFinite(Number(data.generatedAt)));
- if(!valid){host.innerHTML='<div class="mql-live-top"><div class="mql-live-title"><i class="mql-orbit"></i><div><b>مرکز کوانتومی MMP</b><small>QUANTUM INTELLIGENCE · LIVE MARKET COMMAND</small></div></div><span class="mql-state waiting">در انتظار داده</span></div><div class="mql-empty">هنوز خروجی معتبری از چرخهٔ آزمایشگاه ثبت نشده است.</div>';return}
- const qualified=data.opportunities.filter(x=>x&&Number(x.score)>=55);
- const rows=qualified.slice(0,6);
+ if(!valid){host.innerHTML='<div class="mql-live-top"><div class="mql-live-title"><i class="mql-orbit"></i><div><b>هستهٔ کوانتومی MMP</b><small>QUANTUM INTELLIGENCE · خروجی اسکن</small></div></div><span class="mql-state waiting">در انتظار داده</span></div><div class="mql-empty">هنوز خروجی معتبری از چرخهٔ آزمایشگاه ثبت نشده است.</div>';return}
+ const rows=data.opportunities.filter(x=>x&&Number(x.score)>=55).slice(0,6);
  const scanned=Math.max(0,Number(data.scanned)||0),stamp=new Date(Number(data.generatedAt));
  const time=Number.isNaN(stamp.getTime())?"زمان نامشخص":stamp.toLocaleString("fa-IR");
  const state=scanned>0?"ثبت‌شده":"بدون چرخه";
  const cards=rows.map(x=>{const score=Math.max(0,Math.min(100,Number(x.score)||0));const dir=x.direction==="bull"?"up":x.direction==="bear"?"down":"wait";const label=dir==="up"?"صعودی":dir==="down"?"نزولی":"خنثی";return '<a class="mql-opportunity '+dir+'" href="/quantum-lab.html"><span class="mql-coin">'+esc(x.symbol)+'</span><span class="mql-direction">'+label+'</span><span class="mql-score"><b>'+score.toLocaleString("fa-IR")+'</b><i><em style="width:'+score+'%"></em></i></span></a>'}).join("");
- host.innerHTML='<div class="mql-live-top"><div class="mql-live-title"><i class="mql-orbit"></i><div><b>مرکز کوانتومی MMP</b><small>QUANTUM INTELLIGENCE · آخرین خروجی معتبر بازار</small></div></div><span class="mql-state '+(scanned>0?"ready":"waiting")+'"><i></i>'+state+'</span></div><div class="mql-live-metrics"><div><small>ارزهای بررسی‌شده</small><b>'+scanned.toLocaleString("fa-IR")+'</b></div><div><small>فرصت‌های ۵۵+</small><b>'+qualified.length.toLocaleString("fa-IR")+'</b></div><div><small>حداقل امتیاز</small><b>۵۵</b></div></div>'+(rows.length?'<div class="mql-opportunities">'+cards+'</div>':(scanned>0?'<div class="mql-empty">در این چرخه فرصت تأییدشده با امتیاز ۵۵ یا بالاتر ثبت نشده است.</div>':'<div class="mql-empty">هنوز چرخهٔ اسکن معتبری ثبت نشده است؛ صفر فعلی به معنی نبود فرصت در بازار نیست.</div>'))+'<div class="mql-live-foot"><span>آخرین ثبت: '+esc(time)+'</span><a href="/quantum-lab.html">ورود به مرکز کوانتومی ←</a></div>';
+ host.innerHTML='<div class="mql-live-top"><div class="mql-live-title"><i class="mql-orbit"></i><div><b>هستهٔ کوانتومی MMP</b><small>QUANTUM INTELLIGENCE · آخرین خروجی ثبت‌شده</small></div></div><span class="mql-state '+(scanned>0?"ready":"waiting")+'"><i></i>'+state+'</span></div><div class="mql-live-metrics"><div><small>ارز بررسی‌شده</small><b>'+scanned.toLocaleString("fa-IR")+'</b></div><div><small>فرصت‌های ۵۵+</small><b>'+rows.length.toLocaleString("fa-IR")+'</b></div><div><small>حداقل امتیاز</small><b>۵۵</b></div></div>'+(rows.length?'<div class="mql-opportunities">'+cards+'</div>':(scanned>0?'<div class="mql-empty">در این چرخه فرصت تأییدشده با امتیاز ۵۵ یا بالاتر ثبت نشده است.</div>':'<div class="mql-empty">این خروجی هنوز چرخهٔ اسکن معتبری ندارد؛ عدد صفر به معنی نبود فرصت در بازار نیست.</div>'))+'<div class="mql-live-foot"><span>آخرین ثبت: '+esc(time)+'</span><a href="/quantum-lab.html">مشاهده آزمایشگاه ←</a></div>';
 }
 function mount(){
  const hero=document.querySelector(".quantum-command-hero")||document.querySelector(".hero");
@@ -52,23 +51,12 @@ function mount(){
   @media(max-width:600px){#mmp-quantum-live-opportunities{padding:15px 13px 12px;border-radius:17px;min-height:0}#mmp-quantum-live-opportunities:after{right:7px;top:8px;width:108px;height:108px}.mql-live-title b{font-size:13px}.mql-live-title small{font-size:8px;letter-spacing:.08em}.mql-orbit{flex-basis:37px;width:37px;height:37px}.mql-live-metrics{gap:6px;margin:13px 0 10px}.mql-live-metrics>div{padding:9px 8px;border-radius:10px}.mql-live-metrics small{font-size:9px}.mql-live-metrics b{font-size:20px}.mql-opportunities{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.mql-opportunity{padding:8px 7px}.mql-coin{font-size:10px}.mql-direction{font-size:9px}.mql-score i{width:22px}}
   @media(prefers-reduced-motion:no-preference){#mmp-quantum-live-opportunities:after{animation:mqlHalo 16s linear infinite}@keyframes mqlHalo{to{transform:rotate(360deg)}}}
   `;
-
-  style.textContent += `
-  #mmp-quantum-live-opportunities{padding:22px 23px 16px;border-radius:23px;border:1px solid rgba(221,184,103,.56);background:radial-gradient(ellipse at 88% 5%,rgba(231,190,105,.22),transparent 32%),radial-gradient(ellipse at 0% 100%,rgba(37,121,137,.15),transparent 40%),linear-gradient(128deg,#151d2b 0%,#090f18 58%,#1b170f 100%);box-shadow:0 22px 58px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.11)}
-  #mmp-quantum-live-opportunities .mql-live-title b{font-size:clamp(16px,2vw,19px);letter-spacing:0;color:#ffe7b0}
-  #mmp-quantum-live-opportunities .mql-live-title small{font-size:9px;letter-spacing:.16em;color:#b0bdce}
-  #mmp-quantum-live-opportunities .mql-live-metrics>div{min-height:78px;display:flex;flex-direction:column;justify-content:center}
-  #mmp-quantum-live-opportunities .mql-live-metrics b{font-size:clamp(22px,3vw,29px)}
-  #mmp-quantum-live-opportunities .mql-empty{font-size:11px;line-height:2.1;border-style:solid;border-color:#d9b66d44;background:linear-gradient(100deg,#d9b66d12,#ffffff04)}
-  #mmp-quantum-live-opportunities .mql-live-foot a{padding:8px 12px;border:1px solid #d9b66d66;border-radius:9px;background:linear-gradient(120deg,#a77c3525,#e8cd8c12);color:#f5dda2}
-  @media(max-width:600px){#mmp-quantum-live-opportunities{padding:16px 13px 13px;border-radius:18px}#mmp-quantum-live-opportunities .mql-live-title b{font-size:14px}#mmp-quantum-live-opportunities .mql-live-title small{font-size:7px;letter-spacing:.1em}#mmp-quantum-live-opportunities .mql-live-metrics>div{min-height:67px}}
-  `;
   document.head.appendChild(style);
   const live=document.createElement("section");live.id="mmp-quantum-live-opportunities";
   hero.insertAdjacentElement("afterend",live);
   document.querySelectorAll(".native-app-menu,.dropdown-menu").forEach(menu=>{
    if(menu.querySelector('a[href="/quantum-lab.html"]'))return;
-   const link=document.createElement("a");link.href="/quantum-lab.html";link.textContent="◈ مرکز کوانتومی MMP";menu.appendChild(link);
+   const link=document.createElement("a");link.href="/quantum-lab.html";link.textContent="◈ مرکز فرماندهی کوانتومی بازار";menu.appendChild(link);
   });
  }
  render(read());
