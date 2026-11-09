@@ -58,9 +58,33 @@ header{position:sticky;top:0;z-index:10;background:#090d14ed;border-bottom:1px s
 .engine-proof{color:#aeb9c8;font-size:10px;line-height:1.8}
 .engine-result-link{display:inline-block;color:#e8cf91;text-decoration:none;font-size:11px;font-weight:800;margin-top:5px}
 .engine-drawer[open]{border-color:#c5a35f;box-shadow:0 0 18px #c49d4b20}
-</style></head>
+</style><style id="mmp-global-readable-layout">
+/* Global layout safety: keep every label and value inside its own card. */
+*,*::before,*::after{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{overflow-wrap:anywhere;word-break:normal}
+:where(main,section,article,aside,header,footer,nav,div,form,fieldset,details,summary){min-width:0}
+:where(h1,h2,h3,h4,h5,h6,p,small,strong,em,label,span,code,pre,figcaption,caption,li,dt,dd){min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:normal}
+:where(button,a,[role="button"],input,select,textarea){max-width:100%;min-width:0}
+:where(button,a,[role="button"]){white-space:normal;overflow-wrap:anywhere;line-height:1.55}
+:where(input,select,textarea){width:auto}
+:where(img,svg,video,canvas,iframe){max-width:100%}
+:where(table){max-width:100%;border-collapse:collapse}
+:where(th,td){overflow-wrap:anywhere;word-break:normal;white-space:normal}
+:where(pre){max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere}
+:where([class*="card"],[class*="panel"],[class*="engine"],[class*="motor"],[class*="tile"],[class*="metric"],[class*="widget"],[class*="module"]){min-width:0;max-width:100%}
+:where([class*="card"],[class*="panel"],[class*="engine"],[class*="motor"],[class*="tile"],[class*="metric"],[class*="widget"],[class*="module"]) :where(h1,h2,h3,h4,p,span,strong,small,label,button,a,code){max-width:100%;overflow-wrap:anywhere}
+:where(.grid,.row,.flex,.actions,.toolbar,.stats,.metrics,.cards,.card-grid,.engine-grid){min-width:0}
+@media(max-width:760px){
+  :where(.grid,.card-grid,.engine-grid){grid-template-columns:minmax(0,1fr)!important}
+  :where(.row,.flex,.actions,.toolbar,.stats,.metrics,.cards){flex-wrap:wrap}
+  :where(button,a,[role="button"]){max-width:100%}
+  :where(table){display:block;width:100%;overflow-x:auto}
+}
+</style>
+</head>
 <body>
-<header><div class="brand"><div class="mark" aria-label="MMP Quantum coin">M</div><div><b>مرکز کوانتومی MMP</b><small>MMP QUANTUM CENTER · MARKET INTELLIGENCE</small></div></div><div class="actions"><button class="btn" id="back">بازگشت به ترمینال</button><button class="btn primary" id="scan">اتصال به اسکن زنده</button></div></header>
+<header><div class="brand"><div class="mark" aria-label="MMP Quantum coin">M</div><div><b>مرکز کوانتومی MMP</b><small>MMP QUANTUM CENTER · MARKET INTELLIGENCE</small></div></div><div class="actions"><button class="btn" id="back">بازگشت به ترمینال</button><button class="btn primary" id="run-all-engines">اجرای واقعی هر ۱۲ موتور</button><button class="btn" id="scan">به‌روزرسانی وضعیت</button></div></header>
 <main class="wrap">
 <section class="hero"><div class="eyebrow">MMP QUANTUM INTELLIGENCE · LIVE MARKET CENTER</div><h1>مرکز کوانتومی MMP</h1><p>۱۲ موتور تخصصی برای درک رژیم بازار، کشف تغییرات اولیه، تحلیل جریان سفارش، سنجش نقدینگی و ارزیابی سناریوها. خروجی‌ها بر اساس داده قابل مشاهده ساخته می‌شوند؛ هرجا داده‌ای در دسترس نباشد، موتور آن را صریحاً اعلام می‌کند و امتیاز جعلی تولید نمی‌کند.</p></section><nav class="quantum-inner-nav" aria-label="منوی مرکز کوانتومی"><a href="#quantum-overview">نمای کلی</a><a href="#quantum-architecture">معماری ۱۲ موتور</a><a href="#quantum-assets">انتخاب ارز</a><a href="#quantum-charts-section">نمودارها</a><a href="#quantum-opportunities">فرصت‌ها</a><a href="#quantum-analysis">تحلیل عمیق</a><a href="#quantum-ledger">حافظه معاملات</a><a href="#quantum-reports">گزارش اجرا</a></nav>
 <div class="statusbar"><span class="dot" id="dot"></span><b id="status">آماده اتصال به بازار Spot</b><span class="muted tiny" id="source">منبع اصلی: Binance Spot public market data</span><span class="muted tiny" id="progress"></span></div>
@@ -159,6 +183,40 @@ function renderEngines(statuses=null){
   const m=engineEvidence(i),n=String(i+1).padStart(2,"0");
   return '<details class="engine-drawer" id="engine-detail-'+n+'"><summary><span>'+n+'. '+e[0]+'</span><span class="state '+status+'">'+label+'</span><span class="drawer-meta">'+m.value.toLocaleString("fa-IR")+' / '+m.total.toLocaleString("fa-IR")+'</span></summary><div class="engine-more"><p>'+e[1]+'</p><div class="engine-live-meter"><span style="width:'+m.pct+'%"></span></div><div class="engine-live-meta"><b>'+m.label+'</b><strong>'+m.pct.toLocaleString("fa-IR")+'٪</strong></div><p class="engine-proof">این شاخص از snapshot مرکزی و داده‌های ثبت‌شده محاسبه شده است؛ نمایش آن به معنی وجود الگوریتم مستقل جداگانه نیست.</p><a class="engine-result-link" href="#quantum-opportunities">مشاهده خروجی‌ها و فرصت‌های مرتبط ←</a></div></details>';
  }).join("");
+ // Force a true single-row horizontal rail on the actual rendered details cards.
+ const rail=$("engines");
+ rail.style.setProperty("display","flex","important");
+ rail.style.setProperty("flex-direction","row","important");
+ rail.style.setProperty("flex-wrap","nowrap","important");
+ rail.style.setProperty("align-items","stretch","important");
+ rail.style.setProperty("justify-content","flex-start","important");
+ rail.style.setProperty("gap","10px","important");
+ rail.style.setProperty("width","100%","important");
+ rail.style.setProperty("max-width","100%","important");
+ rail.style.setProperty("min-width","0","important");
+ rail.style.setProperty("overflow-x","auto","important");
+ rail.style.setProperty("overflow-y","hidden","important");
+ rail.style.setProperty("overscroll-behavior-x","contain","important");
+ rail.style.setProperty("-webkit-overflow-scrolling","touch","important");
+ rail.style.setProperty("scroll-snap-type","x mandatory","important");
+ rail.style.setProperty("padding","5px 3px 14px","important");
+ rail.querySelectorAll(".engine-drawer").forEach(card=>{
+  card.style.setProperty("display","block","important");
+  card.style.setProperty("flex","0 0 340px","important");
+  card.style.setProperty("width","340px","important");
+  card.style.setProperty("min-width","340px","important");
+  card.style.setProperty("max-width","340px","important");
+  card.style.setProperty("margin","0","important");
+  card.style.setProperty("scroll-snap-align","start","important");
+ });
+ if(matchMedia("(max-width:560px)").matches){
+  rail.querySelectorAll(".engine-drawer").forEach(card=>{
+   card.style.setProperty("flex-basis","86vw","important");
+   card.style.setProperty("width","86vw","important");
+   card.style.setProperty("min-width","86vw","important");
+   card.style.setProperty("max-width","86vw","important");
+  });
+ }
  const target=decodeURIComponent(location.hash.slice(1));
  if(/^engine-detail-\d{2}$/.test(target)){const el=$(target);if(el){el.open=true;setTimeout(()=>el.scrollIntoView({behavior:"smooth",block:"center"}),100)}}
 }
@@ -257,20 +315,8 @@ function applyLiveSnapshot(snap){
  if($("cycle-status"))$("cycle-status").textContent="اسکن خودکار فعال";
  $("source").textContent=(snap.universe_provider||"چندصرافی")+" · پایگاه مرکزی پایدار · "+(snap.market||"spot").toUpperCase();
  $("progress").textContent="چرخه ۶۰ ثانیه‌ای · نشانگر بازار "+Number(snap.next_cursor||0).toLocaleString("fa-IR")+" / "+state.universe.length.toLocaleString("fa-IR");
- const statuses=[
-  snap.status==="online"?"ready":"partial",
-  Number(snap.scanned_count)>0?"ready":"busy",
-  Number(snap.scanned_count)>0?"ready":"busy",
-  signals.some(x=>x.flow?.complete===true)?"ready":"partial",
-  signals.some(x=>x.depth?.confirmed===true)?"ready":"partial",
-  signals.some(x=>Array.isArray(x.evidence)&&x.evidence.some(v=>String(v).includes("تایم")||String(v).includes("روند")))?"ready":"partial",
-  signals.some(x=>Number(x.atrPct)>0)?"ready":"partial",
-  "partial",
-  signals.some(x=>x.tradePlan)?"ready":"partial",
-  state.ledger.length?"ready":"partial",
-  signals.some(x=>Number(x.tradePlan?.riskPercent)>0)?"ready":"partial",
-  signals.some(x=>x.confirmed===true&&x.multiExchangeConfirmed===true&&x.quantum?.qualityGate===true)?"ready":"partial"
- ];
+ const engineKeys=["momentum","flow","structure","liquidity","multiTimeframe","regime","volatility","sentiment","smartMoney","scenario","risk","dataQuality"];
+ const statuses=engineKeys.map(key=>signals.some(x=>x.quantum?.componentAvailability?.[key]===true)?"ready":"partial");
  renderEngines(statuses);renderRows();
  const live=snap.status==="online"&&state.done>0&&Date.now()-Date.parse(snap.checked_at||snap.scanned_at||"")<120000;setStatus(live?("اسکن خودکار بازار فعال است · "+state.done+" نماد در آخرین چرخه بررسی شد"+(signals.length?" · فرصت‌های تأییدشده به‌روز شدند":" · فعلاً فرصت تأییدشده‌ای وجود ندارد")):"در انتظار چرخه بعدی اسکن مرکزی؛ نتایج قبلی حفظ می‌شوند",live?"ok":"");
  if(!window.__mmpLiveLogAt||Date.now()-window.__mmpLiveLogAt>60000){log("وضعیت مرکزی به‌روزرسانی شد · یونیورس "+state.universe.length+" · بررسی چرخه اخیر "+state.done+" · فرصت تأییدشده "+state.rows.length);window.__mmpLiveLogAt=Date.now()}
@@ -350,22 +396,40 @@ async function analyzeIndependent(symbol){
  state.rows=state.rows.filter(x=>x.symbol!==symbol);state.rows.push(row);state.rows.sort((a,b)=>b.score-a.score);renderRows();showDetail(symbol);status.textContent="تحلیل مستقل "+symbol+" انجام شد · امتیاز "+row.score+"/100.";
  }catch(e){status.textContent="تحلیل "+symbol+" ناموفق بود: "+e.message}finally{state.searchBusy=false}
 }
+async function runAllQuantumEngines(){
+ if(state.busy)return;
+ state.busy=true;
+ const button=$("run-all-engines");button.disabled=true;button.textContent="۱۲ موتور در حال اجرا…";
+ setStatus("درخواست اجرای کامل موتور مرکزی ثبت شد؛ در حال دریافت داده و محاسبه خروجی‌ها…");
+ log("فرمان اجرای دستی همه ۱۲ موتور ارسال شد.");
+ try{
+  await fetchJSON(API+"/hunter-run",180000);
+  const snap=await fetchJSON(API+"/hunter-snapshot",30000);
+  applyLiveSnapshot(snap);
+  const active=(snap.signals||[]).reduce((n,x)=>n+Object.values(x.quantum?.componentAvailability||{}).filter(Boolean).length,0);
+  setStatus("چرخه واقعی موتور مرکزی تکمیل شد · "+Number(snap.scanned_count||0).toLocaleString("fa-IR")+" نماد بررسی شد · شواهد موتورهای تخصصی به‌روزرسانی شد","ok");
+  log("اجرای دستی پایان یافت · "+Number(snap.scanned_count||0)+" نماد · "+Number(snap.failed_count||0)+" خطا · "+active+" داده مؤلفه‌ای در سیگنال‌ها");
+ }catch(e){setStatus("اجرای موتورها ناموفق بود: "+e.message,"bad");log("خطای اجرای دستی موتورهای کوانتومی: "+e.message)}
+ finally{state.busy=false;button.disabled=false;button.textContent="اجرای مجدد هر ۱۲ موتور"}
+}
+$("run-all-engines").addEventListener("click",runAllQuantumEngines);
 $("asset-search").addEventListener("input",()=>{clearTimeout(searchTimer);searchTimer=setTimeout(renderAssetSearch,120)});$("asset-search-clear").addEventListener("click",()=>{$("asset-search").value="";state.assetLimit=24;renderAssetSearch();$("asset-search").focus()});$("asset-search-more").addEventListener("click",()=>{state.assetLimit+=24;renderAssetSearch()});$("asset-search-results").addEventListener("click",e=>{const b=e.target.closest("[data-independent-analyze]");if(b)analyzeIndependent(b.dataset.independentAnalyze)});$("scan").addEventListener("click",scan);$("back").addEventListener("click",()=>location.href="/");$("filter").addEventListener("input",renderRows);$("direction").addEventListener("change",renderRows);$("sort").addEventListener("change",renderRows);$("rows").addEventListener("click",e=>{const b=e.target.closest("[data-detail]");if(b)showDetail(b.dataset.detail)});$("record").addEventListener("click",record);$("history").addEventListener("click",updateLedger);$("export").addEventListener("click",exportCSV);
 renderEngines(null);renderLedger();renderQuantumCharts();loadIndependentCatalog();startLiveMonitor();if(state.ledger.length)log("حافظه محلی شامل "+state.ledger.length+" پیش‌بینی قبلی است.");
 })();
 </script>
-<style id="mmp-quantum-live-engine-strip">
-/* Live quantum engine rail — backend scan continues independently of this page */
-.engine-showcase{display:block!important;overflow:hidden;border:1px solid #a9874c66;border-radius:15px;padding:10px;background:linear-gradient(110deg,#141b25,#090f18)}
-.engines{display:flex!important;gap:8px!important;overflow-x:auto!important;overflow-y:hidden!important;padding:2px 2px 9px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:#9e7b43 #111925}
-.engine{flex:0 0 190px!important;width:190px;min-height:86px!important;padding:10px 11px!important;scroll-snap-align:start;border-radius:11px!important;background:linear-gradient(145deg,#1a2634,#0c131d)!important}
-.engine:after{content:"";position:absolute;inset:auto 10px 0 10px;height:2px;background:linear-gradient(90deg,transparent,#cba45f,transparent);opacity:.55}
-.engine b{font-size:11px!important}
-.engine p{font-size:9px!important;line-height:1.7!important;margin-top:6px!important}
-.engine .state{font-size:8px!important}
-.engine .state.ready{box-shadow:0 0 12px #25d69522}
-.engine .state.busy{animation:mmpEnginePulse 1.4s ease-in-out infinite}
-@keyframes mmpEnginePulse{50%{opacity:.42}}
-@media(max-width:560px){.engine-showcase{padding:7px}.engines{gap:7px!important}.engine{flex-basis:158px!important;width:158px;min-height:78px!important;padding:9px!important}.engine b{font-size:10px!important}.engine p{font-size:8px!important}}
+
+
+
+
+
+
+
+
+
+<style id="mmp-quantum-engine-horizontal-final">
+#quantum-engines{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow:hidden!important}
+#quantum-engines>#engines{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:flex-start!important;gap:10px!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow-x:auto!important;overflow-y:hidden!important;overscroll-behavior-x:contain!important;-webkit-overflow-scrolling:touch!important;scroll-snap-type:x mandatory!important;padding:5px 3px 14px!important}
+#quantum-engines>#engines>.engine-drawer{display:block!important;flex:0 0 340px!important;width:340px!important;min-width:340px!important;max-width:340px!important;margin:0!important;scroll-snap-align:start!important}
+@media(max-width:560px){#quantum-engines>#engines{gap:8px!important}#quantum-engines>#engines>.engine-drawer{flex:0 0 86vw!important;width:86vw!important;min-width:86vw!important;max-width:86vw!important}}
 </style>
 </body></html>
