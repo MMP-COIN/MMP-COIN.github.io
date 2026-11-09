@@ -1844,7 +1844,7 @@ body:before{opacity:.23;background-size:34px 34px}
 .server-performance-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .server-performance-head b{display:block;color:#f4d58d;font-size:13px}
 .server-performance-head small{display:block;color:#9aa7b7;font-size:9px;margin-top:4px}
-.performance-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px;margin:12px 0}
+.performance-summary{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin:12px 0}
 .performance-engine-list{display:grid;gap:7px}
 .performance-engine-row{display:grid;grid-template-columns:minmax(0,1.2fr) repeat(4,minmax(0,.7fr));gap:8px;align-items:center;padding:9px;border:1px solid #30394b;border-radius:9px;background:#0e1520;font-size:10px}
 .performance-engine-row b{color:#f4d58d}
@@ -5184,7 +5184,7 @@ body:before{opacity:.23;background-size:34px 34px}
    const response=await fetch(MMP_ANALYTICS_ENDPOINT+"/analytics/public-performance?days=90",{cache:"no-store",headers:{Accept:"application/json"}});
    if(!response.ok)throw new Error("HTTP "+response.status);
    const data=await response.json(),o=data.overall||{},rate=o.win_rate==null?"—":fmt(o.win_rate,1)+"٪",avg=o.avg_r==null?"—":(Number(o.avg_r)>0?"+":"")+fmt(o.avg_r,2)+"R";
-   summary.innerHTML=[["نمونه‌های ثبت‌شده",o.total],["نتایج قطعی",o.resolved],["موفق",o.wins],["ناموفق",o.losses],["نرخ موفقیت",rate],["میانگین R",avg]].map(x=>'<div><small>'+x[0]+'</small><b>'+((x[1]===null||x[1]===undefined)?"—":x[1])+'</b></div>').join("");
+   summary.innerHTML=[["نمونه‌های ثبت‌شده",o.total],["نتایج قطعی",o.resolved],["در انتظار ورود/معامله",o.open],["موفق",o.wins],["ناموفق",o.losses],["نرخ موفقیت",rate],["میانگین R",avg]].map(x=>'<div><small>'+x[0]+'</small><b>'+((x[1]===null||x[1]===undefined)?"—":x[1])+'</b></div>').join("");
    const engines=Array.isArray(data.engines)?data.engines:[];
    list.innerHTML=engines.length?engines.map(x=>'<div class="performance-engine-row"><div><b>'+String(x.engine||"موتور نامشخص")+'</b><small>'+String(x.signal_type||"نوع سیگنال نامشخص")+'</small><small>کل '+Number(x.total||0)+' · نمونه قطعی '+Number(x.resolved||0)+'</small></div><div><small>موفق</small><b>'+Number(x.wins||0)+'</b></div><div><small>ناموفق</small><b>'+Number(x.losses||0)+'</b></div><div><small>نرخ موفقیت</small><b>'+(x.win_rate==null?"—":fmt(x.win_rate,1)+"٪")+'</b></div><div><small>میانگین R</small><b>'+(x.avg_r==null?"—":fmt(x.avg_r,2)+"R")+'</b></div></div>').join(""):'<div class="heatmap-empty">هنوز سیگنال قابل ارزیابی ثبت نشده است.</div>';
    if(status)status.textContent=(data.methodology||"نرخ موفقیت فقط از معاملات بسته‌شده محاسبه می‌شود.")+" · بازه "+data.days+" روز · آخرین به‌روزرسانی "+(data.as_of?new Date(data.as_of).toLocaleString("fa-IR"):"نامشخص")+(Number(o.resolved||0)<30?" · نمونه قطعی کمتر از ۳۰ مورد است و برای قضاوت آماری کافی نیست.":"");
