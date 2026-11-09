@@ -471,3 +471,20 @@ renderEngines(null);renderLedger();renderQuantumCharts();loadIndependentCatalog(
 @media(max-width:460px){.super-engine-capability-grid{grid-template-columns:1fr}.super-engine-capability-head b{font-size:10px}}
 </style>
 </body></html>
+
+<style id="mmp-command-center-super-engine-width-fix">
+/* مرکز فرماندهی: کارت ابرموتور باید تمام عرض شبکه را بگیرد */
+#quantum-engines{display:block!important;width:100%!important;min-width:0!important}
+#quantum-engines>#engines,
+#quantum-engines>.engines,
+#engines.engines{display:grid!important;grid-template-columns:minmax(0,1fr)!important;width:100%!important;max-width:none!important;min-width:0!important}
+#engines>.super-engine-card{grid-column:1/-1!important;width:100%!important;max-width:none!important;min-width:0!important}
+.super-engine-card{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;padding:13px!important}
+.super-engine-card>.engine-top{grid-row:1}
+.super-engine-card>p{grid-row:2;margin:0!important}
+.super-engine-card>.super-engine-stats{grid-row:3;margin:4px 0!important}
+.super-engine-card>.super-engine-capabilities{grid-row:4;margin-top:4px!important}
+.super-engine-capability-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+@media(max-width:760px){.super-engine-capability-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:460px){.super-engine-capability-grid{grid-template-columns:1fr!important}}
+</style>
