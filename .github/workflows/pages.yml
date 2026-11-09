@@ -39,7 +39,6 @@ jobs:
           repository: MMP-COIN/MMP-COIN-AI
           ref: main
           path: canonical
-          persist-credentials: false
       - name: Synchronize canonical Quantum UI and brand assets
         run: |
           set -euo pipefail
