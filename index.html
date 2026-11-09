@@ -1853,7 +1853,14 @@ body:before{opacity:.23;background-size:34px 34px}
 @media(max-width:760px){.market-heatmap-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.heat-tile.major{min-height:125px}.performance-summary{grid-template-columns:repeat(3,minmax(0,1fr))}.performance-engine-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:420px){.heatmap-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.market-heatmap-grid{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(65px,auto)}.heat-tile.major{grid-column:span 2!important;grid-row:span 1!important;min-height:95px}.liquidity-depth-map{grid-template-columns:1fr}.performance-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
-\n<style id="mmp-radar-real-progress-status">\n.radar-core-state.is-offline i{background:#ef6262;box-shadow:0 0 8px #ef6262;animation:none}\n.radar-core-state.is-cached i{background:#e7b45c;box-shadow:0 0 8px #e7b45c}\n.radar-scan-progress.is-offline .radar-scan-track span{background:linear-gradient(90deg,#8c3434,#ef6262)}\n.radar-scan-progress.is-cached .radar-scan-track span{background:linear-gradient(90deg,#946a27,#e7b45c)}\n</style>\n</head>
+\n<style id="mmp-radar-real-progress-status">\n.radar-core-state.is-offline i{background:#ef6262;box-shadow:0 0 8px #ef6262;animation:none}\n.radar-core-state.is-cached i{background:#e7b45c;box-shadow:0 0 8px #e7b45c}\n.radar-scan-progress.is-offline .radar-scan-track span{background:linear-gradient(90deg,#8c3434,#ef6262)}\n.radar-scan-progress.is-cached .radar-scan-track span{background:linear-gradient(90deg,#946a27,#e7b45c)}\n</style>\n<style id="mmp-market-heatmap-entry">
+.market-heatmap-entry{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 18px;padding:17px 20px;border:1px solid #80683f88;border-radius:17px;background:radial-gradient(ellipse at 0 50%,#d9b66d18,transparent 45%),linear-gradient(115deg,#171d28,#0c121b);box-shadow:0 12px 32px #0005}
+.market-heatmap-entry-copy{min-width:0}.market-heatmap-entry-kicker{font-size:9px;letter-spacing:1.4px;color:#d9b66d;font-weight:900}.market-heatmap-entry h2{margin:6px 0;font-size:17px;color:#f4dfa8}.market-heatmap-entry p{margin:0;color:#aab4c2;font-size:11px;line-height:1.9}.market-heatmap-entry-tags{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.market-heatmap-entry-tags span{font-size:9px;color:#c8b98f;border:1px solid #6d5a36;border-radius:20px;padding:4px 8px}
+.market-heatmap-entry-button{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px solid #b59658;border-radius:12px;background:linear-gradient(120deg,#9c742f,#e5c77f);color:#17130a;text-decoration:none;box-shadow:0 7px 22px #0005}
+.market-heatmap-entry-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#17130a18;font-size:22px}.market-heatmap-entry-button b,.market-heatmap-entry-button small{display:block}.market-heatmap-entry-button b{font-size:11px}.market-heatmap-entry-button small{font-size:9px;margin-top:3px;opacity:.75}.market-heatmap-entry-button strong{font-size:20px}
+@media(max-width:620px){.market-heatmap-entry{align-items:stretch;flex-direction:column;padding:14px}.market-heatmap-entry-button{justify-content:center}.market-heatmap-entry-tags{gap:5px}}
+</style>
+</head>
 <body class="mmp-app-mode">
 
 <header class="top">
@@ -1873,6 +1880,7 @@ body:before{opacity:.23;background-size:34px 34px}
 <div class="dropdown-menu" id="dropdownMenu" aria-label="منوی اصلی">
   <div class="menu-section-label">بخش‌های اصلی</div>
   <a href="/quantum-lab.html">◈ ورود به مرکز فرماندهی کوانتومی MMP</a>
+  <a href="/market-heatmap.html">▦ نقشه حرارتی بازار</a>
   <a href="#opportunities">📡 رادار هوشمند بازار</a>
   <a href="#market-hunter">🎯 شکارچی کوانتومی بازار</a>
   <a href="#ai-section">✧ تحلیلگر هوشمند AI</a>
@@ -1999,6 +2007,11 @@ body:before{opacity:.23;background-size:34px 34px}
 <div class="mcp-metrics"><span>بررسی‌شده <b id="mcp-done">—</b></span><span>از <b id="mcp-total">—</b> نماد</span><span>قابلیت‌های دارای شواهد <b id="mcp-engines">—</b></span><span>خطاها <b id="mcp-errors">—</b></span></div>
 <small id="mcp-updated">این نوار فقط از snapshot واقعی موتور مرکزی تغذیه می‌شود؛ در نبود داده، درصد نمایش داده نمی‌شود.</small></section>
 <div class="quantum-hero-foot"><span>اسکن پویا جفت‌های واجد شرایط USDT Spot</span><span>۱۲ موتور تحلیل و تصمیم</span><span>داده ناموجود = بدون امتیازسازی جعلی</span></div>
+</section>
+
+<section class="market-heatmap-entry" aria-label="ورود به نقشه حرارتی بازار">
+ <div class="market-heatmap-entry-copy"><span class="market-heatmap-entry-kicker">MARKET BREADTH · LIVE TURNOVER</span><h2>نقشه حرارتی بازار</h2><p>تمرکز حرکت و گردش معاملات بازار را در یک نمای تصویری بررسی کن؛ نقشه کامل فقط با ورود به این بخش بارگذاری می‌شود.</p><div class="market-heatmap-entry-tags"><span>تغییر قیمت ۲۴ ساعته</span><span>مقایسه گردش معاملات</span><span>نمادهای صعودی و نزولی</span></div></div>
+ <a class="market-heatmap-entry-button" href="/market-heatmap.html"><span class="market-heatmap-entry-icon">▦</span><span><b>ورود به نقشه حرارتی</b><small>مشاهده نقشه زنده بازار</small></span><strong>←</strong></a>
 </section>
 
 <section class="terminal-grid" id="opportunities" data-quantum-module="radar">
@@ -2131,12 +2144,7 @@ body:before{opacity:.23;background-size:34px 34px}
    <div class="liquidity-map-note">دیوارها سفارش‌های Limit قابل مشاهده در لحظه دریافت‌اند و ممکن است لغو شوند. سفارش‌های حدضرر پنهان در دفتر سفارش عمومی دیده نمی‌شوند؛ محدوده‌های احتمالی استاپ، تخمین‌اند نه داده قطعی.</div>
    <div class="intel-foot" id="orderflow-status">در انتظار دریافت دفتر سفارش و معاملات واقعی…</div>
   </article>
-  <article class="intel-panel market-heatmap-panel" id="market-heatmap-panel">
-   <div class="intel-panel-head"><div><small>MARKET BREADTH · LIVE TURNOVER</small><h3>نقشه حرارتی بازار</h3><p class="sub">اندازه کارت‌ها بر پایه گردش ۲۴ساعته و رنگ آن‌ها بر پایه تغییر قیمت واقعی است.</p></div><button class="intel-refresh" id="market-heatmap-refresh" type="button">↻ تازه‌سازی نقشه</button></div>
-   <div class="heatmap-summary" id="market-heatmap-summary"><span>بازارهای بررسی‌شده <b>—</b></span><span>نمادهای مثبت <b>—</b></span><span>نمادهای منفی <b>—</b></span><span>گردش سرمایه <b>—</b></span></div>
-   <div id="market-heatmap-grid" class="market-heatmap-grid"><div class="heatmap-empty">در انتظار دریافت تیکرهای واقعی بازار…</div></div>
-   <div class="intel-foot" id="market-heatmap-status">منبع: تیکر ۲۴ساعته Binance Spot · اندازه کارت‌ها نماینده گردش معاملات است، نه ارزش بازار یا جریان ورود پول.</div>
-  </article>
+  
   <article class="intel-panel" id="candle-intelligence" aria-disabled="true">
    <div class="intel-panel-head"><div><small>CANDLE INTELLIGENCE · TEMPORARILY PAUSED</small><h3>آزمایشگاه سناریوهای کندلی</h3></div><span class="badge">موقتاً غیرفعال</span></div>
    <div class="intel-foot" role="status">این بخش تا زمان رفع خطای دریافت کندل از منبع بازار، هیچ برآورد یا سناریوی قیمتی تولید نمی‌کند. پس از تأیید دریافت کندل‌های واقعی و بسته‌شده و آزمون محاسبات، دوباره فعال خواهد شد.</div>
