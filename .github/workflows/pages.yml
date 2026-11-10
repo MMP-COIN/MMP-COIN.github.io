@@ -65,6 +65,7 @@ jobs:
           if ! git diff --quiet -- index.html quantum-lab.html assets manifest.webmanifest version.json; then
             git add index.html quantum-lab.html assets manifest.webmanifest version.json
             git commit -m "Sync canonical Quantum UI from core [skip ci]"
+            git pull --rebase origin main
             git push
           fi
       - name: Upload root site
