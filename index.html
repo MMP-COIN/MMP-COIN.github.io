@@ -1479,7 +1479,7 @@ body:before{opacity:.23;background-size:34px 34px}
 .intel-suite-head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px}
 .intel-suite-head h2{font-size:20px;margin:5px 0}
 .intel-suite-head p{font-size:11px;color:var(--muted);margin:0;line-height:1.9}
-.intel-live-chip,.journal-local-tag,.intel-status-wait{white-space:nowrap;border:1px solid #3a4655;background:#17202b;color:#b8c2cf;border-radius:30px;padding:7px 11px;font-size:10px}
+.intel-live-chip,.intel-status-wait{white-space:nowrap;border:1px solid #3a4655;background:#17202b;color:#b8c2cf;border-radius:30px;padding:7px 11px;font-size:10px}
 .intel-live-chip i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#42e2b8;box-shadow:0 0 12px #42e2b8;margin-left:5px}
 .intel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
 .intel-panel{padding:16px;min-width:0;margin:0}
@@ -1488,15 +1488,15 @@ body:before{opacity:.23;background-size:34px 34px}
 .intel-panel h3{font-size:15px;margin:5px 0}
 .intel-panel-head p{font-size:10px;line-height:1.8;margin:5px 0;color:var(--muted)}
 .intel-refresh{border:1px solid #476278;border-radius:9px;padding:7px 10px;background:#1a2c3d;color:#e7d39d;font-size:10px;white-space:nowrap;cursor:pointer}
-.intel-symbol-row,.watchlist-form{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.intel-symbol-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .intel-symbol-row label{font-size:10px;color:var(--muted)}
-.intel-symbol-row input,.intel-symbol-row select,.journal-form input,.journal-form select,.watchlist-form input,.watchlist-form select{width:100%;min-width:0;padding:10px 11px;background:#08121d;border:1px solid #344d62;border-radius:9px;color:#f4e7c7;outline:none;font-size:11px}
+.intel-symbol-row input,.intel-symbol-row select{width:100%;min-width:0;padding:10px 11px;background:#08121d;border:1px solid #344d62;border-radius:9px;color:#f4e7c7;outline:none;font-size:11px}
 .intel-symbol-row input{max-width:130px;direction:ltr;text-align:left}.intel-symbol-row select{max-width:145px;min-width:110px;cursor:pointer}
 .intel-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .intel-metrics.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-.intel-metrics>div,.journal-stats>div{padding:10px 9px;border:1px solid #2b4357;border-radius:11px;background:linear-gradient(145deg,#1a2b3c,#101b28);min-width:0}
-.intel-metrics small,.journal-stats small{display:block;color:#9aafbf;font-size:9px;line-height:1.6}
-.intel-metrics b,.journal-stats b{display:block;margin-top:7px;color:#f2d58f;font-size:13px;direction:ltr;text-align:right;overflow-wrap:anywhere}
+.intel-metrics>div{padding:10px 9px;border:1px solid #2b4357;border-radius:11px;background:linear-gradient(145deg,#1a2b3c,#101b28);min-width:0}
+.intel-metrics small{display:block;color:#9aafbf;font-size:9px;line-height:1.6}
+.intel-metrics b{display:block;margin-top:7px;color:#f2d58f;font-size:13px;direction:ltr;text-align:right;overflow-wrap:anywhere}
 .intel-metrics em{display:block;font-size:8px;color:#617f91;font-style:normal;margin-top:3px}
 .intel-foot{font-size:10px;color:#8ea4b6;line-height:1.8;margin-top:11px}
 .intel-mini-row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;margin-top:9px;border:1px solid #2c4254;border-radius:9px;background:#0b1722;font-size:10px}
@@ -1515,27 +1515,10 @@ body:before{opacity:.23;background-size:34px 34px}
 .whale-state b{font-size:11px;color:#e6d4aa}
 .whale-state p{font-size:10px;line-height:1.9;color:#91a3b6;margin:5px 0 0}
 .whale-links{display:flex;gap:8px;margin-top:10px}.whale-links a{font-size:10px;color:#72d9ce;text-decoration:none;border:1px solid #345d62;border-radius:20px;padding:6px 10px}
-.journal-panel,.watchlist-panel{margin:18px 0;padding:18px}
-.journal-form{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:8px;align-items:end}
-.journal-form label{display:grid;gap:5px;color:#9aafbf;font-size:9px}
-.journal-form input,.journal-form select{height:38px}
-.journal-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:13px 0}
-.journal-stats b{font-size:16px}
-.journal-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;color:#9db0bf;margin:10px 0}
-.journal-table-wrap{overflow:auto;border:1px solid #2c4155;border-radius:12px}
-.journal-table{min-width:760px}
-.journal-table td{font-size:10px}
-.journal-delete{border:1px solid #784653;background:#351b27;color:#ff9aaa;border-radius:7px;padding:4px 8px;cursor:pointer}
-.journal-status-open{color:#e7c985}.journal-status-win{color:#46e0b1}.journal-status-loss{color:#ff8395}
-.watchlist-form>*{flex:1}
-.alert-list{display:grid;gap:7px}
-.alert-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid #30465a;border-radius:10px;background:#0b1722;font-size:10px}
-.alert-row b{color:#f1d28d;direction:ltr}
-.alert-row button{border:1px solid #704452;background:#351b27;color:#ff9aaa;border-radius:7px;padding:5px 8px}
-@media(max-width:1100px){.intel-grid{grid-template-columns:1fr}.journal-form{grid-template-columns:repeat(3,minmax(0,1fr))}.journal-form button{grid-column:1/-1}}
+@media(max-width:1100px){.intel-grid{grid-template-columns:1fr}}
 @media(max-width:900px){.top{padding:0 12px}.mmp-sidebar{display:none}.wrap{width:100%;padding:16px 12px 70px}.hero{min-height:200px}.hero-visual{opacity:.55;left:0;transform:translateY(-50%) scale(.8)}}
-@media(max-width:650px){.intel-suite{padding:13px}.intel-suite-head{align-items:flex-start;flex-direction:column}.intel-grid{grid-template-columns:1fr}.intel-panel{padding:13px}.intel-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.journal-form{grid-template-columns:repeat(2,minmax(0,1fr))}.journal-form button{grid-column:1/-1}.journal-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.watchlist-form{display:grid;grid-template-columns:1fr 1fr}.watchlist-form button{grid-column:1/-1}.intel-symbol-row{flex-wrap:wrap}.intel-symbol-row input{flex:1}.hero{padding:18px 15px}.hero-visual{opacity:.28;left:-55px}.hero-refresh-group{right:12px;bottom:12px}.top-actions .pill{display:none}}
-@media(max-width:390px){.journal-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.intel-forecast-grid{gap:5px}.intel-forecast-grid>div{padding:9px 6px}}
+@media(max-width:650px){.intel-suite{padding:13px}.intel-suite-head{align-items:flex-start;flex-direction:column}.intel-grid{grid-template-columns:1fr}.intel-panel{padding:13px}.intel-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.intel-symbol-row{flex-wrap:wrap}.intel-symbol-row input{flex:1}.hero{padding:18px 15px}.hero-visual{opacity:.28;left:-55px}.hero-refresh-group{right:12px;bottom:12px}.top-actions .pill{display:none}}
+@media(max-width:390px){.intel-forecast-grid{gap:5px}.intel-forecast-grid>div{padding:9px 6px}}
 @media(prefers-reduced-motion:reduce){body:after,.hero:before,.hero-coin{animation:none!important;transition:none!important}}
 
 .intel-backtest-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}.intel-backtest-bar span{font-size:9px;color:#8fa5b7}
@@ -2491,8 +2474,6 @@ html body>main.wrap>#mmp-home-hero{margin-top:0!important;margin-block-start:0!i
   <a class="side-link" href="#boom-hunter"><i>◉</i><span>آزمایشگاه Boom Hunter</span><em>05</em></a>
   <a class="side-link" href="#chart-section"><i>⌁</i><span>نمودار حرفه‌ای</span><em>06</em></a>
   <a class="side-link" href="#market-intelligence"><i>◉</i><span>مرکز هوشمندی بازار</span><em>07</em></a>
-  <a class="side-link" href="#smart-alerts"><i>♢</i><span>دیده‌بانی و هشدارها</span><em>08</em></a>
-  <a class="side-link" href="#signal-journal"><i>▦</i><span>دفتر سیگنال و بک‌تست</span><em>09</em></a>
   <div class="side-caption">MARKET & PERSONAL</div>
   <a class="side-link" href="#coins-section"><i>▤</i><span>بازار رمزارزها</span><em>10</em></a>
   <div class="side-caption">TRADING DESK</div>
@@ -2767,33 +2748,17 @@ html body>main.wrap>#mmp-home-hero{margin-top:0!important;margin-block-start:0!i
   </article>
  </div>
 </section>
-<section class="intel-panel journal-panel" id="signal-journal" data-quantum-module="learning">
- <div class="intel-panel-head"><div><small>TRADE JOURNAL · BACKTEST & CALIBRATION</small><h3>دفتر ثبت سیگنال و ارزیابی عملکرد</h3><p class="sub">سیگنال‌ها روی همین دستگاه ذخیره می‌شوند؛ نتیجه فقط با رسیدن قیمت واقعی به حد سود یا حد ضرر بسته می‌شود.</p></div><span class="journal-local-tag">ذخیره محلی</span></div>
- <div class="server-performance-panel" id="server-performance-panel">
+<section class="intel-panel" id="server-performance">
+<div class="server-performance-panel" id="server-performance-panel">
   <div class="server-performance-head"><div><b>سنجش اعتبار موتورهای تحلیل</b><small>کارنامه سروری · فقط نتایج بسته‌شده و قابل‌ردیابی</small></div><button class="intel-refresh" id="performance-refresh" type="button">↻ تازه‌سازی آمار</button></div>
   <div class="performance-summary" id="performance-summary"><div><small>نمونه‌های ثبت‌شده</small><b>—</b></div><div><small>نتایج قطعی</small><b>—</b></div><div><small>موفق</small><b>—</b></div><div><small>ناموفق</small><b>—</b></div><div><small>نرخ موفقیت</small><b>—</b></div><div><small>میانگین R</small><b>—</b></div></div>
   <div class="performance-engine-list" id="performance-engine-list"><div class="heatmap-empty">در انتظار دریافت کارنامه سرور…</div></div>
   <div class="performance-status" id="performance-status">نتایج مبهم، منقضی و بدون معامله از نرخ موفقیت حذف می‌شوند. تا تشکیل نمونه کافی، نرخ موفقیت نمایش داده نخواهد شد.</div>
  </div>
- <div class="journal-form">
-  <label>نماد<input id="journal-symbol" value="BTC" maxlength="15" placeholder="BTC"></label>
-  <label>جهت معامله<select id="journal-side"><option value="LONG">خرید / LONG</option><option value="SHORT">فروش / SHORT</option></select></label>
-  <label>قیمت ورود<input id="journal-entry" type="number" min="0" step="any" placeholder="قیمت ورود"></label>
-  <label>حد ضرر<input id="journal-stop" type="number" min="0" step="any" placeholder="حد ضرر"></label>
-  <label>هدف اول<input id="journal-target" type="number" min="0" step="any" placeholder="هدف اول"></label>
-  <button class="btn primary" id="journal-save" type="button">＋ ثبت سیگنال</button>
- </div>
- <div class="journal-stats" id="journal-stats"><div><small>کل سیگنال‌ها</small><b>۰</b></div><div><small>بسته‌شده</small><b>۰</b></div><div><small>موفق</small><b>۰</b></div><div><small>نرخ برد</small><b>—</b></div><div><small>میانگین بازده R</small><b>—</b></div></div>
- <div class="journal-toolbar"><span id="journal-status">هنوز سیگنالی ثبت نشده است.</span><button class="intel-refresh" id="journal-refresh" type="button">به‌روزرسانی نتایج</button></div>
- <div class="journal-table-wrap"><table class="market-table journal-table"><thead><tr><th>نماد</th><th>جهت</th><th>ورود</th><th>قیمت فعلی</th><th>حد ضرر</th><th>هدف</th><th>وضعیت</th><th></th></tr></thead><tbody id="journal-rows"><tr><td colspan="8" class="muted">هنوز داده‌ای ثبت نشده است.</td></tr></tbody></table></div>
- <p class="intel-foot">دفتر روی مرورگر همین دستگاه نگهداری می‌شود و بین دستگاه‌ها همگام نیست. ارزیابی گذشته‌نگر از داده‌های آینده‌نگرِ بعد از ثبت سیگنال استفاده می‌کند؛ نرخ برد پیش از بسته‌شدن معاملات گزارش نمی‌شود.</p>
 </section>
-<section class="intel-panel watchlist-panel" id="smart-alerts" data-quantum-module="alerts">
- <div class="intel-panel-head"><div><small>SMART ALERTS · WATCHLIST</small><h3>فهرست دیده‌بانی و هشدار قیمت</h3></div><span class="journal-local-tag">محلی و قابل تنظیم</span></div>
- <div class="watchlist-form"><input id="alert-symbol" value="BTC" maxlength="15" aria-label="نماد هشدار" placeholder="نماد"><select id="alert-condition" aria-label="شرط هشدار"><option value="above">عبور به بالای قیمت</option><option value="below">افت به زیر قیمت</option></select><input id="alert-price" type="number" min="0" step="any" placeholder="قیمت هدف" aria-label="قیمت هدف"><button class="btn primary" id="alert-add" type="button">افزودن هشدار</button></div>
- <div id="alert-list" class="alert-list"><div class="muted">هنوز هشداری ثبت نشده است.</div></div>
- <p class="intel-foot">هشدارها تا زمانی که صفحه یا اپ باز باشد بررسی می‌شوند؛ اعلان سیستم فقط با اجازه مرورگر فعال خواهد شد.</p>
-</section>
+
+
+
 
 <section class="collapsible-coins-container mmp-market-catalog" id="coins-section" data-quantum-module="assets">
  <div class="section-head">
@@ -5545,7 +5510,7 @@ body:before{opacity:.23;background-size:34px 34px}
 .intel-suite-head{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:16px}
 .intel-suite-head h2{font-size:20px;margin:5px 0}
 .intel-suite-head p{font-size:11px;color:var(--muted);margin:0;line-height:1.9}
-.intel-live-chip,.journal-local-tag,.intel-status-wait{white-space:nowrap;border:1px solid #3a6e68;background:#123b372e;color:#72e6ce;border-radius:30px;padding:7px 11px;font-size:10px}
+.intel-live-chip,.intel-status-wait{white-space:nowrap;border:1px solid #3a6e68;background:#123b372e;color:#72e6ce;border-radius:30px;padding:7px 11px;font-size:10px}
 .intel-live-chip i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#42e2b8;box-shadow:0 0 12px #42e2b8;margin-left:5px}
 .intel-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
 .intel-panel{padding:16px;min-width:0;margin:0}
@@ -5554,15 +5519,15 @@ body:before{opacity:.23;background-size:34px 34px}
 .intel-panel h3{font-size:15px;margin:5px 0}
 .intel-panel-head p{font-size:10px;line-height:1.8;margin:5px 0;color:var(--muted)}
 .intel-refresh{border:1px solid #476278;border-radius:9px;padding:7px 10px;background:#1a2c3d;color:#e7d39d;font-size:10px;white-space:nowrap;cursor:pointer}
-.intel-symbol-row,.watchlist-form{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.intel-symbol-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .intel-symbol-row label{font-size:10px;color:var(--muted)}
-.intel-symbol-row input,.intel-symbol-row select,.journal-form input,.journal-form select,.watchlist-form input,.watchlist-form select{width:100%;min-width:0;padding:10px 11px;background:#08121d;border:1px solid #344d62;border-radius:9px;color:#f4e7c7;outline:none;font-size:11px}
+.intel-symbol-row input,.intel-symbol-row select{width:100%;min-width:0;padding:10px 11px;background:#08121d;border:1px solid #344d62;border-radius:9px;color:#f4e7c7;outline:none;font-size:11px}
 .intel-symbol-row input{max-width:130px;direction:ltr;text-align:left}.intel-symbol-row select{max-width:145px;min-width:110px;cursor:pointer}
 .intel-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .intel-metrics.two{grid-template-columns:repeat(2,minmax(0,1fr))}
-.intel-metrics>div,.journal-stats>div{padding:10px 9px;border:1px solid #2b4357;border-radius:11px;background:linear-gradient(145deg,#1a2b3c,#101b28);min-width:0}
-.intel-metrics small,.journal-stats small{display:block;color:#9aafbf;font-size:9px;line-height:1.6}
-.intel-metrics b,.journal-stats b{display:block;margin-top:7px;color:#f2d58f;font-size:13px;direction:ltr;text-align:right;overflow-wrap:anywhere}
+.intel-metrics>div{padding:10px 9px;border:1px solid #2b4357;border-radius:11px;background:linear-gradient(145deg,#1a2b3c,#101b28);min-width:0}
+.intel-metrics small{display:block;color:#9aafbf;font-size:9px;line-height:1.6}
+.intel-metrics b{display:block;margin-top:7px;color:#f2d58f;font-size:13px;direction:ltr;text-align:right;overflow-wrap:anywhere}
 .intel-metrics em{display:block;font-size:8px;color:#617f91;font-style:normal;margin-top:3px}
 .intel-foot{font-size:10px;color:#8ea4b6;line-height:1.8;margin-top:11px}
 .intel-mini-row{display:flex;justify-content:space-between;gap:10px;padding:9px 11px;margin-top:9px;border:1px solid #2c4254;border-radius:9px;background:#0b1722;font-size:10px}
@@ -5581,27 +5546,10 @@ body:before{opacity:.23;background-size:34px 34px}
 .whale-state b{font-size:11px;color:#e6d4aa}
 .whale-state p{font-size:10px;line-height:1.9;color:#91a3b6;margin:5px 0 0}
 .whale-links{display:flex;gap:8px;margin-top:10px}.whale-links a{font-size:10px;color:#72d9ce;text-decoration:none;border:1px solid #345d62;border-radius:20px;padding:6px 10px}
-.journal-panel,.watchlist-panel{margin:18px 0;padding:18px}
-.journal-form{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:8px;align-items:end}
-.journal-form label{display:grid;gap:5px;color:#9aafbf;font-size:9px}
-.journal-form input,.journal-form select{height:38px}
-.journal-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:13px 0}
-.journal-stats b{font-size:16px}
-.journal-toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:10px;color:#9db0bf;margin:10px 0}
-.journal-table-wrap{overflow:auto;border:1px solid #2c4155;border-radius:12px}
-.journal-table{min-width:760px}
-.journal-table td{font-size:10px}
-.journal-delete{border:1px solid #784653;background:#351b27;color:#ff9aaa;border-radius:7px;padding:4px 8px;cursor:pointer}
-.journal-status-open{color:#e7c985}.journal-status-win{color:#46e0b1}.journal-status-loss{color:#ff8395}
-.watchlist-form>*{flex:1}
-.alert-list{display:grid;gap:7px}
-.alert-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid #30465a;border-radius:10px;background:#0b1722;font-size:10px}
-.alert-row b{color:#f1d28d;direction:ltr}
-.alert-row button{border:1px solid #704452;background:#351b27;color:#ff9aaa;border-radius:7px;padding:5px 8px}
-@media(max-width:1100px){.intel-grid{grid-template-columns:1fr}.journal-form{grid-template-columns:repeat(3,minmax(0,1fr))}.journal-form button{grid-column:1/-1}}
+@media(max-width:1100px){.intel-grid{grid-template-columns:1fr}}
 @media(max-width:900px){.top{padding:0 12px}.mmp-sidebar{display:none}.wrap{width:100%;padding:16px 12px 70px}.hero{min-height:200px}.hero-visual{opacity:.55;left:0;transform:translateY(-50%) scale(.8)}}
-@media(max-width:650px){.intel-suite{padding:13px}.intel-suite-head{align-items:flex-start;flex-direction:column}.intel-grid{grid-template-columns:1fr}.intel-panel{padding:13px}.intel-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.journal-form{grid-template-columns:repeat(2,minmax(0,1fr))}.journal-form button{grid-column:1/-1}.journal-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.watchlist-form{display:grid;grid-template-columns:1fr 1fr}.watchlist-form button{grid-column:1/-1}.intel-symbol-row{flex-wrap:wrap}.intel-symbol-row input{flex:1}.hero{padding:18px 15px}.hero-visual{opacity:.28;left:-55px}.hero-refresh-group{right:12px;bottom:12px}.top-actions .pill{display:none}}
-@media(max-width:390px){.journal-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.intel-forecast-grid{gap:5px}.intel-forecast-grid>div{padding:9px 6px}}
+@media(max-width:650px){.intel-suite{padding:13px}.intel-suite-head{align-items:flex-start;flex-direction:column}.intel-grid{grid-template-columns:1fr}.intel-panel{padding:13px}.intel-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.intel-symbol-row{flex-wrap:wrap}.intel-symbol-row input{flex:1}.hero{padding:18px 15px}.hero-visual{opacity:.28;left:-55px}.hero-refresh-group{right:12px;bottom:12px}.top-actions .pill{display:none}}
+@media(max-width:390px){.intel-forecast-grid{gap:5px}.intel-forecast-grid>div{padding:9px 6px}}
 @media(prefers-reduced-motion:reduce){body:after,.hero:before,.hero-coin{animation:none!important;transition:none!important}}
 
 .intel-backtest-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:12px}.intel-backtest-bar span{font-size:9px;color:#8fa5b7}
@@ -5724,90 +5672,13 @@ body:before{opacity:.23;background-size:34px 34px}
   }catch(e){if(grid)grid.innerHTML=[1,3,5].map(h=>'<div><small>'+h+' کندل بعد</small><b>—</b><span>داده معتبر در دسترس نیست</span></div>').join("");if(summary)summary.textContent="برآورد فعلاً انجام نشد: "+(e.message||"داده کافی دریافت نشد.")+" · مقادیر قبلی پاک شدند."; }
   finally{if(button){button.disabled=false;button.textContent="تحلیل کندل‌ها";}}
  }
- const JOURNAL_KEY="mmp_signal_journal_v1",ALERT_KEY="mmp_price_alerts_v1";
- const readStore=(key)=>{try{const v=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(v)?v:[];}catch{return [];}};
- const writeStore=(key,value)=>{try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}};
- const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
- function renderJournal(){
-  const items=readStore(JOURNAL_KEY),closed=items.filter(x=>x.status!=="OPEN"),wins=closed.filter(x=>x.status==="WIN"),rvals=closed.map(x=>Number(x.rMultiple)).filter(Number.isFinite),rate=closed.length?wins.length/closed.length*100:null,avg=rvals.length?rvals.reduce((a,b)=>a+b,0)/rvals.length:null;
-  const stats=[items.length,closed.length,wins.length,rate===null?"—":fmt(rate,1)+"٪",avg===null?"—":fmt(avg,2)+"R"];
-  const el=byId("journal-stats");if(el)el.innerHTML=stats.map((v,i)=>'<div><small>'+["کل سیگنال‌ها","بسته‌شده","موفق","نرخ برد","میانگین بازده R"][i]+'</small><b>'+v+'</b></div>').join("");
-  const rows=byId("journal-rows");
-  if(rows)rows.innerHTML=items.length?items.slice().reverse().map(x=>'<tr><td><b>'+esc(x.symbol)+'</b></td><td>'+x.side+'</td><td>'+usd(x.entry)+'</td><td>'+usd(x.lastPrice||x.entry)+'</td><td>'+usd(x.stop)+'</td><td>'+usd(x.target)+'</td><td class="journal-status-'+String(x.status).toLowerCase()+'">'+(x.status==="OPEN"?"باز":x.status==="WIN"?"موفق":"ناموفق")+'</td><td><button class="journal-delete" data-journal-delete="'+x.id+'">حذف</button></td></tr>').join(""):'<tr><td colspan="8" class="muted">هنوز داده‌ای ثبت نشده است.</td></tr>';
-  if(byId("journal-status"))byId("journal-status").textContent="ذخیره محلی · "+items.length+" رکورد · آخرین بررسی "+new Date().toLocaleTimeString("fa-IR");
- }
- async function saveJournal(){
-  const symbol=safeSymbol(byId("journal-symbol")?.value),side=byId("journal-side")?.value,entry=Number(byId("journal-entry")?.value),stop=Number(byId("journal-stop")?.value),target=Number(byId("journal-target")?.value);
-  if(!symbol||!(entry>0&&stop>0&&target>0)||(side==="LONG"?(stop>=entry||target<=entry):(stop<=entry||target>=entry))){alert("نماد و قیمت‌های ورود، حد ضرر و هدف را درست وارد کن؛ حد ضرر و هدف باید در جهت معامله باشند.");return;}
-  const item={id:Date.now().toString(36),symbol,side,entry,stop,target,lastPrice:entry,status:"OPEN",createdAt:new Date().toISOString(),rMultiple:null};
-  const items=readStore(JOURNAL_KEY);items.push(item);
-  if(!writeStore(JOURNAL_KEY,items)){alert("فضای ذخیره‌سازی مرورگر در دسترس نیست.");return;}
-  byId("journal-entry").value="";byId("journal-stop").value="";byId("journal-target").value="";
-  renderJournal();
- }
- async function refreshJournal(){
-  const items=readStore(JOURNAL_KEY),open=items.filter(x=>x.status==="OPEN");
-  if(!open.length){renderJournal();return;}
-  const symbols=[...new Set(open.map(x=>x.symbol))];
-  const results=await Promise.allSettled(symbols.map(async s=>[s,await getJson("https://api.binance.com/api/v3/ticker/price?symbol="+s+"USDT")]));
-  const prices=Object.fromEntries(results.filter(x=>x.status==="fulfilled").map(x=>[x.value[0],Number(x.value[1].price)]));
-  const now=new Date().toISOString();
-  for(const item of open){
-   const p=prices[item.symbol];if(!(p>0))continue;
-   item.lastPrice=p;item.checkedAt=now;
-   const hitStop=item.side==="LONG"?p<=item.stop:p>=item.stop,hitTarget=item.side==="LONG"?p>=item.target:p<=item.target;
-   if(hitStop||hitTarget){item.status=hitTarget?"WIN":"LOSS";item.closedAt=now;item.rMultiple=hitTarget?Math.abs((item.target-item.entry)/(item.entry-item.stop)):-1;}
-  }
-  writeStore(JOURNAL_KEY,items);renderJournal();
- }
- function renderAlerts(){
-  const alerts=readStore(ALERT_KEY),el=byId("alert-list");
-  if(el)el.innerHTML=alerts.length?alerts.map(a=>'<div class="alert-row"><span>'+esc(a.symbol)+' · '+(a.condition==="above"?"عبور به بالای":"افت به زیر")+' <b>'+usd(a.price)+'</b></span><button data-alert-delete="'+a.id+'">حذف</button></div>').join(""):'<div class="muted">هنوز هشداری ثبت نشده است.</div>';
- }
- function addAlert(){
-  const symbol=safeSymbol(byId("alert-symbol")?.value),price=Number(byId("alert-price")?.value),condition=byId("alert-condition")?.value;
-  if(!symbol||!(price>0)){alert("نماد و قیمت هدف معتبر وارد کن.");return;}
-  const items=readStore(ALERT_KEY);items.push({id:Date.now().toString(36),symbol,price,condition,active:true});
-  if(!writeStore(ALERT_KEY,items)){alert("ذخیره‌سازی مرورگر در دسترس نیست.");return;}
-  byId("alert-price").value="";renderAlerts();
- }
- async function checkAlerts(){
-  const items=readStore(ALERT_KEY).filter(x=>x.active);
-  if(!items.length)return;
-  const symbols=[...new Set(items.map(x=>x.symbol))];
-  const results=await Promise.allSettled(symbols.map(async s=>[s,await getJson("https://api.binance.com/api/v3/ticker/price?symbol="+s+"USDT")]));
-  const prices=Object.fromEntries(results.filter(x=>x.status==="fulfilled").map(x=>[x.value[0],Number(x.value[1].price)]));
-  let changed=false;
-  for(const a of items){
-   const p=prices[a.symbol];if(!(p>0))continue;
-   if((a.condition==="above"&&p>=a.price)||(a.condition==="below"&&p<=a.price)){
-    a.active=false;a.triggeredAt=new Date().toISOString();a.triggeredPrice=p;changed=true;
-    const message=a.symbol+" به قیمت هشدار "+usd(p)+" رسید.";
-    if("Notification" in window&&Notification.permission==="granted")new Notification("هشدار قیمت MMP",{body:message});
-    else if(document.visibilityState==="visible")alert(message);
-   }
-  }
-  if(changed){writeStore(ALERT_KEY,readStore(ALERT_KEY).map(old=>items.find(a=>a.id===old.id)||old));renderAlerts();}
- }
- /* derivatives are loaded through the same-origin Worker endpoint below */
+ /* Retired local journal and price-alert modules removed; market intelligence remains Worker-backed. */
  /* derivatives refresh is bound to the Worker endpoint below */
  /* order-flow is loaded through the same-origin Worker endpoint below */
  byId("forecast-run")?.addEventListener("click",loadForecast);
- byId("journal-save")?.addEventListener("click",saveJournal);
- byId("journal-refresh")?.addEventListener("click",refreshJournal);
- byId("journal-rows")?.addEventListener("click",e=>{const b=e.target.closest("[data-journal-delete]");if(!b)return;writeStore(JOURNAL_KEY,readStore(JOURNAL_KEY).filter(x=>x.id!==b.dataset.journalDelete));renderJournal();});
- byId("alert-add")?.addEventListener("click",addAlert);
- byId("alert-list")?.addEventListener("click",e=>{const b=e.target.closest("[data-alert-delete]");if(!b)return;writeStore(ALERT_KEY,readStore(ALERT_KEY).filter(x=>x.id!==b.dataset.alertDelete));renderAlerts();});
  byId("ai-coin-select")?.addEventListener("change",()=>{const v=safeSymbol(byId("ai-coin-select").value);if(v&&byId("intel-symbol"))byId("intel-symbol").value=v;});
  byId("intel-symbol")?.addEventListener("change",()=>{const v=safeSymbol(byId("intel-symbol").value);if(v)byId("intel-symbol").value=v;});
- if("Notification" in window&&Notification.permission==="default"){
-  const notifyButton=document.createElement("button");notifyButton.type="button";notifyButton.className="intel-refresh";notifyButton.textContent="فعال‌سازی اعلان‌ها";
-  notifyButton.addEventListener("click",async()=>{const p=await Notification.requestPermission();notifyButton.textContent=p==="granted"?"اعلان‌ها فعال شد":"اجازه اعلان داده نشد";});
-  byId("smart-alerts")?.querySelector(".intel-panel-head")?.appendChild(notifyButton);
- }
- renderJournal();renderAlerts();
  loadForecast();
- setInterval(()=>{refreshJournal();checkAlerts();},60000);
  /* worker-backed market intelligence refresh is initialized below */
  async function runHistoricalBacktest(){
   const button=byId("historical-backtest"),status=byId("backtest-status"),out=byId("backtest-results");
@@ -5878,7 +5749,7 @@ body:before{opacity:.23;background-size:34px 34px}
  function attachInput(id){const input=$(id);if(!input||input.dataset.mmpPicker)return;input.dataset.mmpPicker="1";const w=document.createElement("div");w.className="mmp-symbol-picker";input.parentNode.insertBefore(w,input);w.appendChild(input);const t=document.createElement("button");t.type="button";t.className="mmp-symbol-trigger";t.title="انتخاب از فهرست کامل ارزها";t.innerHTML='<img src="'+icon({symbol:input.value||"BTC"})+'" alt="">';w.appendChild(t);const a=document.createElement("button");a.type="button";a.className="mmp-symbol-add";a.textContent="＋";a.title="افزودن نماد دلخواه";a.setAttribute("aria-label",a.title);w.appendChild(a);build(w,input,"text");}
  function attachTv(){const s=$("tv-symbol");if(!s||s.dataset.mmpPicker)return;s.dataset.mmpPicker="1";s.classList.add("mmp-native-select-hidden");const w=document.createElement("div");w.className="mmp-tv-picker";s.parentNode.insertBefore(w,s);w.appendChild(s);const t=document.createElement("button");t.type="button";t.className="mmp-symbol-trigger";t.innerHTML='<img src="'+icon({symbol:"BTC"})+'" alt=""><span>Bitcoin · BTC</span><b>⌄</b>';w.appendChild(t);const a=document.createElement("button");a.type="button";a.className="mmp-symbol-add";a.textContent="＋";a.title="افزودن نماد به نمودار";w.appendChild(a);const p=build(w,s,"tv"),update=()=>{const sym=String(s.value||"").split(":").pop().replace(/USDT$/,""),c=pool().find(x=>x.symbol===sym)||{symbol:sym};t.querySelector("img").src=icon(c);t.querySelector("span").textContent=(c.name||sym)+" · "+sym;};s.addEventListener("change",update);a.addEventListener("click",()=>{p.menu.hidden=false;p.menu.querySelector(".mmp-symbol-manual input").focus();p.render();});new MutationObserver(update).observe(s,{childList:true});update();}
  function refreshAi(){const s=$("ai-coin-select");if(!s||typeof syncAiCoinOptions!=="function")return;const old=s.value,all=pool(),manual=all.filter(c=>c.manual).map(c=>({id:"manual:"+c.symbol,symbol:c.symbol,name:c.name,image:c.image}));syncAiCoinOptions([...(typeof cachedCoinsData!=="undefined"?cachedCoinsData:[]),...(typeof hunterUniverseCache!=="undefined"?hunterUniverseCache.coins||[]:[]),...manual]);if(old&&[...s.options].some(o=>o.value===old))s.value=old;}
- function init(){["intel-symbol","journal-symbol","alert-symbol"].forEach(attachInput);attachTv();refreshAi();setInterval(refreshAi,30000);}
+ function init(){["intel-symbol"].forEach(attachInput);attachTv();refreshAi();setInterval(refreshAi,30000);}
  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
 })();
 </script>
@@ -6104,7 +5975,7 @@ body:before{opacity:.23;background-size:34px 34px}
 .intel-suite{margin:12px 0!important}
 .intel-suite-head{margin-bottom:10px!important}
 .intel-grid{gap:9px!important}
-.intel-panel,.journal-panel{padding:12px!important;border-radius:13px!important}
+.intel-panel{padding:12px!important;border-radius:13px!important}
 .intel-panel-head{margin-bottom:9px!important;gap:7px!important}
 .intel-panel-head h3{font-size:13px!important}
 .intel-panel-head small{font-size:8px!important}
@@ -6134,7 +6005,7 @@ body:before{opacity:.23;background-size:34px 34px}
  #tv-symbol.mmp-native-select-hidden{width:100%!important;flex:1 1 100%;font-size:11px!important}
  .chart-actions .btn{flex:1;min-width:0;text-align:center;padding:8px 7px;font-size:9px}
  .whale-transfers{grid-template-columns:1fr}
- .intel-panel,.journal-panel{padding:10px!important}
+ .intel-panel{padding:10px!important}
  #connections{gap:7px!important}
  #connections .conn{padding:8px!important;min-height:84px!important}
  .wrap{padding-bottom:4px!important}
