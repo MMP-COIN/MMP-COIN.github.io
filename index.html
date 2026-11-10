@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="2f103ebc5ab8b28d10f3e93b2a09cc48818b1b77">
+<meta name="mmp-web-build" content="71a75451140b127ead84d710992da2d3ab98e54e">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -2275,12 +2275,12 @@ body.mmp-app-mode>header.top{
  margin-block-start:0!important;transform:none!important;
 }
 body.mmp-app-mode>.mmp-sidebar{top:var(--mmp-header-height,62px)!important}
-body.mmp-app-mode>main.wrap{margin-block-start:0!important;padding-block-start:8px!important}
+body.mmp-app-mode>main.wrap{margin-block-start:0!important;padding-block-start:0!important}
 body.mmp-app-mode #mmp-home-hero.mmp-home-hero{
  display:grid!important;grid-template-columns:minmax(0,1fr) 190px!important;
  align-items:center!important;gap:14px!important;
  min-height:0!important;height:auto!important;max-height:none!important;
- margin:8px 0 12px!important;padding:14px 22px!important;
+ margin:0 0 12px!important;padding:14px 22px!important;
  border-radius:17px!important;overflow:hidden!important;
 }
 body.mmp-app-mode #mmp-home-hero .mmp-hero-copy{min-width:0!important;max-width:none!important}
@@ -2302,7 +2302,7 @@ body.mmp-app-mode #mmp-home-hero .mmp-ring-two{width:136px!important;height:106p
 body.mmp-app-mode #mmp-home-hero .mmp-emblem-caption{font-size:6px!important;letter-spacing:1px!important;bottom:0!important}
 body.mmp-app-mode #mmp-home-hero .mmp-hero-index{display:none!important}
 @media(max-width:900px){
- body.mmp-app-mode>main.wrap{padding-block-start:6px!important}
+ body.mmp-app-mode>main.wrap{padding-block-start:0!important}
  body.mmp-app-mode #mmp-home-hero.mmp-home-hero{grid-template-columns:minmax(0,1fr) 120px!important;gap:8px!important;margin:6px 0 9px!important;padding:10px 13px!important}
  body.mmp-app-mode #mmp-home-hero .mmp-hero-title{font-size:22px!important;margin:4px 0!important}
  body.mmp-app-mode #mmp-home-hero .mmp-hero-copy>p{font-size:9px!important;line-height:1.65!important}
@@ -6612,7 +6612,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="2f103ebc5ab8b28d10f3e93b2a09cc48818b1b77")return;
+ if(!pageBuild||pageBuild==="71a75451140b127ead84d710992da2d3ab98e54e")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
