@@ -117,9 +117,17 @@ jobs:
               for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile",width:390,height:844}]) {
                 const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
                 page.on("pageerror", error => failures.push(viewport.name + ": " + error.message));
+                page.on("requestfailed", request => { if (request.url().includes("workers.dev")) console.log(viewport.name + " WORKER REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); });
+                page.on("response", response => { if (response.url().includes("workers.dev")) console.log(viewport.name + " WORKER RESPONSE: " + response.status() + " " + response.url() + " ACAO=" + (response.headers()["access-control-allow-origin"] || "MISSING")); });
                 const response = await page.goto(process.env.SITE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
                 await page.waitForTimeout(7000);
+                const apiProbe = await page.evaluate(async () => {
+                  const url = "https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/market-candles?symbol=BTCUSDT&interval=1h&market=spot";
+                  try { const r = await fetch(url, {cache:"no-store",headers:{Accept:"application/json"}}); return {ok:r.ok,status:r.status,acao:r.headers.get("access-control-allow-origin"),body:(await r.text()).slice(0,500)}; }
+                  catch(e) { return {error:String(e)}; }
+                });
+                console.log(viewport.name + " DIRECT WORKER PROBE: " + JSON.stringify(apiProbe));
                 const title = await page.title();
                 const bodyText = await page.locator("body").innerText();
                 const layout = await page.evaluate(() => {
