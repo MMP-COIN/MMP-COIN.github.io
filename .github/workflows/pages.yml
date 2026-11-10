@@ -125,6 +125,12 @@ jobs:
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
                 }
+                if (await page.locator("#mmp-chart-status").count() === 0) throw new Error(viewport.name + " missing native chart status");
+                if (await page.locator("[data-chart-tf]").count() !== 6) throw new Error(viewport.name + " missing chart timeframe controls");
+                await page.locator("#mmp-candle-canvas canvas").first().waitFor({state:"visible",timeout:20000});
+                await page.locator("#mmp-rsi-canvas canvas").first().waitFor({state:"visible",timeout:10000});
+                const chartStatus = await page.locator("#mmp-chart-status").innerText();
+                console.log(viewport.name + " chart status: " + chartStatus);
                 await page.close();
               }
               const lab = await browser.newPage({ viewport: { width: 390, height: 844 } });
