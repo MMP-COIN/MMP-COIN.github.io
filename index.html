@@ -6730,39 +6730,6 @@ window.mmpShareDownloadLink = async function () {
  document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
 })();
 </script>
-<script id="mmp-live-update">
-(function(){
- "use strict";
- var marker=document.querySelector('meta[name="mmp-web-build"]');
- var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="01fbec3a10e4d1d86cf0be08a7469fa5493ae4be")return;
- var busy=false;
- async function checkForLiveUpdate(){
-  if(busy||document.visibilityState==="hidden")return;
-  busy=true;
-  try{
-   var endpoint=new URL("version.json",document.baseURI);
-   endpoint.searchParams.set("_",String(Date.now()));
-   var response=await fetch(endpoint.toString(),{cache:"no-store",credentials:"same-origin",headers:{Accept:"application/json"}});
-   if(!response.ok)return;
-   var release=await response.json();
-   if(!release||typeof release.build!=="string"||!release.build)return;
-   var target=release.build.slice(0,12);
-   var current=new URL(window.location.href);
-   if(release.build!==pageBuild&&current.searchParams.get("mmp_live_refresh")!==target){
-    current.searchParams.set("mmp_live_refresh",target);
-    window.location.replace(current.toString());
-   }
-  }catch(error){
-   // Keep the current working screen when the network or version endpoint is unavailable.
-  }finally{busy=false;}
- }
- window.setInterval(checkForLiveUpdate,120000);
- window.addEventListener("focus",checkForLiveUpdate,{passive:true});
- document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")checkForLiveUpdate();});
- window.setTimeout(checkForLiveUpdate,12000);
-})();
-</script>
 <style id="mmp-native-chart-quality-20261110">
 .mmp-chart-toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0;padding:9px;border:1px solid #2d3b4b;border-radius:12px;background:linear-gradient(120deg,#111b28,#0b121c)}
 .mmp-chart-timeframes{display:flex;gap:4px;flex-wrap:wrap}.mmp-chart-timeframes button,.mmp-chart-toggle,.mmp-chart-refresh,.mmp-chart-market select{min-height:34px;padding:6px 10px;border:1px solid #344456;border-radius:8px;background:#111c29;color:#cbd7e2;font-size:11px;font-weight:700}
