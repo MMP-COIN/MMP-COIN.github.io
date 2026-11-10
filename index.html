@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="7a0507cd1154b09d67a00b73752b48ab66fb2cd8">
+<meta name="mmp-web-build" content="bc60ab0b0fd13560fd66e3bcab7649095ab52c50">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -1947,39 +1947,6 @@ body.mmp-app-mode>header.top{
  inset-block-start:0!important;margin-block-start:0!important;transform:none!important
 }
 @media(max-width:900px){body.mmp-app-mode>header.top{top:0!important;inset-block-start:0!important}}
-</style>
-<style id="mmp-market-cards-readable-contrast-20261110">
-/* Readability fix: the four snapshot cards use dark surfaces, so all base text must be light. */
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .mmp-card-tag{
-  color:#d4e0e8!important;
-  font-weight:800!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .stat-label{
-  color:#e5edf3!important;
-  font-weight:800!important;
-  text-shadow:0 1px 2px #0008!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .stat-label b{
-  color:#f2d48e!important;
-  font-weight:900!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .stat-value{
-  color:#fff4d8!important;
-  font-weight:950!important;
-  text-shadow:0 1px 8px #0009!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .sub{
-  color:#c2d0da!important;
-  font-weight:600!important;
-  text-shadow:0 1px 2px #0008!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .sub .positive,
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .positive{color:#31dba4!important}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .sub .negative,
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .negative{color:#ff7885!important}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .mmp-asset-icon{
-  text-shadow:0 1px 5px #0008!important;
-}
 </style>
 </head>
 <body class="mmp-app-mode">
@@ -6270,7 +6237,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="7a0507cd1154b09d67a00b73752b48ab66fb2cd8")return;
+ if(!pageBuild||pageBuild==="bc60ab0b0fd13560fd66e3bcab7649095ab52c50")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
