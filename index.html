@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="69cb4cd6baa9626c80c1cae8c1934cd97a9c7733">
+<meta name="mmp-web-build" content="81df73afde1dca32b319cfdceff09855167f7d41">
 <meta name="mmp-quantum-engine" content="QIE-2.0.0">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
@@ -6235,7 +6235,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="69cb4cd6baa9626c80c1cae8c1934cd97a9c7733")return;
+ if(!pageBuild||pageBuild==="81df73afde1dca32b319cfdceff09855167f7d41")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
@@ -6335,5 +6335,3 @@ html body .wrap{padding-top:8px!important;margin-top:0!important}
 @media(max-width:560px){#derivatives-panel .intel-panel-head,#orderflow-panel .intel-panel-head{align-items:flex-start;gap:8px}#derivatives-panel .intel-metrics>div,#orderflow-panel .intel-metrics>div{padding:10px}#derivatives-panel .intel-metrics b,#orderflow-panel .intel-metrics b{font-size:16px}}
 </style>
 
-
-<!-- canonical-sync-trigger: 2026-11-10 -->
