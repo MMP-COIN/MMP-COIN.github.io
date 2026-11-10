@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="939c2f072971a0c486aed3b97da0d04cef458a28">
+<meta name="mmp-web-build" content="f1e46a757eff7a356123e278163458c0808cd94b">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -6612,7 +6612,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="939c2f072971a0c486aed3b97da0d04cef458a28")return;
+ if(!pageBuild||pageBuild==="f1e46a757eff7a356123e278163458c0808cd94b")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
@@ -6818,6 +6818,31 @@ html body.mmp-app-mode>header.top{
 @media(max-width:900px){
  html body.mmp-app-mode>main.wrap{padding-top:0!important;padding-block-start:0!important}
  html body.mmp-app-mode>main.wrap>#mmp-home-hero{margin-top:0!important;margin-block-start:0!important}
+}
+</style>
+
+<style id="mmp-hard-reset-viewport-top-20261110">
+/* Final viewport-edge reset: remove the 18px top inset that reappeared from legacy responsive rules. */
+html,html body,body.mmp-app-mode{
+ margin:0!important;padding:0!important;
+}
+body.mmp-app-mode{
+ position:relative!important;inset-block-start:0!important;
+}
+body.mmp-app-mode>header.top{
+ position:sticky!important;top:0!important;inset-block-start:0!important;
+ margin:0!important;transform:none!important;
+}
+body.mmp-app-mode>main.wrap{
+ margin-block-start:0!important;margin-top:0!important;
+ padding-block-start:0!important;padding-top:0!important;
+}
+body.mmp-app-mode>main.wrap>#mmp-home-hero{
+ margin-block-start:0!important;margin-top:0!important;
+}
+@media(max-width:900px){
+ body.mmp-app-mode>header.top{top:0!important;inset-block-start:0!important}
+ body.mmp-app-mode>main.wrap{padding-top:0!important;padding-block-start:0!important}
 }
 </style>
 </body>
