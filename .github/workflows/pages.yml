@@ -101,6 +101,28 @@ jobs:
             jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true' /tmp/mmp-worker-health.json >/dev/null
           fi
           echo "Published site, manifest, icon and Quantum Lab verified; Worker status: HTTP $WORKER_STATUS."
+      - name: Diagnose Worker transport, throttling and CORS
+        env:
+          WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
+          SITE_ORIGIN: https://mmp-coin.github.io
+        run: |
+          set -u
+          echo "DNS resolution:"
+          getent ahosts mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev || true
+          probe() {
+            label="$1"; shift
+            echo "=== $label ==="
+            code="$(curl --silent --show-error --connect-timeout 10 --max-time 25 -D /tmp/mmp-probe-headers -o /tmp/mmp-probe-body -w '%{http_code}' "$@" || true)"
+            echo "HTTP_STATUS=$code"
+            grep -iE '^(HTTP/|server:|cf-ray:|retry-after:|access-control-allow-origin:|access-control-allow-methods:|access-control-allow-headers:|content-type:)' /tmp/mmp-probe-headers || true
+            head -c 700 /tmp/mmp-probe-body 2>/dev/null || true
+            echo
+          }
+          probe "health no Origin" "$WORKER_URL/health"
+          probe "health with site Origin" -H "Origin: $SITE_ORIGIN" "$WORKER_URL/health"
+          probe "candles no Origin" -H "Accept: application/json" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
+          probe "candles with site Origin" -H "Origin: $SITE_ORIGIN" -H "Accept: application/json" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
+          probe "CORS preflight" -X OPTIONS -H "Origin: $SITE_ORIGIN" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: accept" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
       - name: Browser smoke test desktop and mobile
         timeout-minutes: 10
         run: |
