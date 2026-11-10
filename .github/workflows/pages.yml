@@ -69,6 +69,29 @@ jobs:
           # Do not commit generated mirror files from inside the deployment job:
           # doing so creates a dirty worktree and makes git pull --rebase fail.
           printf '{"build":"%s","updatedAt":"%s"}\n' "$BUILD_ID" "$(date -u +%FT%TZ)" > version.json
+      - name: Validate inline JavaScript syntax
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, re, subprocess, sys
+          for page in ("index.html", "quantum-lab.html"):
+              source = pathlib.Path(page).read_text(encoding="utf-8")
+              for number, match in enumerate(re.finditer(r"<script\\b([^>]*)>(.*?)</script>", source, re.I | re.S)):
+                  attrs, code = match.groups()
+                  if not code.strip() or re.search(r"\\bsrc\\s*=", attrs, re.I):
+                      continue
+                  if re.search(r"\\btype\\s*=\\s*[\"'](?:application/(?:ld\\+)?json|importmap|speculationrules)[\"']", attrs, re.I):
+                      continue
+                  suffix = ".mjs" if re.search(r"\\btype\\s*=\\s*[\"']module[\"']", attrs, re.I) else ".js"
+                  target = pathlib.Path("/tmp") / f"mmp-{page}-{number}{suffix}"
+                  target.write_text(code, encoding="utf-8")
+                  checked = subprocess.run(["node", "--check", str(target)], capture_output=True, text=True)
+                  if checked.returncode:
+                      print(f"JavaScript syntax error in {page} inline script #{number}:")
+                      print(checked.stderr)
+                      sys.exit(1)
+          print("Inline JavaScript syntax validated for homepage and Quantum Lab.")
+          PY
       - name: Upload root site
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
