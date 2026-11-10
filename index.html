@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="bc60ab0b0fd13560fd66e3bcab7649095ab52c50">
+<meta name="mmp-web-build" content="9280401d62645db2ad0e63631a4411315a496e08">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -1947,28 +1947,6 @@ body.mmp-app-mode>header.top{
  inset-block-start:0!important;margin-block-start:0!important;transform:none!important
 }
 @media(max-width:900px){body.mmp-app-mode>header.top{top:0!important;inset-block-start:0!important}}
-</style>
-<style id="mmp-market-cards-dark-text-20261110">
-/* Dark readable typography for the light market cards */
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .mmp-card-tag{
- color:#52616b!important;font-weight:800!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .stat-label{
- color:#263640!important;font-weight:850!important;text-shadow:none!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .stat-label b{
- color:#75520a!important;font-weight:900!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .stat-value{
- color:#14232c!important;font-weight:950!important;text-shadow:none!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .sub{
- color:#52616b!important;font-weight:650!important;text-shadow:none!important;
-}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .sub .positive,
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .positive{color:#087b55!important}
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .sub .negative,
-html body #market-snapshot.mmp-market-snapshot>.mmp-market-card .negative{color:#c12e43!important}
 </style>
 </head>
 <body class="mmp-app-mode">
@@ -6259,7 +6237,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="bc60ab0b0fd13560fd66e3bcab7649095ab52c50")return;
+ if(!pageBuild||pageBuild==="9280401d62645db2ad0e63631a4411315a496e08")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
