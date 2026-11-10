@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="eeabc315e9b7ce3cec874434aadf5bf2028e5c72">
+<meta name="mmp-web-build" content="bd5cad2cb3726486493bda244c57f1f9fb4eba13">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -2222,9 +2222,9 @@ body.mmp-app-mode #mmp-home-hero .mmp-refresh-button{padding:7px 10px!important;
 <style id="mmp-hero-size-and-top-gap-hard-fix-20261110">
 /* Hard correction for the first homepage hero: compact on desktop and mobile. */
 html,html body,html body.mmp-app-mode{margin:0!important;padding:0!important;scroll-padding-top:64px!important}
-html body.mmp-app-mode>header.top{position:sticky!important;top:0!important;inset-block-start:0!important;margin:0!important;padding-block:0!important;height:62px!important;min-height:62px!important;max-height:62px!important;border-top:0!important;transform:none!important}
+html body.mmp-app-mode>header.top{position:fixed!important;top:0!important;inset-block-start:0!important;left:0!important;right:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;margin:0!important;padding-block:0!important;height:62px!important;min-height:62px!important;max-height:62px!important;border-top:0!important;transform:none!important;z-index:10000!important}
 html body.mmp-app-mode>header.top:before{top:0!important}
-html body.mmp-app-mode>main.wrap{margin-block-start:0!important;padding-block-start:0!important}
+html body.mmp-app-mode>main.wrap{margin-block-start:0!important;padding-block-start:62px!important}
 html body.mmp-app-mode #mmp-home-hero.mmp-home-hero{
  display:grid!important;grid-template-columns:minmax(0,1fr) 104px!important;align-items:center!important;
  min-height:0!important;height:auto!important;max-height:none!important;
@@ -2248,7 +2248,7 @@ html body.mmp-app-mode #mmp-home-hero .mmp-emblem-caption{bottom:-2px!important;
 html body.mmp-app-mode #mmp-home-hero .mmp-hero-index{display:none!important}
 @media(max-width:900px){
  html body.mmp-app-mode>header.top{height:56px!important;min-height:56px!important;max-height:56px!important;padding-inline:9px!important}
- html body.mmp-app-mode>main.wrap{padding-block-start:0!important}
+ html body.mmp-app-mode>main.wrap{padding-block-start:56px!important}
  html body.mmp-app-mode #mmp-home-hero.mmp-home-hero{grid-template-columns:minmax(0,1fr) 82px!important;gap:5px!important;padding:8px 11px!important;margin:0 0 8px!important}
  html body.mmp-app-mode #mmp-home-hero .mmp-hero-title{font-size:20px!important;line-height:1.3!important}
  html body.mmp-app-mode #mmp-home-hero .mmp-hero-copy>p{font-size:8.5px!important;line-height:1.5!important}
@@ -6554,7 +6554,7 @@ window.mmpShareDownloadLink = async function () {
  "use strict";
  var marker=document.querySelector('meta[name="mmp-web-build"]');
  var pageBuild=marker&&marker.content;
- if(!pageBuild||pageBuild==="eeabc315e9b7ce3cec874434aadf5bf2028e5c72")return;
+ if(!pageBuild||pageBuild==="bd5cad2cb3726486493bda244c57f1f9fb4eba13")return;
  var busy=false;
  async function checkForLiveUpdate(){
   if(busy||document.visibilityState==="hidden")return;
