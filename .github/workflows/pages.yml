@@ -127,7 +127,8 @@ jobs:
                   const hero = document.querySelector("#mmp-home-hero");
                   if (!header || !hero) return null;
                   const h = header.getBoundingClientRect(), r = hero.getBoundingClientRect();
-                  return { headerTop: Math.round(h.top), headerBottom: Math.round(h.bottom), heroTop: Math.round(r.top), heroHeight: Math.round(r.height), gap: Math.round(r.top - h.bottom) };
+                  const cs = getComputedStyle(header), bs = getComputedStyle(document.body), hs = getComputedStyle(document.documentElement);
+                  return { headerTop: Math.round(h.top), headerBottom: Math.round(h.bottom), heroTop: Math.round(r.top), heroHeight: Math.round(r.height), gap: Math.round(r.top - h.bottom), position:cs.position, top:cs.top, headerMargin:cs.marginTop, bodyMargin:bs.marginTop, bodyPadding:bs.paddingTop, htmlMargin:hs.marginTop, htmlPadding:hs.paddingTop, bodyTransform:bs.transform, scrollY:window.scrollY };
                 });
                 if (!layout) throw new Error(viewport.name + " missing header or first hero card");
                 console.log(viewport.name + " first-screen geometry: " + JSON.stringify(layout));
