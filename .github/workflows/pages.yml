@@ -76,13 +76,13 @@ jobs:
           import pathlib, re, subprocess, sys
           for page in ("index.html", "quantum-lab.html"):
               source = pathlib.Path(page).read_text(encoding="utf-8")
-              for number, match in enumerate(re.finditer(r"<script\\b([^>]*)>(.*?)</script>", source, re.I | re.S)):
+              for number, match in enumerate(re.finditer(r"<script\b([^>]*)>(.*?)</script>", source, re.I | re.S)):
                   attrs, code = match.groups()
-                  if not code.strip() or re.search(r"\\bsrc\\s*=", attrs, re.I):
+                  if not code.strip() or re.search(r"\bsrc\s*=", attrs, re.I):
                       continue
-                  if re.search(r"\\btype\\s*=\\s*[\"'](?:application/(?:ld\\+)?json|importmap|speculationrules)[\"']", attrs, re.I):
+                  if re.search(r"\btype\s*=\s*[\"'](?:application/(?:ld\+)?json|importmap|speculationrules)[\"']", attrs, re.I):
                       continue
-                  suffix = ".mjs" if re.search(r"\\btype\\s*=\\s*[\"']module[\"']", attrs, re.I) else ".js"
+                  suffix = ".mjs" if re.search(r"\btype\s*=\s*[\"']module[\"']", attrs, re.I) else ".js"
                   target = pathlib.Path("/tmp") / f"mmp-{page}-{number}{suffix}"
                   target.write_text(code, encoding="utf-8")
                   checked = subprocess.run(["node", "--check", str(target)], capture_output=True, text=True)
