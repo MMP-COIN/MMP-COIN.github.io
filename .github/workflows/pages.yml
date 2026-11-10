@@ -1,5 +1,5 @@
 name: Deploy MMP COIN AI root site
-# QIE 4.1 command-interface visual refresh — deploy canonical homepage build.
+# Homepage compact-title, browser-shortcut icon and top-edge header alignment update — sync canonical homepage.
 # Publish restored original 3D M-coin homepage header.
 # Homepage rendering fixes must be committed to canonical/www/index.html; this mirror is regenerated from that source.
 # Re-sync after compact status-only quantum engine cards, accurate readiness labels, and 4+8 layout.
