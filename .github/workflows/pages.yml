@@ -1,5 +1,5 @@
 name: Deploy MMP COIN AI root site
-# Remove the recurring top spacer; assert the compact hero starts directly below the header.
+# Hard-reset the recurring viewport inset; assert the compact hero starts directly below the header.
 # Publish restored original 3D M-coin homepage header.
 # Homepage rendering fixes must be committed to canonical/www/index.html; this mirror is regenerated from that source.
 # Re-sync after compact status-only quantum engine cards, accurate readiness labels, and 4+8 layout.
