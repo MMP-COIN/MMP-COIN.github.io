@@ -3,7 +3,7 @@ name: Deploy MMP COIN AI root site
 # Publish restored original 3D M-coin homepage header.
 # Homepage rendering fixes must be committed to canonical/www/index.html; this mirror is regenerated from that source.
 # Re-sync after compact status-only quantum engine cards, accurate readiness labels, and 4+8 layout.
-# Keep root-domain mirror aligned with canonical UI; preserve yesterday's compact M coin hero proportions and remove the measured 18px top gap.
+# Keep root-domain mirror aligned with canonical UI; preserve yesterday's compact M coin hero proportions and apply the final-cascade top-gap correction.
 
 on:
   push:
