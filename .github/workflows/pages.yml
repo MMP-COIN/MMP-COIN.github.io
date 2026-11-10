@@ -94,13 +94,21 @@ jobs:
           test -n "$BUILD_ID"
           grep -q "$BUILD_ID" /tmp/mmp-home.html
           WORKER_STATUS="$(curl --silent --show-error --max-time 20 -o /tmp/mmp-worker-health.json -w '%{http_code}' "$WORKER_URL/health")"
-          if [ "$WORKER_STATUS" = "429" ]; then
-            echo "::warning::Worker health endpoint is rate-limited (HTTP 429); site verification continues, but Worker health is unverified."
-          else
-            test "$WORKER_STATUS" = "200"
-            jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true' /tmp/mmp-worker-health.json >/dev/null
+          if [ "$WORKER_STATUS" != "200" ]; then
+            if grep -q "error code: 1027" /tmp/mmp-worker-health.json; then
+              echo "::error::Cloudflare Worker daily request quota exhausted (Error 1027). Do not mark the live service healthy."
+            else
+              echo "::error::Worker health probe failed with HTTP $WORKER_STATUS."
+            fi
+            cat /tmp/mmp-worker-health.json || true
+            exit 1
           fi
-          echo "Published site, manifest, icon and Quantum Lab verified; Worker status: HTTP $WORKER_STATUS."
+          jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true' /tmp/mmp-worker-health.json >/dev/null
+          CANDLES_STATUS="$(curl --silent --show-error --max-time 25 -H "Origin: https://mmp-coin.github.io" -D /tmp/mmp-candles-headers -o /tmp/mmp-candles.json -w '%{http_code}' "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot")"
+          test "$CANDLES_STATUS" = "200"
+          grep -qi '^access-control-allow-origin: https://mmp-coin.github.io' /tmp/mmp-candles-headers
+          jq -e '.candles | length > 0' /tmp/mmp-candles.json >/dev/null
+          echo "Published site, manifest, icon, Quantum Lab, Worker health and live BTC candles verified."
       - name: Diagnose Worker transport, throttling and CORS
         env:
           WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
@@ -146,10 +154,17 @@ jobs:
                 await page.waitForTimeout(7000);
                 const apiProbe = await page.evaluate(async () => {
                   const url = "https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/market-candles?symbol=BTCUSDT&interval=1h&market=spot";
-                  try { const r = await fetch(url, {cache:"no-store",headers:{Accept:"application/json"}}); return {ok:r.ok,status:r.status,acao:r.headers.get("access-control-allow-origin"),body:(await r.text()).slice(0,500)}; }
-                  catch(e) { return {error:String(e)}; }
+                  try {
+                    const r = await fetch(url, {cache:"no-store",headers:{Accept:"application/json"}});
+                    const body = await r.text();
+                    let data = null; try { data = JSON.parse(body); } catch {}
+                    return {ok:r.ok,status:r.status,acao:r.headers.get("access-control-allow-origin"),candles:Array.isArray(data?.candles)?data.candles.length:0,body:body.slice(0,300)};
+                  } catch(e) { return {error:String(e)}; }
                 });
                 console.log(viewport.name + " DIRECT WORKER PROBE: " + JSON.stringify(apiProbe));
+                if (apiProbe.error || !apiProbe.ok || apiProbe.status !== 200 || apiProbe.acao !== "https://mmp-coin.github.io" || apiProbe.candles < 1) {
+                  throw new Error(viewport.name + " live Worker candle/CORS probe failed: " + JSON.stringify(apiProbe));
+                }
                 const title = await page.title();
                 const bodyText = await page.locator("body").innerText();
                 const layout = await page.evaluate(() => {
