@@ -1,5 +1,5 @@
 name: Deploy MMP COIN AI root site
-# Finalize compact MMP homepage and browser-launch manifest from canonical source.
+# Deploy measured compact hero and zero-gap top navigation from canonical source.
 # Publish restored original 3D M-coin homepage header.
 # Homepage rendering fixes must be committed to canonical/www/index.html; this mirror is regenerated from that source.
 # Re-sync after compact status-only quantum engine cards, accurate readiness labels, and 4+8 layout.
@@ -122,6 +122,18 @@ jobs:
                 await page.waitForTimeout(7000);
                 const title = await page.title();
                 const bodyText = await page.locator("body").innerText();
+                const layout = await page.evaluate(() => {
+                  const header = document.querySelector("body > header.top");
+                  const hero = document.querySelector("#mmp-home-hero");
+                  if (!header || !hero) return null;
+                  const h = header.getBoundingClientRect(), r = hero.getBoundingClientRect();
+                  return { headerTop: Math.round(h.top), headerBottom: Math.round(h.bottom), heroTop: Math.round(r.top), heroHeight: Math.round(r.height), gap: Math.round(r.top - h.bottom) };
+                });
+                if (!layout) throw new Error(viewport.name + " missing header or first hero card");
+                console.log(viewport.name + " first-screen geometry: " + JSON.stringify(layout));
+                if (Math.abs(layout.headerTop) > 2) throw new Error(viewport.name + " top navigation does not start at page top");
+                if (layout.gap > 12 || layout.gap < -2) throw new Error(viewport.name + " unwanted blank gap before first card: " + layout.gap + "px");
+                if (layout.heroHeight > (viewport.name === "desktop" ? 170 : 180)) throw new Error(viewport.name + " first hero card is still too tall: " + layout.heroHeight + "px");
                 if (!title.includes("MMP QUANTUM")) throw new Error(viewport.name + " homepage title is missing");
                 if (bodyText.trim().length < 200) throw new Error(viewport.name + " homepage rendered almost no content");
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
