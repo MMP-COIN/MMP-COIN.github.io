@@ -63,8 +63,10 @@ jobs:
           printf '{"build":"%s","updatedAt":"%s"}\n' "$BUILD_ID" "$(date -u +%FT%TZ)" > version.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if ! git diff --quiet -- index.html quantum-lab.html assets manifest.webmanifest version.json; then
-            git add index.html quantum-lab.html assets manifest.webmanifest version.json
+          # version.json is generated for the deployment artifact only. Do not commit its timestamp:
+          # committing it creates avoidable rebase conflicts when deployments overlap or are retried.
+          if ! git diff --quiet -- index.html quantum-lab.html assets manifest.webmanifest; then
+            git add index.html quantum-lab.html assets manifest.webmanifest
             git commit -m "Sync canonical Quantum UI from core [skip ci]"
             git pull --rebase origin main
             git push
@@ -98,9 +100,14 @@ jobs:
           BUILD_ID="$(jq -r '.build // empty' /tmp/mmp-version.json)"
           test -n "$BUILD_ID"
           grep -q "$BUILD_ID" /tmp/mmp-home.html
-          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$WORKER_URL/health" -o /tmp/mmp-worker-health.json
-          jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true' /tmp/mmp-worker-health.json >/dev/null
-          echo "Published site, manifest, icon, Quantum Lab, version marker and Worker health all verified."
+          WORKER_STATUS="$(curl --silent --show-error --max-time 20 -o /tmp/mmp-worker-health.json -w '%{http_code}' "$WORKER_URL/health")"
+          if [ "$WORKER_STATUS" = "429" ]; then
+            echo "::warning::Worker health endpoint is rate-limited (HTTP 429); site verification continues, but Worker health is unverified."
+          else
+            test "$WORKER_STATUS" = "200"
+            jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true' /tmp/mmp-worker-health.json >/dev/null
+          fi
+          echo "Published site, manifest, icon and Quantum Lab verified; Worker status: HTTP $WORKER_STATUS."
       - name: Browser smoke test desktop and mobile
         timeout-minutes: 10
         run: |
