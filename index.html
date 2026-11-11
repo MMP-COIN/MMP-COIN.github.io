@@ -3276,7 +3276,7 @@ async function enrichWithBinance(coins){
 }
 
 
-async async function fetchTetherRate(){
+async function fetchTetherRate(){
  // Prefer the server-side local market monitor: it checks Nobitex, Wallex and Bitpin,
  // normalizes Rial/Toman units and returns the number of genuinely fresh sources.
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);
