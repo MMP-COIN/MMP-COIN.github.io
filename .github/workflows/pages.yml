@@ -93,7 +93,9 @@ jobs:
         run: |
           set -euo pipefail
           # The 3D visual design is now a required release asset, not an optional follow-up.
-          grep -q 'mmp-real-depth-visuals.css?v=3' index.html
+          grep -q 'mmp-real-depth-visuals.css?v=4' index.html
+          grep -q 'mmp-quantum-nexus.css?v=1' index.html
+          test -s assets/mmp-quantum-nexus.css
           grep -q 'MMP VISIBLE 3D PASS' assets/mmp-real-depth-visuals.css
           echo 'Required MMP 3D visual stylesheet and cache key verified.'
           python3 - <<'PY'
