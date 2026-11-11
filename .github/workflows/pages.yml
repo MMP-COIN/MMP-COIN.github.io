@@ -120,9 +120,20 @@ jobs:
           curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 5 --max-time 25 -H "Cache-Control: no-cache" "$SITE_URL/?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-home.html
           grep -q 'MMP QUANTUM' /tmp/mmp-home.html
           grep -q 'quantum-currency-irt' /tmp/mmp-home.html
+          grep -q 'class="menu-group"' /tmp/mmp-home.html
+          grep -q 'fonts.googleapis.com/css2?family=Vazirmatn' /tmp/mmp-home.html
           grep -q 'market-flow?market=spot' /tmp/mmp-home.html
+          grep -q 'market-orderflow' /tmp/mmp-home.html
+          grep -q 'market-derivatives?symbol=' /tmp/mmp-home.html
           grep -q 'market-candles?symbol=' /tmp/mmp-home.html
+          grep -q 'market-proxy?source=gate-tickers' /tmp/mmp-home.html
+          ! grep -q 'fapi.binance.com' /tmp/mmp-home.html
+          ! grep -q 'api.bybit.com' /tmp/mmp-home.html
+          ! grep -q 'api.wallex.ir' /tmp/mmp-home.html
           ! grep -q 'mmp-command-progress' /tmp/mmp-home.html
+          grep -q 'مرکز فرماندهی کوانتومی MMP' /tmp/mmp-quantum.html
+          grep -q 'gate-tickers' /tmp/mmp-heatmap.html
+          grep -q 'setTimeout(()=>controller.abort(),6500' /tmp/mmp-heatmap.html
           grep -q 'mmp-web-build' /tmp/mmp-home.html
           ! grep -q '__MMP_WEB_BUILD_ID__' /tmp/mmp-home.html
           ! grep -q 'QUANTUM HUNTER CORE · UNIFIED ENGINE' /tmp/mmp-home.html
