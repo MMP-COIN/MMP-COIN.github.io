@@ -329,10 +329,40 @@ jobs:
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
                 }
+                const appMode = viewport.name === "mobile";
+                const openCenter = async center => {
+                  const selector = appMode ? "#mmp-app-page-dock [data-mmp-app-page='" + center + "']" : "#mmp-terminal-hub [data-mmp-open-center='" + center + "']";
+                  await page.locator(selector).click();
+                };
                 const hubCards = page.locator("#mmp-terminal-hub .mmp-hub-card");
-                await hubCards.first().waitFor({state:"visible",timeout:5000});
-                if (await hubCards.count() !== 8) throw new Error(viewport.name + " homepage must expose exactly eight specialist centers");
-                await page.locator("#mmp-terminal-hub [data-mmp-open-center='command']").click();
+                if (appMode) {
+                  await page.locator("#mmp-app-page-dock").waitFor({state:"visible",timeout:5000});
+                  if (await page.locator("#mmp-app-page-dock [data-mmp-app-page]").count() !== 8) throw new Error("native app must expose exactly eight page controls");
+                  if (await page.locator("body").getAttribute("data-mmp-view") !== "command") throw new Error("native app must open directly on Market Command");
+                  const swipe = async (from,to) => page.evaluate(({from,to}) => {
+                    const target=document.querySelector("#hero");
+                    const a=new Touch({identifier:1,target,clientX:from,clientY:420});
+                    const b=new Touch({identifier:1,target,clientX:to,clientY:420});
+                    target.dispatchEvent(new TouchEvent("touchstart",{touches:[a],targetTouches:[a],changedTouches:[a],bubbles:true,cancelable:true}));
+                    target.dispatchEvent(new TouchEvent("touchend",{touches:[],targetTouches:[],changedTouches:[b],bubbles:true,cancelable:true}));
+                  },{from,to});
+                  await swipe(320,100);
+                  await page.waitForFunction(() => document.body.dataset.mmpView === "hunter", {timeout:3000});
+                  await swipe(100,320);
+                  await page.waitForFunction(() => document.body.dataset.mmpView === "command", {timeout:3000});
+                  await page.locator(".menu-btn").click();
+                  await page.locator("#dropdownMenu [data-mmp-open-center='support']").click();
+                  await page.locator("#app-download").waitFor({state:"visible",timeout:5000});
+                  await page.locator("#contact-us").waitFor({state:"visible",timeout:5000});
+                  if (await page.locator("#native-share-app").count() !== 1) throw new Error("native app combined share/contact page is missing its share action");
+                  const apkLink=page.locator("#app-download a[href*='/releases/latest/download/app-release.apk']");
+                  if (await apkLink.count() && await apkLink.isVisible()) throw new Error("APK download control must remain website-only");
+                  await openCenter("command");
+                } else {
+                  await hubCards.first().waitFor({state:"visible",timeout:5000});
+                  if (await hubCards.count() !== 8) throw new Error("website homepage must expose exactly eight specialist centers");
+                  await openCenter("command");
+                }
                 const commandMenu = page.locator("#mmp-center-toolbar .mmp-center-jump");
                 if (await commandMenu.count() !== 6) throw new Error(viewport.name + " Market Command card must expose six internal navigation links");
                 await page.locator("#mmp-center-toolbar .mmp-center-jump[href='#mmp-usdt-card']").click();
@@ -344,13 +374,13 @@ jobs:
                 await page.locator("#btn-irt").click();
                 if (!await page.locator("#btn-irt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " Toman switch did not activate");
                 for (const [center,selector] of [["command","#mmp-home-hero"],["hunter","#market-hunter"],["charts","#chart-section"],["flow","#market-intelligence"],["ai","#ai-section"],["strategy","#trading-tools"],["markets","#coins-section"]]) {
-                  await page.locator("#mmp-terminal-hub [data-mmp-open-center='" + center + "']").click();
+                  await openCenter(center);
                   await page.locator(selector).waitFor({state:"visible",timeout:5000});
                   const activeCenter = await page.locator("body").getAttribute("data-mmp-view");
                   if (activeCenter !== center) throw new Error(viewport.name + " wrong workspace opened for " + center);
                   await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
                 }
-                await page.locator("#mmp-terminal-hub [data-mmp-open-center='ai']").click();
+                await openCenter("ai");
                 await page.locator("#ai-section").waitFor({state:"visible",timeout:5000});
                 const analyzer = await page.locator("#ai-section").evaluate(el => {
                   const toolbar = el.querySelector(".ai-toolbar");
@@ -371,7 +401,7 @@ jobs:
                 await page.locator("#ai-coin-picker-trigger").click();
                 if (await page.locator("#mmp-chart-status").count() === 0) throw new Error(viewport.name + " missing native chart status");
                 await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
-                await page.locator("#mmp-terminal-hub [data-mmp-open-center='charts']").click();
+                await openCenter("charts");
                 await page.locator("#chart-section").waitFor({state:"visible",timeout:5000});
                 if (await page.locator("[data-chart-tf]").count() !== 6) throw new Error(viewport.name + " missing chart timeframe controls");
                 await page.locator("#chart-section").scrollIntoViewIfNeeded();
@@ -383,6 +413,15 @@ jobs:
                 }, {timeout:25000});
                 const chartStatus = await page.locator("#mmp-chart-status").innerText();
                 console.log(viewport.name + " verified chart status: " + chartStatus);
+                if (appMode) {
+                  await openCenter("lab");
+                  await page.waitForURL(/quantum-lab\\.html/, {timeout:10000});
+                  await page.locator("#mmp-app-page-dock").waitFor({state:"visible",timeout:5000});
+                  if (await page.locator("#mmp-app-page-dock a").count() !== 8) throw new Error("Quantum Lab native dock must expose all eight pages");
+                  await page.locator("#mmp-app-page-dock a[href*='center=markets']").click();
+                  await page.waitForURL(/center=markets/, {timeout:10000});
+                  if (await page.locator("body").getAttribute("data-mmp-view") !== "markets") throw new Error("Quantum Lab navigation did not return to Markets workspace");
+                }
                 await page.close();
               }
               const lab = await browser.newPage({ viewport: { width: 390, height: 844 } });
