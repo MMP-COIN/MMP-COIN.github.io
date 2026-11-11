@@ -2,11 +2,14 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="referrer" content="no-referrer"><meta name="theme-color" content="#090d15">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><meta name="theme-color" content="#090d15">
 <title>مرکز مدیریت | MMP COIN AI</title>
 <style>
 :root{color-scheme:dark;--bg:#090d15;--panel:#121a27;--panel2:#0e1520;--line:#29364a;--gold:#e8c879;--gold2:#b58c45;--muted:#99a8bd;--text:#f4f1e8;--red:#ff7777;--green:#64d6a0}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#9c77321c,transparent 36%),radial-gradient(ellipse at 90% 10%,#31588b20,transparent 35%),var(--bg);color:var(--text);font:14px Tahoma,Arial,sans-serif;min-height:100vh}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0%,#9c77321c,transparent 36%),radial-gradient(ellipse at 90% 10%,#31588b20,transparent 35%),var(--bg);color:var(--text);font:14px Vazirmatn,Tahoma,Arial,sans-serif;min-height:100vh}
 .wrap{width:min(1180px,100%);margin:auto;padding:22px 16px 50px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:18px 20px;border:1px solid #d9b7653b;border-radius:18px;background:linear-gradient(115deg,#171d28,#111a29);box-shadow:0 14px 40px #0005;margin-bottom:18px}
 .brand{display:flex;align-items:center;gap:13px}.mark{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(145deg,#f4dfa7,#a77b32);color:#17130a;font-weight:900;font-size:21px;box-shadow:0 6px 22px #d4ad5c44}.brand b{display:block;color:var(--gold);font-size:19px;letter-spacing:1px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.5px;margin-top:5px;direction:ltr;text-align:right}
@@ -24,6 +27,30 @@ h2{font-size:17px;margin:4px 0 13px}.section-head{display:flex;justify-content:s
 .barline{display:grid;grid-template-columns:minmax(70px,110px) 1fr 48px;gap:10px;align-items:center;margin:10px 0;font-size:11px}.bar{height:8px;border-radius:20px;background:#273449;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,#967038,#f0d58c);border-radius:20px}
 .badge{display:inline-block;padding:4px 8px;border-radius:20px;background:#263448;color:#dce5f3;font-size:11px}.good{color:var(--green)}.bad{color:var(--red)}
 @media(max-width:720px){.wrap{padding:12px 10px 35px}.top{padding:14px;border-radius:14px}.metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.metric{padding:12px;min-height:88px}.metric b{font-size:21px}.cols{grid-template-columns:1fr}.panel{padding:13px}.auth{margin:5vh auto;padding:19px}.brand b{font-size:16px}.top .muted{display:none}}
+</style>
+<style id="mmp-global-readable-layout">
+/* Global layout safety: keep every label and value inside its own card. */
+*,*::before,*::after{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{overflow-wrap:anywhere;word-break:normal}
+:where(main,section,article,aside,header,footer,nav,div,form,fieldset,details,summary){min-width:0}
+:where(h1,h2,h3,h4,h5,h6,p,small,strong,em,label,span,code,pre,figcaption,caption,li,dt,dd){min-width:0;max-width:100%;overflow-wrap:anywhere;word-break:normal}
+:where(button,a,[role="button"],input,select,textarea){max-width:100%;min-width:0}
+:where(button,a,[role="button"]){white-space:normal;overflow-wrap:anywhere;line-height:1.55}
+:where(input,select,textarea){width:auto}
+:where(img,svg,video,canvas,iframe){max-width:100%}
+:where(table){max-width:100%;border-collapse:collapse}
+:where(th,td){overflow-wrap:anywhere;word-break:normal;white-space:normal}
+:where(pre){max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere}
+:where([class*="card"],[class*="panel"],[class*="engine"],[class*="motor"],[class*="tile"],[class*="metric"],[class*="widget"],[class*="module"]){min-width:0;max-width:100%}
+:where([class*="card"],[class*="panel"],[class*="engine"],[class*="motor"],[class*="tile"],[class*="metric"],[class*="widget"],[class*="module"]) :where(h1,h2,h3,h4,p,span,strong,small,label,button,a,code){max-width:100%;overflow-wrap:anywhere}
+:where(.grid,.row,.flex,.actions,.toolbar,.stats,.metrics,.cards,.card-grid,.engine-grid){min-width:0}
+@media(max-width:760px){
+  :where(.grid,.card-grid,.engine-grid){grid-template-columns:minmax(0,1fr)!important}
+  :where(.row,.flex,.actions,.toolbar,.stats,.metrics,.cards){flex-wrap:wrap}
+  :where(button,a,[role="button"]){max-width:100%}
+  :where(table){display:block;width:100%;overflow-x:auto}
+}
 </style>
 </head>
 <body>
