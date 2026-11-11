@@ -2522,6 +2522,16 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 .mmp-core-currency-actions button.active{background:#d9b66d2b;border-color:#e2c47e;color:#fff0c8}
 @media(max-width:520px){.mmp-core-currency-values{grid-template-columns:1fr 1fr}.mmp-core-currency-values>div:last-child{grid-column:1/-1}}
 </style>
+
+<style id="mmp-compact-menu-groups-20261111">
+.dropdown-menu .menu-group{border-bottom:1px solid #ffffff12}
+.dropdown-menu .menu-group>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:43px;padding:10px 16px;color:var(--gold2);font-size:12px;font-weight:800;cursor:pointer;list-style:none;user-select:none}
+.dropdown-menu .menu-group>summary::-webkit-details-marker{display:none}
+.dropdown-menu .menu-group>summary span:last-child{font-size:17px;line-height:1;color:var(--muted);transition:transform .18s}
+.dropdown-menu .menu-group[open]>summary span:last-child{transform:rotate(180deg)}
+.dropdown-menu .menu-group>a{min-height:40px;padding:9px 25px 9px 14px;font-size:12px}
+.dropdown-menu .menu-group>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px;border-radius:8px}
+</style>
 </head>
 <body class="mmp-app-mode">
 <header class="top">
@@ -2549,6 +2559,27 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <a href="#chart-section"><i class="menu-icon">▥</i><span>نمودار حرفه‌ای</span></a>
   <a href="#trading-tools"><i class="menu-icon">⌗</i><span>ابزارهای معامله</span></a>
   <div class="menu-divider"></div>
+  <details class="menu-group">
+    <summary><span>تحلیل‌های تخصصی</span><span aria-hidden="true">⌄</span></summary>
+    <a href="#market-intelligence">مرکز هوشمندی بازار</a>
+    <a href="#derivatives-panel">نبض بازار فیوچرز</a>
+    <a href="#orderflow-panel">جریان سفارش و نقدینگی</a>
+    <a href="#candle-intelligence">آزمایشگاه سناریوهای کندلی</a>
+    <a href="#forecast-summary">تحلیل سناریو و پیش‌بینی</a>
+    <a href="#whale-panel">پایش انتقال‌های بزرگ</a>
+  </details>
+  <details class="menu-group">
+    <summary><span>بازار و ابزارها</span><span aria-hidden="true">⌄</span></summary>
+    <a href="#coins-section">فهرست بازار رمزارزها</a>
+    <a href="#trading-tools">ابزارهای معامله‌گری</a>
+    <a href="#market-hours">ساعت بازارهای جهانی</a>
+    <a href="#connections">وضعیت اتصال صرافی‌ها</a>
+  </details>
+  <details class="menu-group">
+    <summary><span>اپلیکیشن و ارتباط</span><span aria-hidden="true">⌄</span></summary>
+    <a href="#app-download">دریافت اپلیکیشن اندروید</a>
+    <a href="#contact-us">ارتباط با ما</a>
+  </details>
 </div>
 </header>
 
