@@ -66,6 +66,8 @@ jobs:
           test -s canonical/www/assets/mmp-coin-ai-icon.svg
           test -s canonical/www/assets/mmp-coin-mark.svg
           test -s canonical/www/assets/mmp-quantum-lab-integration.js
+          test -s canonical/www/assets/mmp-quantum-terminal-v1.css
+          test -s canonical/www/assets/mmp-quantum-terminal-v1.js
           test -s canonical/manifest.webmanifest
           cp canonical/www/index.html ./index.html
           cp canonical/www/quantum-lab.html ./quantum-lab.html
@@ -260,6 +262,23 @@ jobs:
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
                 }
+                const hubCards = page.locator("#mmp-terminal-hub .mmp-hub-card");
+                await hubCards.first().waitFor({state:"visible",timeout:5000});
+                if (await hubCards.count() !== 8) throw new Error(viewport.name + " homepage must expose exactly eight specialist centers");
+                if (await page.locator("#btn-irt").count() !== 1 || await page.locator("#btn-usdt").count() !== 1 || await page.locator("#usdt").count() !== 1) throw new Error(viewport.name + " missing primary Toman/USDT controls or tether quote");
+                await page.locator("#btn-usdt").click();
+                if (!await page.locator("#btn-usdt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " USDT switch did not activate");
+                await page.locator("#btn-irt").click();
+                if (!await page.locator("#btn-irt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " Toman switch did not activate");
+                for (const [center,selector] of [["command","#mmp-home-hero"],["hunter","#market-hunter"],["charts","#chart-section"],["flow","#market-intelligence"],["ai","#ai-section"],["strategy","#trading-tools"],["markets","#coins-section"]]) {
+                  await page.locator("#mmp-terminal-hub [data-mmp-open-center='" + center + "']").click();
+                  await page.locator(selector).waitFor({state:"visible",timeout:5000});
+                  const activeCenter = await page.locator("body").getAttribute("data-mmp-view");
+                  if (activeCenter !== center) throw new Error(viewport.name + " wrong workspace opened for " + center);
+                  await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
+                }
+                await page.locator("#mmp-terminal-hub [data-mmp-open-center='ai']").click();
+                await page.locator("#ai-section").waitFor({state:"visible",timeout:5000});
                 const analyzer = await page.locator("#ai-section").evaluate(el => {
                   const toolbar = el.querySelector(".ai-toolbar");
                   const picker = el.querySelector("#ai-coin-picker-trigger");
@@ -278,6 +297,9 @@ jobs:
                 if (!menuBox || menuBox.width < 140 || menuBox.x < -1 || menuBox.x + menuBox.width > viewport.width + 2) throw new Error(viewport.name + " analyzer coin menu is clipped or too narrow");
                 await page.locator("#ai-coin-picker-trigger").click();
                 if (await page.locator("#mmp-chart-status").count() === 0) throw new Error(viewport.name + " missing native chart status");
+                await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
+                await page.locator("#mmp-terminal-hub [data-mmp-open-center='charts']").click();
+                await page.locator("#chart-section").waitFor({state:"visible",timeout:5000});
                 if (await page.locator("[data-chart-tf]").count() !== 6) throw new Error(viewport.name + " missing chart timeframe controls");
                 await page.locator("#chart-section").scrollIntoViewIfNeeded();
                 await page.locator("#mmp-candle-canvas canvas").first().waitFor({state:"visible",timeout:20000});
