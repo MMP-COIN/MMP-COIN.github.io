@@ -283,7 +283,13 @@ jobs:
                   }));
                   if (terminalState.ready === "1" && terminalState.hubCards === 8 && terminalState.script.length > 0) break;
                   console.log(viewport.name + " stale Pages edge; retrying canonical index, attempt " + (attempt + 1));
-                  if (attempt < 6) await page.reload({ waitUntil: "domcontentloaded", timeout: 60000 });
+                  if (attempt < 6) {
+                    // A different query key forces a fresh Pages/CDN edge lookup; reloading the same stale URL can pin one edge response.
+                    const retryUrl = new URL(homeUrl.toString());
+                    retryUrl.searchParams.set("mmp_smoke_attempt", String(attempt + 1));
+                    const retryResponse = await page.goto(retryUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
+                    if (!retryResponse || !retryResponse.ok()) throw new Error(viewport.name + " retry homepage HTTP response is not successful");
+                  }
                 }
                 console.log(viewport.name + " TERMINAL INIT STATE: " + JSON.stringify(terminalState));
                 const apiProbe = await page.evaluate(async () => {
