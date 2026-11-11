@@ -379,3 +379,5 @@ jobs:
             }
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
+
+# Republish cache-busted Market Command navigation script v3.
