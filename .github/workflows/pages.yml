@@ -12,6 +12,7 @@ name: Deploy MMP COIN AI root site
 # Reuse one fetched Hunter snapshot for the command progress and engine panels.
 # Re-sync after compact status-only quantum engine cards, accurate readiness labels, and 4+8 layout.
 # Keep root-domain mirror aligned with canonical UI; verify analyzer control widths on desktop and mobile. preserve yesterday's compact M coin hero proportions and keep header in document flow and apply final-cascade top-gap correction.
+# Trigger root mirror sync for the canonical Lightweight Charts 4.2.0 fix (77a30f5).
 
 on:
   push:
