@@ -2510,6 +2510,16 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 </style>
 <style id="mmp-core-currency-menu">
 .mmp-core-currency{margin:12px 0 5px;padding:12px;border:1px solid #b99a5b66;border-radius:12px;background:linear-gradient(120deg,#101b27,#171b20);color:#e9edf3}
+.mmp-core-currency>summary{list-style:none;cursor:pointer;user-select:none}
+.mmp-core-currency>summary::-webkit-details-marker{display:none}
+.mmp-core-currency-head span{display:flex;align-items:center;gap:7px}
+.mmp-core-currency-head span i{font-style:normal;font-size:16px;transition:transform .2s}
+.mmp-core-currency[open] .mmp-core-currency-head span i{transform:rotate(180deg)}
+.mmp-core-currency .mmp-core-currency-values{grid-template-columns:repeat(2,minmax(0,1fr))}
+.mmp-core-currency .mmp-core-currency-values>div:last-child{grid-column:auto}
+.mmp-core-currency .sub{font-size:9px;line-height:1.7;margin-top:8px}
+@media(max-width:520px){.mmp-core-currency .mmp-core-currency-values{grid-template-columns:repeat(2,minmax(0,1fr))}.mmp-core-currency .mmp-core-currency-values>div:last-child{grid-column:auto}}
+
 .mmp-core-currency-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
 .mmp-core-currency-head b{font-size:12px;color:#f0d18a}
 .mmp-core-currency-head span{font-size:9px;color:#aebdca;text-align:left}
@@ -2669,6 +2679,18 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <p>اتاق تصمیم‌گیری یکپارچه برای رصد بازار، کشف فرصت‌های زودهنگام، تحلیل جریان سفارش و سنجش سناریوهای معاملاتی؛ متصل به رادار، شکارچی بازار و تحلیلگر هوشمند.</p>
   <div class="quantum-hero-tags"><span>۱۲ لایه تحلیلی در یک هسته</span><span>اسکن پویای جفت‌های واجد شرایط USDT</span><span>تحلیل چندلایه و مدیریت ریسک</span></div>
   <div class="quantum-hero-actions"><a class="quantum-enter-btn" href="/quantum-lab.html"><span>ورود به مرکز کوانتومی</span><b>←</b></a><a class="quantum-run-compact" href="/quantum-lab.html?run-engines=1" aria-label="ورود و اجرای چرخه ابرموتور"><span>⟳ اجرای چرخه ابرموتور</span><small>اسکن واقعی بازار</small></a><span class="badge">مرکز یکپارچه تحلیل بازار</span></div>
+  <details class="mmp-core-currency">
+   <summary class="mmp-core-currency-head"><b>نرخ تتر و تبدیل تومان</b><span>نمایش نرخ <i aria-hidden="true">⌄</i></span></summary>
+   <div class="mmp-core-currency-values">
+    <div><small>قیمت ۱ تتر</small><strong id="mmp-core-toman">— تومان</strong></div>
+    <div><small>معادل ۱ میلیون تومان</small><strong id="mmp-core-reverse">— USDT</strong></div>
+   </div>
+   <div class="mmp-core-currency-actions">
+    <button type="button" id="mmp-core-show-irt" onclick="setCurrency('IRT')">نمایش قیمت‌ها به تومان</button>
+    <button type="button" id="mmp-core-show-usdt" onclick="setCurrency('USDT')">نمایش قیمت‌ها به تتر</button>
+   </div>
+   <div class="sub" id="mmp-core-currency-status" role="status" aria-live="polite">در انتظار نرخ معتبر تتر از صرافی‌های داخلی…</div>
+  </details>
  </div>
  <div class="quantum-hero-art" aria-label="نشان سه‌بعدی کوانتومی MMP"><div class="quantum-art-grid"></div><div class="quantum-art-orbit orbit-one"></div><div class="quantum-art-orbit orbit-two"></div><div class="quantum-art-orbit orbit-three"></div><div class="quantum-art-core mmp-quantum-emblem"><img src="assets/mmp-coin-mark.svg?v=20261109-hero" alt="نشان اصلی سکه MMP"></div><i class="quantum-node node-one"></i><i class="quantum-node node-two"></i><i class="quantum-node node-three"></i><div class="quantum-art-caption">QUANTUM COMMAND<small>MMP MARKET INTELLIGENCE</small></div></div>
  <div class="quantum-core-flow" aria-label="مسیر تصمیم‌گیری QIE-4"><span>داده زنده</span><i>←</i><span>تحلیل و پیش‌آگاهی</span><i>←</i><span>اعتبارسنجی</span><i>←</i><b>تصمیم نهایی</b></div>
