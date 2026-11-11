@@ -3007,7 +3007,7 @@ function formatVal(usdPrice) {
   }
 }
 
-let mmpChartState={chart:null,candles:null,volume:null,emaFast:null,emaSlow:null,rsiChart:null,rsiSeries:null,abort:null,seq:0,interval:"1h",market:"spot",showEMA:true,showVolume:true,cache:new Map(),resizeObserver:null,refreshTimer:null,viewKey:null,stream:null,streamKey:"",streamRetry:null,liveRows:[]};
+let mmpChartState={chart:null,candles:null,volume:null,emaFast:null,emaSlow:null,rsiChart:null,rsiSeries:null,abort:null,seq:0,interval:"1h",market:"spot",showEMA:true,showVolume:true,cache:new Map(),resizeObserver:null,refreshTimer:null,viewKey:null,stream:null,streamKey:"",streamRetry:null,liveRows:[],streamProvider:"",streamHasData:false,streamCandidates:[],streamCandidateIndex:0,streamLastTick:0};
 function mmpChartSymbol(){const raw=String(document.getElementById("tv-symbol")?.value||"BINANCE:BTCUSDT").split(":").pop().toUpperCase();return raw.endsWith("USDT")?raw:raw+"USDT";}
 function mmpChartStatus(message,kind=""){const el=document.getElementById("mmp-chart-status");if(el){el.textContent=message;el.className="mmp-chart-status"+(kind?" "+kind:"");}}
 function mmpChartRsi(rows,period=14){const out=[];let gain=0,loss=0;for(let i=1;i<rows.length;i++){const d=rows[i].close-rows[i-1].close;if(i<=period){gain+=Math.max(0,d);loss+=Math.max(0,-d);if(i===period)out.push({time:rows[i].time,value:loss===0?100:100-100/(1+gain/loss)});}else{gain=(gain*(period-1)+Math.max(0,d))/period;loss=(loss*(period-1)+Math.max(0,-d))/period;out.push({time:rows[i].time,value:loss===0?100:100-100/(1+gain/loss)});}}return out;}
@@ -3059,54 +3059,91 @@ function mmpRenderChart(payload){
  st.viewKey=viewKey;
  const last=rows[rows.length-1],date=new Date(last.time*1000).toLocaleString("fa-IR"),stale=payload.data_stale?" · داده کش‌شده/قدیمی":" · داده تازه";
  mmpChartStatus("منبع: "+(payload.provider||"Worker")+" · "+rows.length+" کندل معتبر · آخرین کندل: "+date+stale+(st.stream&&st.stream.readyState===WebSocket.OPEN?" · جریان زنده فعال":" · اتصال جریان زنده در حال برقراری"),payload.data_stale?"warning":"ok");
- mmpConnectChartStream(payload.symbol||mmpChartSymbol(),payload.interval||st.interval,payload.market||st.market);
+ mmpConnectChartStream(payload.symbol||mmpChartSymbol(),payload.interval||st.interval,payload.market||st.market,payload.provider||"");
  const link=document.getElementById("chart-replay-link");if(link){const p=String(payload.provider||"").toLowerCase(),ex=p.includes("bitget")?"BITGET":p.includes("bybit")?"BYBIT":p.includes("okx")?"OKX":p.includes("mexc")?"MEXC":"BINANCE";link.href="https://www.tradingview.com/chart/?symbol="+encodeURIComponent(ex+":"+payload.symbol);}
  document.querySelectorAll("[data-chart-tf]").forEach(b=>b.classList.toggle("active",b.dataset.chartTf===st.interval));
 }
 function mmpDisconnectChartStream(){
  const st=mmpChartState;
- if(st.stream){try{st.stream.onclose=null;st.stream.close();}catch(e){}st.stream=null;}
+ if(st.stream){try{st.stream.onclose=null;st.stream.onerror=null;st.stream.close();}catch(e){}st.stream=null;}
  if(st.streamRetry){clearTimeout(st.streamRetry);st.streamRetry=null;}
- st.streamKey="";
+ st.streamKey="";st.streamProvider="";st.streamHasData=false;st.streamCandidates=[];st.streamCandidateIndex=0;
 }
-function mmpConnectChartStream(symbol,interval,market){
- const st=mmpChartState,key=[symbol,interval,market].join(":");
+function mmpChartStreamInterval(interval,provider){
+ const maps={
+  binance:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1h","4h":"4h","1d":"1d"},
+  bybit:{"1m":"1","3m":"3","5m":"5","15m":"15","1h":"60","4h":"240","1d":"D"},
+  okx:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1H","4h":"4H","1d":"1Dutc"},
+  bitget:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1H","4h":"4H","1d":"1D"},
+  gate:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1h","4h":"4h","1d":"1d"},
+  mexc:{"1m":"Min1","3m":"Min3","5m":"Min5","15m":"Min15","1h":"Min60","4h":"Hour4","1d":"Day1"}
+ };
+ return maps[provider]?.[interval]||null;
+}
+function mmpChartStreamConfig(provider,symbol,interval,market){
+ const tf=mmpChartStreamInterval(interval,provider);if(!tf)return null;
+ const pair=String(symbol).toUpperCase().match(/^([A-Z0-9]+)(USDT|USDC|BTC|ETH|IRT)$/);
+ const base=pair?pair[1]:String(symbol).replace(/(USDT|USDC|BTC|ETH|IRT)$/,"");
+ const quote=pair?pair[2]:"USDT";
+ if(provider==="binance")return {url:market==="futures"?"wss://fstream.binance.com/ws/"+symbol.toLowerCase()+"@kline_"+tf:"wss://stream.binance.com:443/ws/"+symbol.toLowerCase()+"@kline_"+tf,onopen:null,parse:m=>{const k=m?.k;return k?{time:k.t,open:k.o,high:k.h,low:k.l,close:k.c,volume:k.v}:null;}};
+ if(provider==="bybit")return {url:"wss://stream.bybit.com/v5/public/"+(market==="futures"?"linear":"spot"),onopen:ws=>ws.send(JSON.stringify({op:"subscribe",args:["kline."+tf+"."+symbol]})),parse:m=>{const x=Array.isArray(m?.data)?m.data[0]:m?.data;if(!x)return null;return {time:x.start??x.startTime,open:x.open,high:x.high,low:x.low,close:x.close,volume:x.volume};}};
+ if(provider==="okx")return {url:"wss://ws.okx.com:8443/ws/v5/business",onopen:ws=>ws.send(JSON.stringify({op:"subscribe",args:[{channel:"candle"+tf,instId:base+"-"+quote+(market==="futures"?"-SWAP":"") }]})),parse:m=>{const x=m?.data?.[0];return Array.isArray(x)?{time:x[0],open:x[1],high:x[2],low:x[3],close:x[4],volume:x[5]}:null;}};
+ if(provider==="bitget")return {url:"wss://ws.bitget.com/v2/ws/public",onopen:ws=>ws.send(JSON.stringify({op:"subscribe",args:[{instType:market==="futures"?"USDT-FUTURES":"SPOT",channel:"candle"+tf,instId:symbol}]})),parse:m=>{const x=m?.data?.[0];return Array.isArray(x)?{time:x[0],open:x[1],high:x[2],low:x[3],close:x[4],volume:x[5]}:null;}};
+ if(provider==="gate"){const contract=base+"_USDT";return {url:market==="futures"?"wss://fx-ws.gateio.ws/v4/ws/usdt":"wss://api.gateio.ws/ws/v4/",onopen:ws=>ws.send(JSON.stringify({time:Math.floor(Date.now()/1000),channel:market==="futures"?"futures.candlesticks":"spot.candlesticks",event:"subscribe",payload:[tf,contract]})),parse:m=>{const x=m?.result?.[0]||m?.result;if(!x)return null;return {time:x.t??x.time,open:x.o,high:x.h,low:x.l,close:x.c,volume:x.v??x.a};}};}
+ if(provider==="mexc"){if(market==="futures")return {url:"wss://contract.mexc.com/edge",onopen:ws=>ws.send(JSON.stringify({method:"sub.kline",param:{symbol:base+"_USDT",interval:tf}})),parse:m=>{const x=m?.data;if(!x)return null;return {time:x.t??x.time,open:x.o??x.open,high:x.h??x.high,low:x.l??x.low,close:x.c??x.close,volume:x.q??x.volume??x.a};}};return {url:"wss://wbs-api.mexc.com/ws",onopen:ws=>ws.send(JSON.stringify({method:"SUBSCRIPTION",params:["spot@public.kline.v3.api@"+symbol+"@"+tf]})),parse:m=>{const x=m?.d?.k||m?.data?.k||m?.d;if(!x)return null;return {time:x.t??x.a,open:x.o,high:x.h,low:x.l,close:x.c,volume:x.v};}};}
+ return null;
+}
+function mmpConnectChartStream(symbol,interval,market,provider){
+ const st=mmpChartState,view=[symbol,interval,market].join(":");
+ const source=String(provider||"").toLowerCase();
+ const preferred=source.includes("bybit")?"bybit":source.includes("okx")?"okx":source.includes("bitget")?"bitget":source.includes("gate")?"gate":source.includes("mexc")?"mexc":source.includes("binance")?"binance":"";
+ const candidates=[preferred,"binance","bybit","okx","bitget","gate","mexc"].filter((x,i,a)=>x&&a.indexOf(x)===i&&mmpChartStreamConfig(x,symbol,interval,market));
+ const key=view+"|"+(preferred||"auto");
  if(st.streamKey===key&&st.stream&&(st.stream.readyState===WebSocket.OPEN||st.stream.readyState===WebSocket.CONNECTING))return;
- mmpDisconnectChartStream();st.streamKey=key;
- const streamName=String(symbol).toLowerCase()+"@kline_"+interval;
- const base=market==="futures"?"wss://fstream.binance.com/ws/":"wss://stream.binance.com:9443/ws/";
- try{
-  const ws=new WebSocket(base+streamName);st.stream=ws;
+ mmpDisconnectChartStream();st.streamKey=key;st.streamCandidates=candidates;st.streamCandidateIndex=0;st.streamHasData=false;
+ const connect=index=>{
+  if(st.streamKey!==key||document.hidden)return;
+  if(index>=candidates.length){st.streamRetry=setTimeout(()=>{if(st.streamKey===key){st.streamCandidateIndex=0;connect(0);}},7000);mmpChartStatus("جریان زنده قطع است؛ تلاش مجدد برای اتصال…","warning");return;}
+  const exchange=candidates[index],config=mmpChartStreamConfig(exchange,symbol,interval,market);if(!config){connect(index+1);return;}
+  let ws;try{ws=new WebSocket(config.url);}catch(e){connect(index+1);return;}
+  st.stream=ws;st.streamProvider=exchange;st.streamCandidateIndex=index;
+  ws.onopen=()=>{if(st.stream!==ws)return;try{if(config.onopen)config.onopen(ws);}catch(e){try{ws.close();}catch(x){}}mmpChartStatus("اتصال زنده "+exchange.toUpperCase()+" برقرار شد؛ منتظر داده بازار…","ok");};
   ws.onmessage=event=>{
    if(st.stream!==ws||st.streamKey!==key)return;
    try{
-    const msg=JSON.parse(event.data),k=msg.k;if(!k)return;
-    const candle={time:Math.floor(Number(k.t)/1000),open:Number(k.o),high:Number(k.h),low:Number(k.l),close:Number(k.c),volume:Number(k.v)||0};
-    if(!Number.isFinite(candle.time)||![candle.open,candle.high,candle.low,candle.close].every(v=>Number.isFinite(v)&&v>0))return;
+    const msg=JSON.parse(event.data);if(msg?.event||msg?.op==="pong"||msg?.success===true)return;
+    const raw=config.parse(msg);if(!raw)return;
+    const n=Number(raw.time),time=Math.floor(n>1e12?n/1000:n),candle={time,open:Number(raw.open),high:Number(raw.high),low:Number(raw.low),close:Number(raw.close),volume:Number(raw.volume)||0};
+    if(!Number.isFinite(time)||time<=0||![candle.open,candle.high,candle.low,candle.close].every(v=>Number.isFinite(v)&&v>0))return;
     const rows=st.liveRows,previous=rows[rows.length-1];
     if(previous&&previous.time===candle.time)rows[rows.length-1]=candle;
-    else if(!previous||candle.time>previous.time)rows.push(candle);
-    else return;
+    else if(!previous||candle.time>previous.time)rows.push(candle);else return;
     while(rows.length>600)rows.shift();
     st.candles.update({time:candle.time,open:candle.open,high:candle.high,low:candle.low,close:candle.close});
     st.volume.update({time:candle.time,value:candle.volume,color:candle.close>=candle.open?"rgba(32,201,151,.48)":"rgba(240,92,112,.48)"});
+    if(st.showEMA){st.emaFast.setData(mmpChartEma(rows,20));st.emaSlow.setData(mmpChartEma(rows,50));}
+    st.rsiSeries.setData(mmpChartRsi(rows));
+    try{if(Math.abs(st.chart.timeScale().scrollPosition())<2)st.chart.timeScale().scrollToRealTime();}catch(e){}
+    st.streamHasData=true;st.streamLastTick=Date.now();
     const status=document.getElementById("mmp-chart-status");
-    if(status&&!status.classList.contains("warning"))mmpChartStatus("جریان زنده Binance · "+symbol+" · "+interval+" · قیمت آخرین معامله: "+candle.close,"ok");
+    if(status&&!status.classList.contains("warning"))mmpChartStatus("کندل و حجم زنده · "+exchange.toUpperCase()+" · "+symbol+" · "+interval+" · قیمت: "+candle.close,"ok");
    }catch(e){}
   };
   ws.onerror=()=>{try{ws.close();}catch(e){}};
   ws.onclose=()=>{
    if(st.stream===ws)st.stream=null;
-   if(st.streamKey===key&&!document.hidden){
-    st.streamRetry=setTimeout(()=>{if(st.streamKey===key)mmpConnectChartStream(symbol,interval,market);},5000);
-   }
+   if(st.streamKey!==key||document.hidden)return;
+   const next=st.streamHasData?index:index+1;
+   st.streamRetry=setTimeout(()=>{if(st.streamKey===key)connect(next);},st.streamHasData?5000:1200);
   };
- }catch(e){st.stream=null;}
+ };
+ if(!candidates.length){mmpChartStatus("برای این نماد/بازه جریان زنده صرافی در دسترس نیست.","warning");return;}
+ connect(0);
 }
 document.addEventListener("visibilitychange",()=>{
  if(!document.hidden&&mmpChartState.viewKey){
   const [symbol,interval,market]=mmpChartState.viewKey.split(":");
-  mmpDisconnectChartStream();mmpConnectChartStream(symbol,interval,market);
+  mmpDisconnectChartStream();mmpConnectChartStream(symbol,interval,market,"");
  }
 });
 function initTradingView(){mmpLoadChart(true);if(mmpChartState.refreshTimer)clearInterval(mmpChartState.refreshTimer);mmpChartState.refreshTimer=setInterval(()=>{if(!document.hidden&&document.getElementById("chart-section")?.getBoundingClientRect().top<window.innerHeight+600)mmpLoadChart(false);},45000);}
