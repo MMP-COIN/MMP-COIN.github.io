@@ -1,6 +1,7 @@
 # Trigger root Pages mirror sync for canonical unified-core cleanup, report removal, and asset-picker fallback.
 # Trigger canonical www sync and full Pages smoke tests after 2026-11-11 UI and market-feed repairs.
 name: Deploy MMP COIN AI root site
+# Browser smoke tests use cache-busting URLs and retain full page-error stacks.
 # Republish canonical server-only Radar/Hunter, Worker-backed charts, and multi-exchange failover.
 # Repair HTML style order and enforce final zero-gap header geometry.
 # Publish restored original 3D M-coin homepage header.
@@ -194,11 +195,12 @@ jobs:
             try {
               for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile",width:390,height:844}]) {
                 const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
-                page.on("pageerror", error => failures.push(viewport.name + ": " + error.message));
+                page.on("pageerror", error => failures.push(viewport.name + ": " + (error.stack || error.message)));
                 page.on("requestfailed", request => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => request.url().includes(host))) console.log(viewport.name + " RESOURCE REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); });
                 page.on("response", response => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => response.url().includes(host))) console.log(viewport.name + " RESOURCE RESPONSE: " + response.status() + " " + response.url() + " ACAO=" + (response.headers()["access-control-allow-origin"] || "MISSING")); });
                 page.on("console", message => { if (message.type() === "error") console.log(viewport.name + " BROWSER CONSOLE ERROR: " + message.text()); });
-                const response = await page.goto(process.env.SITE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
+                const homeUrl = new URL(process.env.SITE_URL); homeUrl.searchParams.set("mmp_smoke", process.env.GITHUB_RUN_ID || "test");
+                const response = await page.goto(homeUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
                 await page.waitForTimeout(7000);
                 const apiProbe = await page.evaluate(async () => {
@@ -264,7 +266,8 @@ jobs:
               }
               const lab = await browser.newPage({ viewport: { width: 390, height: 844 } });
               lab.on("pageerror", error => failures.push("Quantum Lab: " + error.message));
-              const labResponse = await lab.goto(new URL("quantum-lab.html", process.env.SITE_URL).toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
+              const labUrl = new URL("quantum-lab.html", process.env.SITE_URL); labUrl.searchParams.set("mmp_smoke", process.env.GITHUB_RUN_ID || "test");
+              const labResponse = await lab.goto(labUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
               if (!labResponse || !labResponse.ok()) throw new Error("Quantum Lab HTTP response is not successful");
               await lab.waitForTimeout(5000);
               if ((await lab.locator("body").innerText()).trim().length < 150) throw new Error("Quantum Lab rendered almost no content");
