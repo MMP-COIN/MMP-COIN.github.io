@@ -58,10 +58,14 @@ jobs:
           set -euo pipefail
           test -s canonical/www/index.html
           test -s canonical/www/quantum-lab.html
+          test -s canonical/www/admin.html
+          test -s canonical/www/market-heatmap.html
           test -s canonical/assets/mmp-coin-ai-icon.svg
           test -s canonical/manifest.webmanifest
           cp canonical/www/index.html ./index.html
           cp canonical/www/quantum-lab.html ./quantum-lab.html
+          cp canonical/www/admin.html ./admin.html
+          cp canonical/www/market-heatmap.html ./market-heatmap.html
           mkdir -p assets
           cp -R canonical/assets/. assets/
           test -s canonical/www/assets/mmp-quantum-lab-integration.js
@@ -78,7 +82,7 @@ jobs:
           set -euo pipefail
           python3 - <<'PY'
           import pathlib, re, subprocess, sys
-          for page in ("index.html", "quantum-lab.html"):
+          for page in ("index.html", "quantum-lab.html", "admin.html", "market-heatmap.html"):
               source = pathlib.Path(page).read_text(encoding="utf-8")
               for number, match in enumerate(re.finditer(r"<script\b([^>]*)>(.*?)</script>", source, re.I | re.S)):
                   attrs, code = match.groups()
@@ -115,6 +119,10 @@ jobs:
           grep -q 'mmp-web-build' /tmp/mmp-home.html
           ! grep -q '__MMP_WEB_BUILD_ID__' /tmp/mmp-home.html
           ! grep -q 'QUANTUM HUNTER CORE · UNIFIED ENGINE' /tmp/mmp-home.html
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/admin.html?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-admin.html
+          grep -q 'مرکز مدیریت' /tmp/mmp-admin.html
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/market-heatmap.html?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-heatmap.html
+          grep -q 'نقشه حرارتی بازار' /tmp/mmp-heatmap.html
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/manifest.webmanifest" -o /tmp/mmp-manifest.json
           jq -e '.name and .icons and (.icons | length > 0)' /tmp/mmp-manifest.json >/dev/null
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/assets/mmp-coin-ai-icon.svg" -o /tmp/mmp-icon.svg
