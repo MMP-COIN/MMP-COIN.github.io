@@ -1,6 +1,7 @@
 # Trigger root Pages mirror sync for canonical unified-core cleanup, report removal, and asset-picker fallback.
 # Trigger canonical www sync and full Pages smoke tests after 2026-11-11 UI and market-feed repairs.
 name: Deploy MMP COIN AI root site
+# Republish canonical server-only Radar/Hunter, Worker-backed charts, and multi-exchange failover.
 # Repair HTML style order and enforce final zero-gap header geometry.
 # Publish restored original 3D M-coin homepage header.
 # Trigger immediate root-domain deployment of canonical UI build 930de03c48ad713ffadf7ac4122c3f05e31e69d2.
