@@ -28,6 +28,9 @@
 <link rel="shortcut icon" href="assets/mmp-coin-ai-icon.svg?v=20261110-browser-icon" type="image/svg+xml">
 <link rel="apple-touch-icon" href="assets/mmp-coin-ai-icon.svg?v=20261110-browser-icon">
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#08090d;--panel:#11131b;--panel2:#171a24;--line:#282c38;--gold:#d9b66d;--gold2:#f2d99b;--text:#f4f1e9;--muted:#9a9eaa;--green:#25d695;--red:#ff5e6c;--yellow:#f4c45e;--blue:#78a9ff}
 *{box-sizing:border-box}
@@ -149,7 +152,7 @@ button{cursor:pointer}
 @media(max-width:760px){.ai-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ai-toolbar{grid-template-columns:1fr 1fr}.ai-toolbar button{grid-column:1/-1}.ai-report .ai-levels{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap');
+
 :root{--font-fa:'Vazirmatn',Tahoma,Arial,sans-serif;--glow:0 14px 42px #0006}
 body,button,input,select{font-family:var(--font-fa)}
 body{background:radial-gradient(ellipse at 82% -10%,#29223b 0,transparent 36%),radial-gradient(ellipse at 4% 30%,#102b32 0,transparent 28%),#080a10}
@@ -2889,7 +2892,7 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 
 
 
-<div class="mmp-coin-detail-backdrop" id="mmp-coin-detail" hidden role="dialog" aria-modal="true" aria-labelledby="mmp-coin-detail-title"><div class="mmp-coin-detail-panel"><button type="button" class="mmp-coin-detail-close" id="mmp-coin-detail-close" aria-label="بستن">×</button><div id="mmp-coin-detail-content"></div><div class="mmp-coin-detail-actions"><button type="button" class="btn primary" id="mmp-coin-analyze">تحلیل این ارز در تحلیلگر هوشمند</button></div></div></div>
+<div class="mmp-coin-detail-backdrop" id="mmp-coin-detail" hidden role="dialog" aria-modal="true" aria-labelledby="mmp-coin-detail-title"><div class="mmp-coin-detail-panel"><button type="button" class="mmp-coin-detail-close" id="mmp-coin-detail-close" aria-label="بستن">×</button><div id="mmp-coin-detail-content"></div><div class="mmp-coin-detail-actions"><button type="button" class="btn primary" class="mmp-coin-analyze-action">تحلیل این ارز در تحلیلگر هوشمند</button></div></div></div>
 </main>
 
 
@@ -3663,7 +3666,7 @@ function renderCoinsTables(data) {
    $("mmp-coin-detail").hidden=false;return;
   }
   if(event.target.closest("#mmp-coin-detail-close")||event.target.id==="mmp-coin-detail"){close();return;}
-  if(event.target.closest("#mmp-coin-analyze")&&selectedMarketCoin){
+  if(event.target.closest(".mmp-coin-analyze-action")&&selectedMarketCoin){
    const select=$("ai-coin-select"),id=String(selectedMarketCoin.id||"");
    if(select){if(![...select.options].some(o=>o.value===id)){const option=document.createElement("option");option.value=id;option.textContent=(selectedMarketCoin.name||selectedMarketCoin.symbol)+" ("+selectedMarketCoin.symbol+")";select.appendChild(option);}select.value=id;select.dispatchEvent(new Event("change",{bubbles:true}));}
    close();$("ai-section")?.scrollIntoView({behavior:"smooth",block:"start"});if(typeof runAiAnalysis==="function")runAiAnalysis(true);
