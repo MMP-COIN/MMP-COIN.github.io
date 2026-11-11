@@ -266,8 +266,12 @@ jobs:
                 const homeUrl = new URL(process.env.SITE_URL); homeUrl.searchParams.set("mmp_smoke", process.env.GITHUB_RUN_ID || "test");
                 const response = await page.goto(homeUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
-                await page.waitForTimeout(7000);
-                const terminalState = await page.evaluate(() => ({
+                let terminalState = null;
+                // GitHub Pages/CDN edges may serve the previous index for a short propagation window.
+                // Retry the same cache-busted URL until the canonical terminal bundle is actually present.
+                for (let attempt = 0; attempt < 7; attempt++) {
+                  await page.waitForTimeout(attempt === 0 ? 7000 : 5000);
+                  terminalState = await page.evaluate(() => ({
                   ready: document.body?.dataset?.mmpTerminalReady || null,
                   view: document.body?.dataset?.mmpView || null,
                   bodyClass: document.body?.className || null,
@@ -276,7 +280,11 @@ jobs:
                   hubCards: document.querySelectorAll("#mmp-terminal-hub .mmp-hub-card").length,
                   main: !!document.querySelector("#hero"),
                   sections: document.querySelectorAll("#hero > section").length
-                }));
+                  }));
+                  if (terminalState.ready === "1" && terminalState.hubCards === 8 && terminalState.script.length > 0) break;
+                  console.log(viewport.name + " stale Pages edge; retrying canonical index, attempt " + (attempt + 1));
+                  if (attempt < 6) await page.reload({ waitUntil: "domcontentloaded", timeout: 60000 });
+                }
                 console.log(viewport.name + " TERMINAL INIT STATE: " + JSON.stringify(terminalState));
                 const apiProbe = await page.evaluate(async () => {
                   const url = "https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/market-candles?symbol=BTCUSDT&interval=1h&market=spot";
@@ -316,6 +324,12 @@ jobs:
                 const hubCards = page.locator("#mmp-terminal-hub .mmp-hub-card");
                 await hubCards.first().waitFor({state:"visible",timeout:5000});
                 if (await hubCards.count() !== 8) throw new Error(viewport.name + " homepage must expose exactly eight specialist centers");
+                await page.locator("#mmp-terminal-hub [data-mmp-open-center='command']").click();
+                const commandMenu = page.locator("#mmp-center-toolbar .mmp-center-jump");
+                if (await commandMenu.count() !== 6) throw new Error(viewport.name + " Market Command card must expose six internal navigation links");
+                await page.locator("#mmp-center-toolbar .mmp-center-jump[href='#mmp-usdt-card']").click();
+                await page.locator("#mmp-usdt-card").waitFor({state:"visible",timeout:5000});
+                await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
                 if (await page.locator("#btn-irt").count() !== 1 || await page.locator("#btn-usdt").count() !== 1 || await page.locator("#usdt").count() !== 1) throw new Error(viewport.name + " missing primary Toman/USDT controls or tether quote");
                 await page.locator("#btn-usdt").click();
                 if (!await page.locator("#btn-usdt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " USDT switch did not activate");
