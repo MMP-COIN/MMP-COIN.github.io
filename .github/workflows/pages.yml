@@ -110,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           SITE_URL="${SITE_URL%/}"
-          curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 5 --max-time 25 "$SITE_URL/" -o /tmp/mmp-home.html
+          curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 5 --max-time 25 -H "Cache-Control: no-cache" "$SITE_URL/?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-home.html
           grep -q 'MMP QUANTUM' /tmp/mmp-home.html
           grep -q 'mmp-web-build' /tmp/mmp-home.html
           ! grep -q '__MMP_WEB_BUILD_ID__' /tmp/mmp-home.html
@@ -119,13 +119,15 @@ jobs:
           jq -e '.name and .icons and (.icons | length > 0)' /tmp/mmp-manifest.json >/dev/null
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/assets/mmp-coin-ai-icon.svg" -o /tmp/mmp-icon.svg
           grep -q '<svg' /tmp/mmp-icon.svg
-          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/quantum-lab.html" -o /tmp/mmp-lab.html
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/quantum-lab.html?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-lab.html
           grep -q 'MMP QUANTUM' /tmp/mmp-lab.html
-          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 "$SITE_URL/version.json" -o /tmp/mmp-version.json
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/version.json?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-version.json
           BUILD_ID="$(jq -r '.build // empty' /tmp/mmp-version.json)"
           test -n "$BUILD_ID"
+          echo "Published site build ID: $BUILD_ID"
           grep -q "$BUILD_ID" /tmp/mmp-home.html
-          WORKER_STATUS="$(curl --silent --show-error --max-time 20 -o /tmp/mmp-worker-health.json -w '%{http_code}' "$WORKER_URL/health")"
+          WORKER_STATUS="$(curl --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 25 -o /tmp/mmp-worker-health.json -w '%{http_code}' "$WORKER_URL/health")"
+          echo "Worker health HTTP: $WORKER_STATUS"
           if [ "$WORKER_STATUS" != "200" ]; then
             if grep -q "error code: 1027" /tmp/mmp-worker-health.json; then
               echo "::error::Cloudflare Worker daily request quota exhausted (Error 1027). Do not mark the live service healthy."
