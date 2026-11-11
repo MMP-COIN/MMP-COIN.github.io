@@ -443,6 +443,44 @@ jobs:
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
 
+      - name: Persist canonical mirror for legacy Pages source
+        if: success()
+        id: mirror
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git add index.html quantum-lab.html admin.html market-heatmap.html assets manifest.webmanifest version.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Root Pages source already matches canonical build."
+            exit 0
+          fi
+          BUILD_ID="$(jq -r '.build' version.json)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Sync canonical MMP site mirror $BUILD_ID"
+          if git push origin HEAD:main; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Committed canonical mirror $BUILD_ID to root Pages source."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Could not update the legacy Pages branch mirror in this run; the Actions deployment remains authoritative."
+          fi
+
+      - name: Rebuild legacy Pages source after mirror synchronization
+        if: success() && steps.mirror.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" >/tmp/pages-build.json; then
+            echo "::warning::Legacy Pages build request was not accepted; the canonical Actions deployment remains published."
+            exit 0
+          fi
+          cat /tmp/pages-build.json
+          echo "Requested a final branch-source build from the synchronized canonical mirror."
+
 # Republish cache-busted Market Command navigation script v3.
 
 # Publish isolated horizontal Toman and USDT selector layout from MMP-COIN-AI.
