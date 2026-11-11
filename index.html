@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="0351cd76318af0d9609f2cc02df3b61cc76e0528">
+<meta name="mmp-web-build" content="a16c82abf32e1d8e5e3bf1b0445aa16076a9b4aa">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -2525,8 +2525,9 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 .dropdown-menu .menu-group>a{min-height:40px;padding:9px 25px 9px 14px;font-size:12px}
 .dropdown-menu .menu-group>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px;border-radius:8px}
 </style>
+<link rel="stylesheet" href="assets/mmp-quantum-terminal-v1.css?v=9"><script defer src="assets/mmp-quantum-terminal-v1.js?v=6"></script>
 </head>
-<body class="mmp-app-mode">
+<body class="mmp-app-mode mmp-quantum-terminal" data-mmp-view="home">
 <header class="top">
 <div class="brand">
   <div class="logo"><img src="assets/mmp-coin-mark.svg?v=20261108-qcoin2" alt="نشان سکه کوانتومی MMP" style="width:100%;height:100%;object-fit:contain;padding:1px;border-radius:12px"></div>
@@ -2627,22 +2628,22 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 
 
 <section class="grid mmp-market-snapshot" id="market-snapshot" data-quantum-module="market-data" aria-label="نمای سریع بازار">
-  <article class="card mmp-market-card mmp-btc-card">
+  <article id="mmp-btc-card" class="card mmp-market-card mmp-btc-card">
     <div class="mmp-card-top"><span class="mmp-asset-icon btc-icon">₿</span><span class="mmp-card-tag">دارایی شاخص</span><span class="mmp-card-spark">↗</span></div>
     <div class="stat-label">بیت‌کوین <b>BTC</b></div><div class="stat-value" id="btc">$—</div><div class="sub" id="btc-sub">در انتظار داده بازار</div>
     <div class="mmp-card-track"><i></i></div>
   </article>
-  <article class="card mmp-market-card mmp-eth-card">
+  <article id="mmp-eth-card" class="card mmp-market-card mmp-eth-card">
     <div class="mmp-card-top"><span class="mmp-asset-icon eth-icon">◆</span><span class="mmp-card-tag">دارایی شاخص</span><span class="mmp-card-spark">◇</span></div>
     <div class="stat-label">اتریوم <b>ETH</b></div><div class="stat-value" id="eth">$—</div><div class="sub" id="eth-sub">در انتظار داده بازار</div>
     <div class="mmp-card-track"><i></i></div>
   </article>
-  <article class="card mmp-market-card mmp-usdt-card">
+  <article id="mmp-usdt-card" class="card mmp-market-card mmp-usdt-card">
     <div class="mmp-card-top"><span class="mmp-asset-icon usdt-icon">₮</span><span class="mmp-card-tag">نرخ بازار داخلی</span><span class="mmp-card-spark">⇄</span></div>
     <div class="stat-label">تتر به تومان <b>USDT / IRT</b></div><div class="stat-value" id="usdt">—</div><div class="sub" id="usdt-source">منابع صرافی‌های داخلی · پایش زنده</div>
     <div class="mmp-card-track"><i></i></div>
   </article>
-  <article class="card mmp-market-card mmp-gold-card">
+  <article id="mmp-gold-card" class="card mmp-market-card mmp-gold-card">
     <div class="mmp-card-top"><span class="mmp-asset-icon gold-icon">Au</span><span class="mmp-card-tag">دارایی جهانی</span><span class="mmp-card-spark">✧</span></div>
     <div class="stat-label">اونس جهانی طلا <b>XAU</b></div><div class="stat-value" id="gold">$—</div><div class="sub" id="gold-sub">مرجع جهانی فلزات گران‌بها · دریافت مستقل</div>
     <div class="mmp-card-track"><i></i></div>
@@ -2666,12 +2667,7 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <div class="quantum-hero-actions"><a class="quantum-enter-btn" href="/quantum-lab.html"><span>ورود به مرکز کوانتومی</span><b>←</b></a><a class="quantum-run-compact" href="/quantum-lab.html?run-engines=1" aria-label="ورود و اجرای چرخه ابرموتور"><span>⟳ اجرای چرخه ابرموتور</span><small>اسکن واقعی بازار</small></a><div class="quantum-currency-switch" role="group" aria-label="واحد نمایش قیمت"><button type="button" id="quantum-currency-irt" class="active" aria-pressed="true" onclick="setCurrency('IRT')">تومان</button><button type="button" id="quantum-currency-usdt" aria-pressed="false" onclick="setCurrency('USDT')">تتر / USDT</button></div><span class="badge">مرکز یکپارچه تحلیل بازار</span></div>
  </div>
  <div class="quantum-hero-art" aria-label="نشان سه‌بعدی کوانتومی MMP"><div class="quantum-art-grid"></div><div class="quantum-art-orbit orbit-one"></div><div class="quantum-art-orbit orbit-two"></div><div class="quantum-art-orbit orbit-three"></div><div class="quantum-art-core mmp-quantum-emblem"><img src="assets/mmp-coin-mark.svg?v=20261109-hero" alt="نشان اصلی سکه MMP"></div><i class="quantum-node node-one"></i><i class="quantum-node node-two"></i><i class="quantum-node node-three"></i><div class="quantum-art-caption">QUANTUM COMMAND<small>MMP MARKET INTELLIGENCE</small></div></div>
- <section class="quantum-engine-single" id="quantum-engine-single" aria-label="هسته هوشمند واحد MMP">
-  <div class="quantum-engine-single-head"><span class="quantum-core-mark">M</span><div><small>MMP QUANTUM INTELLIGENCE · QIE-4</small><b>هسته هوشمند واحد MMP</b><p>یک هسته مرکزی؛ همه شواهد بازار در یک مسیر تصمیم‌گیری هماهنگ می‌شوند.</p></div></div>
-  <div class="quantum-core-flow"><span>داده زنده</span><i>←</i><span>تحلیل و پیش‌آگاهی</span><i>←</i><span>اعتبارسنجی</span><i>←</i><b>تصمیم نهایی</b></div>
-  <a class="quantum-engine-enter" href="/quantum-lab.html">ورود به مرکز فرماندهی کوانتومی <b>←</b></a>
-</section>
- 
+
 <div class="quantum-hero-foot"><span>اسکن پویا جفت‌های واجد شرایط USDT Spot</span><span>یک موتور مرکزی · تصمیم‌گیری یکپارچه</span><span>داده ناموجود = بدون امتیازسازی جعلی</span></div>
 </section>
 
@@ -3016,6 +3012,7 @@ function setCurrency(curr) {
   [['btn-irt',isToman],['btn-usdt',!isToman],['quantum-currency-irt',isToman],['quantum-currency-usdt',!isToman],['native-currency-irt',isToman],['native-currency-usdt',!isToman]].forEach(([id,active])=>{
     const button=$(id);if(button){button.classList.toggle('active',active);button.setAttribute('aria-pressed',active?'true':'false');}
   });
+  document.querySelectorAll('[data-mmp-currency]').forEach(button=>{const active=button.dataset.mmpCurrency===currentCurrency;button.classList.toggle('active',active);button.setAttribute('aria-pressed',active?'true':'false');});
   renderTetherCard();
   const indicator=$('currency-indicator');
   if(indicator)indicator.innerText='واحد انتخاب‌شده: '+(isToman?'تومان':'تتر · USDT');
@@ -3072,7 +3069,10 @@ async function mmpLoadChart(force=false){
   if(seq!==mmpChartState.seq)return;if(!payload||!Array.isArray(payload.candles))throw new Error("پاسخ کندلی نامعتبر است");
   const rows=payload.candles.map(c=>({time:Number(c.time),open:Number(c.open),high:Number(c.high),low:Number(c.low),close:Number(c.close),volume:Number(c.volume)||0})).filter(c=>Number.isFinite(c.time)&&c.time>0&&[c.open,c.high,c.low,c.close].every(v=>Number.isFinite(v)&&v>0)&&c.high>=Math.max(c.open,c.close,c.low)&&c.low<=Math.min(c.open,c.close,c.high)).sort((a,b)=>a.time-b.time);
   const unique=rows.filter((c,i)=>i===0||c.time>rows[i-1].time);if(unique.length<20)throw new Error("تعداد کندل معتبر کافی نیست ("+unique.length+")");
-  const clean={...payload,candles:unique};mmpChartState.cache.set(key,{at:now,payload:clean});mmpRenderChart(clean);
+  const durationMs=({"1m":60000,"3m":180000,"5m":300000,"15m":900000,"1h":3600000,"4h":14400000,"1d":86400000})[interval]||3600000;
+  const candleAgeMs=Math.max(0,Date.now()-unique[unique.length-1].time*1000);
+  if(payload.data_stale===true||candleAgeMs>durationMs*1.5)throw new Error("آخرین کندل قدیمی است · سن کندل "+Math.round(candleAgeMs/60000)+" دقیقه؛ داده کهنه به‌عنوان زنده پذیرفته نشد.");
+  const clean={...payload,candles:unique,data_age_ms:Number(payload.data_age_ms)||candleAgeMs};mmpChartState.cache.set(key,{at:now,payload:clean});mmpRenderChart(clean);
  }catch(error){if(controller.signal.aborted||seq!==mmpChartState.seq)return;const old=mmpChartState.cache.get(key);if(old){mmpRenderChart({...old.payload,data_stale:true});mmpChartStatus("دریافت تازه ناموفق؛ آخرین داده ذخیره‌شده نمایش داده می‌شود · "+String(error.message||error),"warning");}else mmpChartStatus("داده نمودار دریافت نشد: "+String(error.message||error)+" · تازه‌سازی را دوباره بزن.","error");}
  finally{clearTimeout(timer);}
 }
@@ -3084,12 +3084,12 @@ function mmpRenderChart(payload){
  st.emaFast.setData(st.showEMA?mmpChartEma(rows,20):[]);st.emaSlow.setData(st.showEMA?mmpChartEma(rows,50):[]);st.volume.applyOptions({visible:st.showVolume});st.rsiSeries.setData(mmpChartRsi(rows));
  if(newView||!range){st.chart.timeScale().fitContent();st.rsiChart.timeScale().fitContent();}else{try{st.chart.timeScale().setVisibleLogicalRange(range);}catch(e){}}
  st.viewKey=viewKey;
- const last=rows[rows.length-1],date=new Date(last.time*1000).toLocaleString("fa-IR"),stale=payload.data_stale?" · داده کش‌شده/قدیمی":" · داده تازه";
- mmpChartStatus("منبع: "+(payload.provider||"Worker")+" · "+rows.length+" کندل معتبر · آخرین کندل: "+date+stale,payload.data_stale?"warning":"ok");
+ const last=rows[rows.length-1],date=new Date(last.time*1000).toLocaleString("fa-IR"),ageMs=Math.max(0,Number(payload.data_age_ms)||Date.now()-last.time*1000),ageLabel=ageMs<60000?"کمتر از یک دقیقه":Math.round(ageMs/60000).toLocaleString("fa-IR")+" دقیقه",stale=payload.data_stale?" · داده کش‌شده/قدیمی":" · دریافت زنده از منبع";
+ mmpChartStatus("منبع: "+(payload.provider||"Worker")+" · "+rows.length+" کندل معتبر · آخرین کندل: "+date+" · سن داده: "+ageLabel+stale,payload.data_stale?"warning":"ok");
  const link=document.getElementById("chart-replay-link");if(link){const p=String(payload.provider||"").toLowerCase(),ex=p.includes("bitget")?"BITGET":p.includes("bybit")?"BYBIT":p.includes("okx")?"OKX":p.includes("mexc")?"MEXC":"BINANCE";link.href="https://www.tradingview.com/chart/?symbol="+encodeURIComponent(ex+":"+payload.symbol);}
  document.querySelectorAll("[data-chart-tf]").forEach(b=>b.classList.toggle("active",b.dataset.chartTf===st.interval));
 }
-function initTradingView(){mmpLoadChart(true);if(mmpChartState.refreshTimer)clearInterval(mmpChartState.refreshTimer);mmpChartState.refreshTimer=setInterval(()=>{if(!document.hidden&&document.getElementById("chart-section")?.getBoundingClientRect().top<window.innerHeight+600)mmpLoadChart(false);},300000);}
+function initTradingView(){mmpLoadChart(true);if(mmpChartState.refreshTimer)clearInterval(mmpChartState.refreshTimer);mmpChartState.refreshTimer=setInterval(()=>{if(!document.hidden&&document.getElementById("chart-section")?.getBoundingClientRect().top<window.innerHeight+600)mmpLoadChart(false);},60000);}
 function changeTradingViewSymbol(){mmpLoadChart(true);}
 function mmpSetChartInterval(value){if(!["1m","5m","15m","1h","4h","1d"].includes(value))return;mmpChartState.interval=value;mmpLoadChart(true);}
 function mmpSetChartMarket(value){mmpChartState.market=value==="futures"?"futures":"spot";mmpLoadChart(true);}
