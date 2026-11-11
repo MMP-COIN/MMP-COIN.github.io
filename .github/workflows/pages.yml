@@ -245,12 +245,11 @@ jobs:
         run: |
           set -euo pipefail
           npm install --prefix /tmp/mmp-playwright --no-save playwright
-          PLAYWRIGHT_BROWSERS_PATH=/tmp/mmp-browsers /tmp/mmp-playwright/node_modules/.bin/playwright install --with-deps chromium
           SITE_URL="${{ steps.deployment.outputs.page_url }}"
           NODE_PATH=/tmp/mmp-playwright/node_modules PLAYWRIGHT_BROWSERS_PATH=/tmp/mmp-browsers SITE_URL="$SITE_URL" node <<'NODE'
           const { chromium } = require("playwright");
           (async () => {
-            const browser = await chromium.launch({ headless: true });
+            const browser = await chromium.launch({ headless: true, channel: "chrome" });
             const failures = [];
             try {
               for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile",width:390,height:844}]) {
