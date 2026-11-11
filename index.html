@@ -2656,7 +2656,7 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
  </div>
  <div class="quantum-hero-art" aria-label="نشان سه‌بعدی کوانتومی MMP"><div class="quantum-art-grid"></div><div class="quantum-art-orbit orbit-one"></div><div class="quantum-art-orbit orbit-two"></div><div class="quantum-art-orbit orbit-three"></div><div class="quantum-art-core mmp-quantum-emblem"><img src="assets/mmp-coin-mark.svg?v=20261109-hero" alt="نشان اصلی سکه MMP"></div><i class="quantum-node node-one"></i><i class="quantum-node node-two"></i><i class="quantum-node node-three"></i><div class="quantum-art-caption">QUANTUM COMMAND<small>MMP MARKET INTELLIGENCE</small></div></div>
  <div class="quantum-core-flow" aria-label="مسیر تصمیم‌گیری QIE-4"><span>داده زنده</span><i>←</i><span>تحلیل و پیش‌آگاهی</span><i>←</i><span>اعتبارسنجی</span><i>←</i><b>تصمیم نهایی</b></div>
- <section class="mmp-command-progress" id="mmp-command-progress" aria-live="polite" aria-label="پیشرفت واقعی موتور مرکزی">
+ <section hidden class="mmp-command-progress" id="mmp-command-progress" aria-live="polite" aria-label="پیشرفت واقعی موتور مرکزی">
 <div class="mcp-head"><div><span class="mcp-kicker">QUANTUM CORE · LIVE CYCLE</span><b id="mcp-state">در انتظار دریافت وضعیت موتور مرکزی</b></div><strong id="mcp-percent">—</strong></div>
 <div class="mcp-track" role="progressbar" aria-label="پیشرفت اسکن موتور مرکزی" aria-valuemin="0" aria-valuemax="100"><i id="mcp-bar"></i></div>
 <div class="mcp-metrics"><span>پوشش چرخه <b id="mcp-done">—</b> از <b id="mcp-total">—</b> نماد</span><span>موفق در نوبت اخیر <b id="mcp-batch">—</b></span><span>لایه‌های دارای شواهد واقعی <b id="mcp-engines">—</b></span><span>خطاهای نوبت اخیر <b id="mcp-errors">—</b></span></div>
@@ -6677,20 +6677,26 @@ window.mmpShareDownloadLink = async function () {
 
 
 
+<style id="mmp-command-progress-transient">#mmp-command-progress[hidden]{display:none!important}</style>
 <script id="mmp-command-progress-live">
 (function(){
  "use strict";
  const root=document.getElementById("mmp-command-progress");if(!root||root.dataset.bound==="1")return;root.dataset.bound="1";
  const el=id=>document.getElementById(id),fmt=v=>Number(v).toLocaleString("fa-IR");
  const keys=["momentum","flow","structure","liquidity","multiTimeframe","regime","volatility","sentiment","smartMoney","scenario","risk","dataQuality"];
+ let hideErrorTimer=0,refreshBusy=false;
  function fail(message){
   root.classList.add("is-error");el("mcp-state").textContent="وضعیت موتور مرکزی دریافت نشد";
   ["mcp-percent","mcp-done","mcp-total","mcp-batch","mcp-engines","mcp-errors"].forEach(id=>el(id).textContent="—");
   el("mcp-bar").style.width="0%";const track=root.querySelector('[role="progressbar"]');if(track)track.removeAttribute("aria-valuenow");
   el("mcp-updated").textContent=message||"داده معتبر در دسترس نیست؛ درصد ساختگی نمایش داده نمی‌شود.";
+  clearTimeout(hideErrorTimer);hideErrorTimer=setTimeout(()=>{root.hidden=true;},3200);
  }
  async function refresh(){
-  if(document.hidden)return;const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
+  if(document.hidden||refreshBusy)return;
+  refreshBusy=true;root.hidden=false;clearTimeout(hideErrorTimer);
+  el("mcp-state").textContent="در حال دریافت وضعیت موتور مرکزی…";
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
   try{
    let snap=window.__mmpDigitalHunterSnapshot;
    let stamp=snap?Date.parse(snap.checked_at||snap.scanned_at||""):0;
@@ -6704,7 +6710,7 @@ window.mmpShareDownloadLink = async function () {
    if(!Number.isFinite(total)||total<=0||!Number.isFinite(batchDone))throw new Error("شمارنده معتبر اسکن در snapshot موجود نیست");
    const covered=cursor===0&&batchDone>0?total:Math.min(total,cursor||batchDone),pct=Math.max(0,Math.min(100,Math.round(covered/total*100))),signals=Array.isArray(snap.signals)?snap.signals:[],activity=snap.engine_activity&&typeof snap.engine_activity==="object"?snap.engine_activity:{};
    const evidenced=keys.filter(key=>{const m=activity[key];return !!(m&&Number(m.evidence)>0)||signals.some(x=>x?.quantum?.componentAvailability?.[key]===true)}).length;
-   const stamp=Date.parse(snap.checked_at||snap.scanned_at||""),stale=!stamp||Date.now()-stamp>120000;
+   const stale=!stamp||Date.now()-stamp>120000;
    el("mcp-state").textContent=stale?"آخرین چرخه ثبت‌شده · نیازمند به‌روزرسانی":pct>=100?"پوشش کامل بازار · چرخه آماده تکرار":"موتور مرکزی · پوشش چرخه در حال تکمیل";
    el("mcp-percent").textContent=fmt(pct)+"٪";el("mcp-done").textContent=fmt(covered);el("mcp-total").textContent=fmt(total);
    el("mcp-batch").textContent=fmt(batchDone)+(batchSize?" / "+fmt(batchSize):"");
@@ -6713,9 +6719,9 @@ window.mmpShareDownloadLink = async function () {
    el("mcp-updated").textContent=(stale?"داده قدیمی یا زمان آخرین اسکن نامشخص است · ":"آخرین دریافت: ")+(stamp?new Date(stamp).toLocaleString("fa-IR"):"زمان نامشخص")+" · پیشرفت از next_cursor محاسبه شده؛ عدد نوبت اخیر جداست. صفر بودن شواهد خروجی به معنی خاموش بودن موتور نیست.";
    root.classList.remove("is-error");
   }catch(error){fail("اتصال یا داده معتبر در دسترس نیست · "+(error?.message||"خطای نامشخص"));}
-  finally{clearTimeout(timer);}
+  finally{clearTimeout(timer);refreshBusy=false;}
  }
- let started=false;window.mmpWhenVisible?window.mmpWhenVisible("#mmp-command-progress",()=>{started=true;refresh();setInterval(()=>{if(!document.hidden&&document.getElementById("mmp-command-progress")?.getBoundingClientRect().top<window.innerHeight+500)refresh();},60000);},{rootMargin:"450px 0px"}):(started=true,refresh());document.addEventListener("mmp-hunter-snapshot-updated",()=>{if(started)refresh();});document.addEventListener("visibilitychange",()=>{if(started&&!document.hidden)refresh();});
+ let started=false;window.mmpWhenVisible?window.mmpWhenVisible("#mmp-command-progress",()=>{started=true;refresh();if(window.__mmpCommandProgressTimer)clearInterval(window.__mmpCommandProgressTimer);window.__mmpCommandProgressTimer=setInterval(()=>{const panel=document.getElementById("mmp-command-progress");if(!document.hidden&&panel&&!panel.hidden&&panel.getBoundingClientRect().top<window.innerHeight+500)refresh();},60000);},{rootMargin:"450px 0px"}):(started=true,refresh());document.addEventListener("mmp-hunter-snapshot-updated",()=>{if(started)refresh();});document.addEventListener("visibilitychange",()=>{if(started&&!document.hidden)refresh();});
 })();
 </script><style id="mmp-home-engine-live-style">
 #quantum-center-entry .quantum-engine-link{position:relative;overflow:hidden}
