@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="a1ffe0bb674068c28095f9046ae5ce1815a3b249">
+<meta name="mmp-web-build" content="f9134be4c8bb9850baac39165e07062e99161d84">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -2499,6 +2499,40 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
  html body #ai-section .ai-coin-picker-trigger{padding-inline:9px!important;font-size:11px!important}
 }
 </style>
+
+<style id="mmp-compact-server-performance">
+/* Compact collapsed server performance drawer; preserve the full report inside. */
+.server-performance-drawer{margin:6px 0 9px!important;border-radius:10px!important}
+.server-performance-details>summary{min-height:42px;padding:7px 10px;gap:8px}
+.server-performance-details>summary>span{min-width:0;display:block}
+.server-performance-details>summary b{font-size:10px;line-height:1.45}
+.server-performance-details>summary small{font-size:7.5px;line-height:1.4;margin-top:2px}
+.server-performance-details>summary em{font-size:8px;padding:4px 7px;border-radius:7px}
+.server-performance-details>summary i{margin-inline-start:3px}
+.server-performance-panel{padding:9px!important}
+@media(max-width:420px){.server-performance-details>summary{padding:7px 8px;gap:6px}.server-performance-details>summary em{font-size:7.5px;padding:4px 6px}}
+</style>
+
+<style id="mmp-unified-core-and-menu-v2">
+.quantum-engine-single{grid-column:1/-1;margin-top:12px;padding:15px;border:1px solid #a98a50;border-radius:15px;background:linear-gradient(115deg,#1c2633,#111923 60%,#191a18);box-shadow:0 12px 30px #0005}
+.quantum-engine-single-head{display:flex;align-items:center;gap:12px}
+.quantum-core-mark{width:42px;height:42px;flex:0 0 42px;display:grid;place-items:center;border:2px solid #f1d58e;border-radius:50%;background:radial-gradient(circle at 32% 24%,#fff0b8,#d7ad5d 38%,#62431e 78%);color:#201709;font:900 24px Georgia,serif;box-shadow:0 0 18px #d9b66d44,inset 0 2px 4px #fff8}
+.quantum-engine-single-head small{display:block;color:#d5b66e;font-size:9px;letter-spacing:1.2px}
+.quantum-engine-single-head b{display:block;color:#f4dfa8;font-size:14px;margin:4px 0}
+.quantum-engine-single-head p{margin:0;color:#b7c1ce;font-size:10px;line-height:1.8}
+.quantum-core-flow{display:flex;align-items:center;justify-content:space-between;gap:7px;flex-wrap:wrap;margin:13px 0;padding:10px;border:1px solid #ffffff16;border-radius:10px;background:#080e17a8}
+.quantum-core-flow span,.quantum-core-flow b{font-size:10px;color:#dce3ed}.quantum-core-flow b{color:#f2d48b}.quantum-core-flow i{font-style:normal;color:#b49355;font-weight:900}
+.quantum-engine-enter{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 13px;border:1px solid #c5a35f88;border-radius:10px;background:#d9b66d12;color:#f4dfa8;text-decoration:none;font-size:11px;font-weight:800}
+.quantum-engine-enter b{font-size:16px}
+#dropdownMenu>a:not(.menu-admin-link){display:flex;align-items:center;gap:11px}
+#dropdownMenu .menu-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid #a98b5066;border-radius:9px;background:linear-gradient(145deg,#283747,#111b27);color:#f0d18a;font-style:normal;font-size:16px;font-weight:900}
+#dropdownMenu>a span{flex:1;min-width:0}
+#dropdownMenu>a.menu-admin-link{display:flex;align-items:center;gap:10px}
+#dropdownMenu>a.menu-admin-link .menu-icon{background:#20190e;border-color:#6d542a;color:#f4d58f}
+#dropdownMenu>a.menu-admin-link b{font-size:20px}
+.mmp-sidebar .side-link>i{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid #9b7b455c;border-radius:9px;background:linear-gradient(145deg,#263746,#101923);color:#f0d18a;font-style:normal;font-size:15px}
+@media(max-width:560px){.quantum-engine-single{padding:11px}.quantum-core-flow{justify-content:center}.quantum-core-flow span,.quantum-core-flow b{font-size:9px}.quantum-engine-single-head b{font-size:12px}}
+</style>
 </head>
 <body class="mmp-app-mode">
 <header class="top">
@@ -2517,16 +2551,16 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 </div>
 <div class="dropdown-menu" id="dropdownMenu" aria-label="منوی اصلی">
   <div class="menu-section-label">بخش‌های اصلی</div>
-  <a href="/quantum-lab.html">◈ ورود به مرکز هوشمند بازار MMP</a>
-  <a href="/market-heatmap.html">▦ نقشه حرارتی بازار</a>
-  <a href="#opportunities">📡 رادار هوشمند بازار</a>
-  <a href="#market-hunter">🎯 شکارچی کوانتومی بازار</a>
-  <a href="#ai-section">✧ تحلیلگر هوشمند AI</a>
-  <a href="#boom-hunter">◉ آزمایشگاه کوانتومی Boom Hunter</a>
-  <a href="#chart-section">▥ نمودار حرفه‌ای</a>
-  <a href="#trading-tools">⌗ ابزارهای معامله</a>
+  <a href="/quantum-lab.html"><i class="menu-icon">⬡</i><span>مرکز فرماندهی کوانتومی MMP</span></a>
+  <a href="/market-heatmap.html"><i class="menu-icon">▦</i><span>نقشه حرارتی بازار</span></a>
+  <a href="#opportunities"><i class="menu-icon">⌖</i><span>رادار هوشمند بازار</span></a>
+  <a href="#market-hunter"><i class="menu-icon">🎯</i><span>شکارچی کوانتومی بازار</span></a>
+  <a href="#ai-section"><i class="menu-icon">✧</i><span>تحلیلگر هوشمند AI</span></a>
+  <a href="#boom-hunter"><i class="menu-icon">ϟ</i><span>آزمایشگاه Boom Hunter</span></a>
+  <a href="#chart-section"><i class="menu-icon">▥</i><span>نمودار حرفه‌ای</span></a>
+  <a href="#trading-tools"><i class="menu-icon">⌗</i><span>ابزارهای معامله</span></a>
   <div class="menu-divider"></div>
-  <a class="menu-admin-link" href="https://mmp-coin.github.io/admin.html">⚙ ورود به پنل مدیریت <span>›</span></a>
+  <a class="menu-admin-link" href="https://mmp-coin.github.io/admin.html"><i class="menu-icon">⚙</i><span>پنل مدیریت</span><b>›</b></a>
 </div>
 </header>
 
@@ -2620,24 +2654,11 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <div class="quantum-hero-actions"><a class="quantum-enter-btn" href="/quantum-lab.html"><span>ورود به مرکز کوانتومی</span><b>←</b></a><a class="quantum-run-compact" href="/quantum-lab.html?run-engines=1" aria-label="ورود و اجرای چرخه ابرموتور"><span>⟳ اجرای چرخه ابرموتور</span><small>اسکن واقعی بازار</small></a><span class="badge">مرکز یکپارچه تحلیل بازار</span></div>
  </div>
  <div class="quantum-hero-art" aria-label="نشان سه‌بعدی کوانتومی MMP"><div class="quantum-art-grid"></div><div class="quantum-art-orbit orbit-one"></div><div class="quantum-art-orbit orbit-two"></div><div class="quantum-art-orbit orbit-three"></div><div class="quantum-art-core mmp-quantum-emblem"><img src="assets/mmp-coin-mark.svg?v=20261109-hero" alt="نشان اصلی سکه MMP"></div><i class="quantum-node node-one"></i><i class="quantum-node node-two"></i><i class="quantum-node node-three"></i><div class="quantum-art-caption">QUANTUM COMMAND<small>MMP MARKET INTELLIGENCE</small></div></div>
- <details class="quantum-engine-board" aria-label="مرکز دسترسی به ۱۲ قابلیت یکپارچه">
-  <summary class="quantum-engine-board-head"><div><b>یک موتور مرکزی · ۱۲ قابلیت تخصصی</b><small>برای مشاهده ابزارهای داخلی، این مرکز فرماندهی را باز کن؛ وضعیت هر قابلیت فقط با داده معتبر اعلام می‌شود</small></div><span>نمایش ۱۲ قابلیت <b class="engine-toggle-chevron" aria-hidden="true">⌄</b></span></summary>
-  <div class="quantum-engine-matrix">
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-01" aria-label="ورود به موتور هوشمندی بازار"><i>01</i><b>هوشمندی بازار</b><small>رژیم بازار، جهت BTC و همبستگی</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-02" aria-label="ورود به موتور پیش‌بینی حرکت انفجاری بازار"><i>02</i><b>پیش‌بینی حرکت انفجاری بازار</b><small>برآورد احتمال جهش بر پایه فشردگی قیمت، حجم و شتاب اولیه</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-03" aria-label="ورود به موتور شکار فرصت زودهنگام"><i>03</i><b>شکار فرصت زودهنگام</b><small>کشف تغییرات اولیه بین نمادها</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-04" aria-label="ورود به موتور جریان پول هوشمند"><i>04</i><b>جریان پول هوشمند</b><small>جهت جریان Taker Buy و Sell</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-05" aria-label="ورود به موتور شکارچی نقدینگی"><i>05</i><b>شکارچی نقدینگی</b><small>دفتر سفارش، عدم تعادل و نقدینگی</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-06" aria-label="ورود به موتور هم‌جهتی چندتایم‌فریمی"><i>06</i><b>هم‌جهتی چندتایم‌فریمی</b><small>تطبیق روند ۵ دقیقه و یک‌ساعته</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-07" aria-label="ورود به موتور هوشمندی نوسان"><i>07</i><b>هوشمندی نوسان</b><small>ATR، دامنه حرکت و فشردگی نوسان</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-08" aria-label="ورود به موتور سنجش احساسات بازار"><i>08</i><b>سنجش احساسات بازار</b><small>رفتار قیمت و حجم به‌عنوان نشانه</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-09" aria-label="ورود به موتور شبیه‌ساز سناریو"><i>09</i><b>شبیه‌ساز سناریو</b><small>سناریوی صعودی/نزولی و نقطه ابطال</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-10" aria-label="ورود به موتور یادگیری تطبیقی"><i>10</i><b>یادگیری تطبیقی</b><small>ثبت و سنجش نتیجه پیش‌بینی‌ها</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-11" aria-label="ورود به موتور هوشمندی مدیریت ریسک"><i>11</i><b>هوشمندی مدیریت ریسک</b><small>حدضرر، ATR و نسبت ریسک به بازده</small></a>
-   <a class="quantum-engine-link" href="quantum-lab.html#engine-detail-12" aria-label="ورود به موتور موتور تصمیم کوانتومی"><i>12</i><b>موتور تصمیم کوانتومی</b><small>ترکیب شواهد، کیفیت داده و رتبه‌بندی</small></a>
-  </div>
-  <div class="quantum-engine-links"><span>رادار فرصت‌ها</span><b>←</b><span>شکارچی بازار</span><b>←</b><span>تحلیلگر هوشمند</span><b>←</b><span>جریان سفارش و سناریو</span></div>
- </details>
+ <section class="quantum-engine-single" id="quantum-engine-single" aria-label="هسته هوشمند واحد MMP">
+  <div class="quantum-engine-single-head"><span class="quantum-core-mark">M</span><div><small>MMP QUANTUM INTELLIGENCE · QIE-4</small><b>هسته هوشمند واحد MMP</b><p>یک هسته مرکزی؛ همه شواهد بازار در یک مسیر تصمیم‌گیری هماهنگ می‌شوند.</p></div></div>
+  <div class="quantum-core-flow"><span>داده زنده</span><i>←</i><span>تحلیل و پیش‌آگاهی</span><i>←</i><span>اعتبارسنجی</span><i>←</i><b>تصمیم نهایی</b></div>
+  <a class="quantum-engine-enter" href="/quantum-lab.html">ورود به مرکز فرماندهی کوانتومی <b>←</b></a>
+</section>
  <section class="mmp-command-progress" id="mmp-command-progress" aria-live="polite" aria-label="پیشرفت واقعی موتور مرکزی">
 <div class="mcp-head"><div><span class="mcp-kicker">QUANTUM CORE · LIVE CYCLE</span><b id="mcp-state">در انتظار دریافت وضعیت موتور مرکزی</b></div><strong id="mcp-percent">—</strong></div>
 <div class="mcp-track" role="progressbar" aria-label="پیشرفت اسکن موتور مرکزی" aria-valuemin="0" aria-valuemax="100"><i id="mcp-bar"></i></div>
@@ -2816,13 +2837,16 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   </article>
  </div>
 </section>
-<section class="intel-panel" id="server-performance">
-<div class="server-performance-panel" id="server-performance-panel">
-  <div class="server-performance-head"><div><b>سنجش اعتبار موتورهای تحلیل</b><small>کارنامه سروری · فقط نتایج بسته‌شده و قابل‌ردیابی</small></div><button class="intel-refresh" id="performance-refresh" type="button">↻ تازه‌سازی آمار</button></div>
-  <div class="performance-summary" id="performance-summary"><div><small>نمونه‌های ثبت‌شده</small><b>—</b></div><div><small>نتایج قطعی</small><b>—</b></div><div><small>موفق</small><b>—</b></div><div><small>ناموفق</small><b>—</b></div><div><small>نرخ موفقیت</small><b>—</b></div><div><small>میانگین R</small><b>—</b></div></div>
-  <div class="performance-engine-list" id="performance-engine-list"><div class="heatmap-empty">در انتظار دریافت کارنامه سرور…</div></div>
-  <div class="performance-status" id="performance-status">نتایج مبهم، منقضی و بدون معامله از نرخ موفقیت حذف می‌شوند. تا تشکیل نمونه کافی، نرخ موفقیت نمایش داده نخواهد شد.</div>
- </div>
+<section class="server-performance-drawer" id="server-performance">
+ <details class="server-performance-details" id="server-performance-details">
+  <summary><span><b>سنجش اعتبار موتورهای تحلیل</b><small>کارنامه سروری · فقط نتایج بسته‌شده و قابل‌ردیابی</small></span><em>نمایش کارنامه <i>⌄</i></em></summary>
+  <div class="server-performance-panel" id="server-performance-panel">
+   <div class="server-performance-head"><div><b>گزارش عملکرد موتورهای تحلیل</b><small>فقط معاملات بسته‌شده و نتایج قابل‌ردیابی</small></div><button class="intel-refresh" id="performance-refresh" type="button">↻ تازه‌سازی آمار</button></div>
+   <div class="performance-summary" id="performance-summary"><div><small>نمونه‌های ثبت‌شده</small><b>—</b></div><div><small>نتایج قطعی</small><b>—</b></div><div><small>موفق</small><b>—</b></div><div><small>ناموفق</small><b>—</b></div><div><small>نرخ موفقیت</small><b>—</b></div><div><small>میانگین R</small><b>—</b></div></div>
+   <div class="performance-engine-list" id="performance-engine-list"><div class="heatmap-empty">در انتظار دریافت کارنامه سرور…</div></div>
+   <div class="performance-status" id="performance-status">نتایج مبهم، منقضی و بدون معامله از نرخ موفقیت حذف می‌شوند. تا تشکیل نمونه کافی، نرخ موفقیت نمایش داده نخواهد شد.</div>
+  </div>
+ </details>
 </section>
 
 
@@ -2830,15 +2854,16 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 
 <section class="collapsible-coins-container mmp-market-catalog" id="coins-section" data-quantum-module="assets">
  <div class="section-head">
-  <div class="mmp-section-heading-content"><img class="mmp-module-logo" src="assets/logos/mmp-assets.svg" alt="نشان بازار دارایی‌های MMP"><div class="section-kicker">QUANTUM ASSET UNIVERSE</div><h2>بازار رمزارزها</h2><p class="sub">فهرست مرکزی بازارهای معتبر صرافی‌های داخلی و خارجی؛ بدون سقف تعداد</p></div>
+  <div class="mmp-section-heading-content"><img class="mmp-module-logo" src="assets/logos/mmp-assets.svg" alt="نشان بازار دارایی‌های MMP"><div class="section-kicker">QUANTUM ASSET UNIVERSE</div><h2>بازار رمزارزها</h2><p class="sub">نمای اولیه فقط ۴ ارز شاخص را نشان می‌دهد؛ سایر دارایی‌ها در فهرست بازشونده و قابل جستجو هستند.</p></div>
   <div class="mmp-market-total"><strong id="market-catalog-count">—</strong><small>دارایی معتبر شناسایی‌شده</small></div>
  </div>
  <div class="mmp-market-tools">
   <label class="mmp-market-search"><span>⌕</span><input id="market-catalog-search" type="search" placeholder="نام یا نماد ارز را جستجو کن؛ مثل Bitcoin یا BTC" autocomplete="off" aria-label="جستجوی ارز در فهرست بازار"></label>
   <span id="market-catalog-result-count" class="mmp-market-result-count">در حال دریافت فهرست…</span>
  </div>
- <div class="mmp-market-drawer-head"><div><b>دارایی‌های منتخب بازار</b><small>۶ دارایی برتر بر اساس رتبه بازار؛ جستجو همچنان کل فهرست را بررسی می‌کند</small></div><span id="market-catalog-visible-count" class="mmp-market-visible-count"></span></div>
+ <div class="mmp-market-drawer-head"><div><b>دارایی‌های منتخب بازار</b><small>۴ دارایی شاخص؛ برای دیدن بقیه، فهرست را باز کنید</small></div><span id="market-catalog-visible-count" class="mmp-market-visible-count"></span></div>
  <div id="market-catalog-grid" class="mmp-market-grid"><div class="ai-empty">در حال دریافت فهرست کامل دارایی‌ها…</div></div>
+ <p class="mmp-market-hint">برای مشاهده مشخصات کامل هر ارز، روی کارت همان ارز بزنید.</p>
  <button id="market-catalog-toggle" class="mmp-market-drawer-toggle" type="button" aria-expanded="false" aria-controls="market-catalog-grid"><span>نمایش همه دارایی‌های بازار</span><b aria-hidden="true">⌄</b></button>
  <div class="mmp-market-foot" id="market-catalog-foot">جستجو در کل کاتالوگ انجام می‌شود؛ ارزهای تازه‌کشف‌شده شکارچی نیز جداگانه رصد می‌شوند.</div>
  <div class="mmp-market-legacy" aria-hidden="true">
@@ -2906,6 +2931,14 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 
 <script>
 const $=id=>document.getElementById(id);
+// Progressive startup: defer non-critical engines until their section approaches the viewport.
+window.mmpWhenVisible=window.mmpWhenVisible||function(selector,callback,options){
+ const target=typeof selector==="string"?document.querySelector(selector):selector;let done=false;
+ if(!target||typeof callback!=="function")return;
+ const run=()=>{if(done)return;done=true;const task=()=>{try{callback()}catch(error){console.error("MMP progressive module failed:",selector,error)}};if(window.requestIdleCallback)window.requestIdleCallback(task,{timeout:1600});else setTimeout(task,180);};
+ if(!("IntersectionObserver" in window)){setTimeout(run,350);return;}
+ const observer=new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting)){observer.disconnect();run()}},{rootMargin:(options&&options.rootMargin)||"520px 0px"});observer.observe(target);
+};
 let lastMarket={};
 let currentTetherPrice = 0;
 let currentCurrency = 'IRT';
@@ -2952,7 +2985,7 @@ async function refreshSiteData(){
  $("updated").textContent="در حال بروزرسانی داده‌های اپلیکیشن…";
  try{
   const marketPromise=typeof refreshAll==="function"?refreshAll():Promise.resolve(false);
-  const connectionPromise=typeof checkConnections==="function"?checkConnections():Promise.resolve([]);
+  const connectionPromise=typeof checkConnections==="function"?checkConnections(true):Promise.resolve([]);
   const [marketResult,connectionResult]=await Promise.allSettled([marketPromise,connectionPromise]);
   const marketOk=marketResult.status==="fulfilled"&&marketResult.value===true;
   const connectionOk=connectionResult.status==="fulfilled"&&Array.isArray(connectionResult.value)&&connectionResult.value.some(item=>item&&item.status!=="down");
@@ -3007,7 +3040,7 @@ function formatVal(usdPrice) {
   }
 }
 
-let mmpChartState={chart:null,candles:null,volume:null,emaFast:null,emaSlow:null,rsiChart:null,rsiSeries:null,abort:null,seq:0,interval:"1h",market:"spot",showEMA:true,showVolume:true,cache:new Map(),resizeObserver:null,refreshTimer:null,viewKey:null,stream:null,streamKey:"",streamRetry:null,liveRows:[],streamProvider:"",streamHasData:false,streamCandidates:[],streamCandidateIndex:0,streamHeartbeat:null,streamWatchdog:null,streamRequestedProvider:"",streamLastTick:0};
+let mmpChartState={chart:null,candles:null,volume:null,emaFast:null,emaSlow:null,rsiChart:null,rsiSeries:null,abort:null,seq:0,interval:"1h",market:"spot",showEMA:true,showVolume:true,cache:new Map(),resizeObserver:null,refreshTimer:null,viewKey:null};
 function mmpChartSymbol(){const raw=String(document.getElementById("tv-symbol")?.value||"BINANCE:BTCUSDT").split(":").pop().toUpperCase();return raw.endsWith("USDT")?raw:raw+"USDT";}
 function mmpChartStatus(message,kind=""){const el=document.getElementById("mmp-chart-status");if(el){el.textContent=message;el.className="mmp-chart-status"+(kind?" "+kind:"");}}
 function mmpChartRsi(rows,period=14){const out=[];let gain=0,loss=0;for(let i=1;i<rows.length;i++){const d=rows[i].close-rows[i-1].close;if(i<=period){gain+=Math.max(0,d);loss+=Math.max(0,-d);if(i===period)out.push({time:rows[i].time,value:loss===0?100:100-100/(1+gain/loss)});}else{gain=(gain*(period-1)+Math.max(0,d))/period;loss=(loss*(period-1)+Math.max(0,-d))/period;out.push({time:rows[i].time,value:loss===0?100:100-100/(1+gain/loss)});}}return out;}
@@ -3036,7 +3069,7 @@ async function mmpLoadChart(force=false){
  const symbol=mmpChartSymbol(),interval=mmpChartState.interval,market=mmpChartState.market,key=[symbol,interval,market].join(":");
  const cached=mmpChartState.cache.get(key),now=Date.now();if(!force&&cached&&now-cached.at<20000){mmpRenderChart(cached.payload);return;}
  if(mmpChartState.abort)mmpChartState.abort.abort();
- const controller=new AbortController(),seq=++mmpChartState.seq;mmpChartState.abort=controller;
+ const controller=new AbortController(),seq=++mmpChartState.seq,timer=setTimeout(()=>controller.abort(),18000);mmpChartState.abort=controller;
  mmpChartStatus("در حال دریافت کندل‌های "+symbol+" · "+interval+" …","loading");
  const url="https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/market-candles?symbol="+encodeURIComponent(symbol)+"&interval="+encodeURIComponent(interval)+"&market="+market;
  try{
@@ -3047,10 +3080,10 @@ async function mmpLoadChart(force=false){
   const unique=rows.filter((c,i)=>i===0||c.time>rows[i-1].time);if(unique.length<20)throw new Error("تعداد کندل معتبر کافی نیست ("+unique.length+")");
   const clean={...payload,candles:unique};mmpChartState.cache.set(key,{at:now,payload:clean});mmpRenderChart(clean);
  }catch(error){if(controller.signal.aborted||seq!==mmpChartState.seq)return;const old=mmpChartState.cache.get(key);if(old){mmpRenderChart({...old.payload,data_stale:true});mmpChartStatus("دریافت تازه ناموفق؛ آخرین داده ذخیره‌شده نمایش داده می‌شود · "+String(error.message||error),"warning");}else mmpChartStatus("داده نمودار دریافت نشد: "+String(error.message||error)+" · تازه‌سازی را دوباره بزن.","error");}
+ finally{clearTimeout(timer);}
 }
 function mmpRenderChart(payload){
  const rows=payload.candles||[],st=mmpChartState;if(!st.chart||!rows.length)return;
- st.liveRows=rows.map(c=>({...c}));
  const viewKey=[payload.symbol,payload.interval,payload.market].join(":"),newView=viewKey!==st.viewKey,range=st.chart.timeScale().getVisibleLogicalRange();
  st.candles.setData(rows.map(c=>({time:c.time,open:c.open,high:c.high,low:c.low,close:c.close})));
  st.volume.setData(rows.map(c=>({time:c.time,value:c.volume,color:c.close>=c.open?"rgba(32,201,151,.48)":"rgba(240,92,112,.48)"})));
@@ -3058,99 +3091,14 @@ function mmpRenderChart(payload){
  if(newView||!range){st.chart.timeScale().fitContent();st.rsiChart.timeScale().fitContent();}else{try{st.chart.timeScale().setVisibleLogicalRange(range);}catch(e){}}
  st.viewKey=viewKey;
  const last=rows[rows.length-1],date=new Date(last.time*1000).toLocaleString("fa-IR"),stale=payload.data_stale?" · داده کش‌شده/قدیمی":" · داده تازه";
- mmpChartStatus("منبع: "+(payload.provider||"Worker")+" · "+rows.length+" کندل معتبر · آخرین کندل: "+date+stale+(st.stream&&st.stream.readyState===WebSocket.OPEN?" · جریان زنده فعال":" · اتصال جریان زنده در حال برقراری"),payload.data_stale?"warning":"ok");
- mmpConnectChartStream(payload.symbol||mmpChartSymbol(),payload.interval||st.interval,payload.market||st.market,payload.provider||"");
+ mmpChartStatus("منبع: "+(payload.provider||"Worker")+" · "+rows.length+" کندل معتبر · آخرین کندل: "+date+stale,payload.data_stale?"warning":"ok");
  const link=document.getElementById("chart-replay-link");if(link){const p=String(payload.provider||"").toLowerCase(),ex=p.includes("bitget")?"BITGET":p.includes("bybit")?"BYBIT":p.includes("okx")?"OKX":p.includes("mexc")?"MEXC":"BINANCE";link.href="https://www.tradingview.com/chart/?symbol="+encodeURIComponent(ex+":"+payload.symbol);}
  document.querySelectorAll("[data-chart-tf]").forEach(b=>b.classList.toggle("active",b.dataset.chartTf===st.interval));
 }
-function mmpDisconnectChartStream(){
- const st=mmpChartState;
- if(st.stream){try{st.stream.onclose=null;st.stream.onerror=null;st.stream.close();}catch(e){}st.stream=null;}
- if(st.streamRetry){clearTimeout(st.streamRetry);st.streamRetry=null;}
- if(st.streamHeartbeat){clearInterval(st.streamHeartbeat);st.streamHeartbeat=null;}
- if(st.streamWatchdog){clearTimeout(st.streamWatchdog);st.streamWatchdog=null;}
- st.streamKey="";st.streamProvider="";st.streamHasData=false;st.streamCandidates=[];st.streamCandidateIndex=0;
-}
-function mmpChartStreamInterval(interval,provider){
- const maps={
-  binance:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1h","4h":"4h","1d":"1d"},
-  bybit:{"1m":"1","3m":"3","5m":"5","15m":"15","1h":"60","4h":"240","1d":"D"},
-  okx:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1H","4h":"4H","1d":"1Dutc"},
-  bitget:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1H","4h":"4H","1d":"1D"},
-  gate:{"1m":"1m","3m":"3m","5m":"5m","15m":"15m","1h":"1h","4h":"4h","1d":"1d"},
-  mexc:{"1m":"Min1","3m":"Min3","5m":"Min5","15m":"Min15","1h":"Min60","4h":"Hour4","1d":"Day1"}
- };
- return maps[provider]?.[interval]||null;
-}
-function mmpChartStreamConfig(provider,symbol,interval,market){
- const tf=mmpChartStreamInterval(interval,provider);if(!tf)return null;
- const pair=String(symbol).toUpperCase().match(/^([A-Z0-9]+)(USDT|USDC|BTC|ETH|IRT)$/);
- const base=pair?pair[1]:String(symbol).replace(/(USDT|USDC|BTC|ETH|IRT)$/,"");
- const quote=pair?pair[2]:"USDT";
- if(provider==="binance")return {url:market==="futures"?"wss://fstream.binance.com/ws/"+symbol.toLowerCase()+"@kline_"+tf:"wss://stream.binance.com:443/ws/"+symbol.toLowerCase()+"@kline_"+tf,onopen:null,parse:m=>{const k=m?.k;return k?{time:k.t,open:k.o,high:k.h,low:k.l,close:k.c,volume:k.v}:null;}};
- if(provider==="bybit")return {url:"wss://stream.bybit.com/v5/public/"+(market==="futures"?"linear":"spot"),onopen:ws=>ws.send(JSON.stringify({op:"subscribe",args:["kline."+tf+"."+symbol]})),parse:m=>{const x=Array.isArray(m?.data)?m.data[0]:m?.data;if(!x)return null;return {time:x.start??x.startTime,open:x.open,high:x.high,low:x.low,close:x.close,volume:x.volume};}};
- if(provider==="okx")return {url:"wss://ws.okx.com:8443/ws/v5/business",onopen:ws=>ws.send(JSON.stringify({op:"subscribe",args:[{channel:"candle"+tf,instId:base+"-"+quote+(market==="futures"?"-SWAP":"") }]})),parse:m=>{const x=m?.data?.[0];return Array.isArray(x)?{time:x[0],open:x[1],high:x[2],low:x[3],close:x[4],volume:x[5]}:null;}};
- if(provider==="bitget")return {url:"wss://ws.bitget.com/v2/ws/public",onopen:ws=>ws.send(JSON.stringify({op:"subscribe",args:[{instType:market==="futures"?"USDT-FUTURES":"SPOT",channel:"candle"+tf,instId:symbol}]})),parse:m=>{const x=m?.data?.[0];return Array.isArray(x)?{time:x[0],open:x[1],high:x[2],low:x[3],close:x[4],volume:x[5]}:null;}};
- if(provider==="gate"){const contract=base+"_USDT";return {url:market==="futures"?"wss://fx-ws.gateio.ws/v4/ws/usdt":"wss://api.gateio.ws/ws/v4/",onopen:ws=>ws.send(JSON.stringify({time:Math.floor(Date.now()/1000),channel:market==="futures"?"futures.candlesticks":"spot.candlesticks",event:"subscribe",payload:[tf,contract]})),parse:m=>{const x=m?.result?.[0]||m?.result;if(!x)return null;return {time:x.t??x.time,open:x.o,high:x.h,low:x.l,close:x.c,volume:x.v??x.a};}};}
- if(provider==="mexc"){if(market==="futures")return {url:"wss://contract.mexc.com/edge",onopen:ws=>ws.send(JSON.stringify({method:"sub.kline",param:{symbol:base+"_USDT",interval:tf}})),parse:m=>{const x=m?.data;if(!x)return null;return {time:x.t??x.time,open:x.o??x.open,high:x.h??x.high,low:x.l??x.low,close:x.c??x.close,volume:x.q??x.volume??x.a};}};return {url:"wss://wbs-api.mexc.com/ws",onopen:ws=>ws.send(JSON.stringify({method:"SUBSCRIPTION",params:["spot@public.kline.v3.api@"+symbol+"@"+tf]})),parse:m=>{const x=m?.d?.k||m?.data?.k||m?.d;if(!x)return null;return {time:x.t??x.a,open:x.o,high:x.h,low:x.l,close:x.c,volume:x.v};}};}
- return null;
-}
-function mmpConnectChartStream(symbol,interval,market,provider){
- const st=mmpChartState,view=[symbol,interval,market].join(":");
- const source=String(provider||"").toLowerCase();
- const preferred=source.includes("bybit")?"bybit":source.includes("okx")?"okx":source.includes("bitget")?"bitget":source.includes("gate")?"gate":source.includes("mexc")?"mexc":source.includes("binance")?"binance":"";
- const candidates=[preferred,"binance","bybit","okx","bitget","gate","mexc"].filter((x,i,a)=>x&&a.indexOf(x)===i&&mmpChartStreamConfig(x,symbol,interval,market));
- const key=view+"|"+(preferred||"auto");st.streamRequestedProvider=provider||st.streamRequestedProvider||"";
- if(st.streamKey===key&&((st.stream&&(st.stream.readyState===WebSocket.OPEN||st.stream.readyState===WebSocket.CONNECTING))||st.streamRetry))return;
- mmpDisconnectChartStream();st.streamKey=key;st.streamCandidates=candidates;st.streamCandidateIndex=0;st.streamHasData=false;
- const connect=index=>{
-  if(st.streamKey!==key||document.hidden)return;
-  if(index>=candidates.length){st.streamRetry=setTimeout(()=>{if(st.streamKey===key){st.streamCandidateIndex=0;connect(0);}},7000);mmpChartStatus("جریان زنده قطع است؛ تلاش مجدد برای اتصال…","warning");return;}
-  const exchange=candidates[index],config=mmpChartStreamConfig(exchange,symbol,interval,market);if(!config){connect(index+1);return;}
-  let ws;try{ws=new WebSocket(config.url);}catch(e){connect(index+1);return;}
-  st.stream=ws;st.streamProvider=exchange;st.streamCandidateIndex=index;
-  ws.onopen=()=>{if(st.stream!==ws)return;try{if(config.onopen)config.onopen(ws);}catch(e){try{ws.close();}catch(x){}}mmpChartStatus("اتصال زنده "+exchange.toUpperCase()+" برقرار شد؛ منتظر داده بازار…","ok");if(st.streamWatchdog)clearTimeout(st.streamWatchdog);st.streamWatchdog=setTimeout(()=>{if(st.stream===ws&&!st.streamHasData)try{ws.close();}catch(e){}},12000);if(st.streamHeartbeat)clearInterval(st.streamHeartbeat);st.streamHeartbeat=setInterval(()=>{if(st.stream!==ws||ws.readyState!==WebSocket.OPEN)return;try{if(exchange==="bybit")ws.send(JSON.stringify({op:"ping"}));else if(exchange==="okx"||exchange==="bitget")ws.send("ping");else if(exchange==="gate")ws.send(JSON.stringify({time:Math.floor(Date.now()/1000),channel:market==="futures"?"futures.ping":"spot.ping",event:"ping"}));else if(exchange==="mexc")ws.send(JSON.stringify({method:"PING"}));}catch(e){}},20000);};
-  ws.onmessage=event=>{
-   if(st.stream!==ws||st.streamKey!==key)return;
-   try{
-    const msg=JSON.parse(event.data);if(msg?.event||msg?.op==="pong"||msg?.success===true)return;
-    const raw=config.parse(msg);if(!raw)return;
-    const n=Number(raw.time),time=Math.floor(n>1e12?n/1000:n),candle={time,open:Number(raw.open),high:Number(raw.high),low:Number(raw.low),close:Number(raw.close),volume:Number(raw.volume)||0};
-    if(!Number.isFinite(time)||time<=0||![candle.open,candle.high,candle.low,candle.close].every(v=>Number.isFinite(v)&&v>0))return;
-    const rows=st.liveRows,previous=rows[rows.length-1];
-    if(previous&&previous.time===candle.time)rows[rows.length-1]=candle;
-    else if(!previous||candle.time>previous.time)rows.push(candle);else return;
-    while(rows.length>600)rows.shift();
-    st.candles.update({time:candle.time,open:candle.open,high:candle.high,low:candle.low,close:candle.close});
-    st.volume.update({time:candle.time,value:candle.volume,color:candle.close>=candle.open?"rgba(32,201,151,.48)":"rgba(240,92,112,.48)"});
-    if(st.showEMA){st.emaFast.setData(mmpChartEma(rows,20));st.emaSlow.setData(mmpChartEma(rows,50));}
-    st.rsiSeries.setData(mmpChartRsi(rows));
-    try{if(Math.abs(st.chart.timeScale().scrollPosition())<2)st.chart.timeScale().scrollToRealTime();}catch(e){}
-    st.streamHasData=true;st.streamLastTick=Date.now();if(st.streamWatchdog){clearTimeout(st.streamWatchdog);st.streamWatchdog=null;}
-    const status=document.getElementById("mmp-chart-status");
-    if(status&&!status.classList.contains("warning"))mmpChartStatus("کندل و حجم زنده · "+exchange.toUpperCase()+" · "+symbol+" · "+interval+" · قیمت: "+candle.close,"ok");
-   }catch(e){}
-  };
-  ws.onerror=()=>{try{ws.close();}catch(e){}};
-  ws.onclose=()=>{
-   if(st.stream===ws)st.stream=null;
-   if(st.streamHeartbeat){clearInterval(st.streamHeartbeat);st.streamHeartbeat=null;}if(st.streamWatchdog){clearTimeout(st.streamWatchdog);st.streamWatchdog=null;}
-   if(st.streamKey!==key||document.hidden)return;
-   const next=st.streamHasData?index:index+1;
-   st.streamRetry=setTimeout(()=>{if(st.streamKey===key)connect(next);},st.streamHasData?5000:1200);
-  };
- };
- if(!candidates.length){mmpChartStatus("برای این نماد/بازه جریان زنده صرافی در دسترس نیست.","warning");return;}
- connect(0);
-}
-document.addEventListener("visibilitychange",()=>{
- if(document.hidden){mmpDisconnectChartStream();return;}
- if(mmpChartState.viewKey){const [symbol,interval,market]=mmpChartState.viewKey.split(":");mmpConnectChartStream(symbol,interval,market,mmpChartState.streamRequestedProvider||"");}
-});
-function initTradingView(){mmpLoadChart(true);if(mmpChartState.refreshTimer)clearInterval(mmpChartState.refreshTimer);mmpChartState.refreshTimer=setInterval(()=>{const st=mmpChartState,visible=document.getElementById("chart-section")?.getBoundingClientRect().top<window.innerHeight+600;if(!document.hidden&&visible&&(!st.stream||st.stream.readyState!==WebSocket.OPEN||Date.now()-Number(st.streamLastTick||0)>90000))mmpLoadChart(false);},15000);}
-function changeTradingViewSymbol(){mmpDisconnectChartStream();mmpLoadChart(true);}
-function mmpSetChartInterval(value){if(!["1m","5m","15m","1h","4h","1d"].includes(value))return;mmpChartState.interval=value;mmpDisconnectChartStream();mmpLoadChart(true);}
-function mmpSetChartMarket(value){mmpChartState.market=value==="futures"?"futures":"spot";mmpDisconnectChartStream();mmpLoadChart(true);}
+function initTradingView(){mmpLoadChart(true);if(mmpChartState.refreshTimer)clearInterval(mmpChartState.refreshTimer);mmpChartState.refreshTimer=setInterval(()=>{if(!document.hidden&&document.getElementById("chart-section")?.getBoundingClientRect().top<window.innerHeight+600)mmpLoadChart(false);},300000);}
+function changeTradingViewSymbol(){mmpLoadChart(true);}
+function mmpSetChartInterval(value){if(!["1m","5m","15m","1h","4h","1d"].includes(value))return;mmpChartState.interval=value;mmpLoadChart(true);}
+function mmpSetChartMarket(value){mmpChartState.market=value==="futures"?"futures":"spot";mmpLoadChart(true);}
 function mmpToggleChartEMA(){mmpChartState.showEMA=!mmpChartState.showEMA;document.getElementById("mmp-chart-ema-toggle")?.classList.toggle("active",mmpChartState.showEMA);const c=mmpChartState.cache.get([mmpChartSymbol(),mmpChartState.interval,mmpChartState.market].join(":"));if(c)mmpRenderChart(c.payload);}
 function mmpToggleChartVolume(){mmpChartState.showVolume=!mmpChartState.showVolume;document.getElementById("mmp-chart-volume-toggle")?.classList.toggle("active",mmpChartState.showVolume);const c=mmpChartState.cache.get([mmpChartSymbol(),mmpChartState.interval,mmpChartState.market].join(":"));if(c)mmpRenderChart(c.payload);}
 async function toggleChartFullscreen() {
@@ -3403,6 +3351,11 @@ async function refreshGoldQuote(){
 async function refreshAll(){
  if(refreshInFlight)return false;
  refreshInFlight=true;
+ const fetchMarketBounded=async(url,options={},timeoutMs=10000)=>{
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
+  try{return await fetch(url,{...options,signal:controller.signal});}
+  finally{clearTimeout(timer);}
+ };
  // قیمت دارایی‌های شاخص مستقل از بارگیری کاتالوگ کامل و نرخ تتر دریافت می‌شوند.
  void refreshBenchmarkQuotes();
  void refreshGoldQuote();
@@ -3436,7 +3389,7 @@ async function refreshAll(){
   // Public direct fallback keeps prices available if the Cloudflare Worker/proxy is unavailable.
   if(!Array.isArray(topData)){
    try{
-    const directTop=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d',{cache:'no-store'});
+    const directTop=await fetchMarketBounded('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false&price_change_percentage=1h%2C24h%2C7d',{cache:'no-store'},9000);
     if(directTop.ok){const payload=await directTop.json();if(Array.isArray(payload)&&payload.length){topData=payload;marketMetadataSource="CoinGecko Direct";}}
    }catch(error){console.warn('Direct CoinGecko market fallback unavailable:',error);}
   }
@@ -3446,7 +3399,31 @@ async function refreshAll(){
   if(!Array.isArray(topData)||!topData.length)throw new Error("داده قیمت از منابع مستقل دریافت نشد");
   if(extraRes?.ok){try{const payload=await extraRes.json();if(Array.isArray(payload))extraData=payload;}catch(error){console.warn('Extra market payload invalid:',error);}}
   if(!extraData.length){
-   try{const directExtra=await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids='+encodeURIComponent(EXTRA_COIN_IDS.join(','))+'&order=market_cap_desc&sparkline=false&price_change_percentage=1h%2C24h%2C7d',{cache:'no-store'});if(directExtra.ok){const payload=await directExtra.json();if(Array.isArray(payload))extraData=payload;}}catch(error){console.warn('CoinGecko extra direct fallback unavailable:',error);}
+   try{const directExtra=await fetchMarketBounded('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids='+encodeURIComponent(EXTRA_COIN_IDS.join(','))+'&order=market_cap_desc&sparkline=false&price_change_percentage=1h%2C24h%2C7d',{cache:'no-store'},9000);if(directExtra.ok){const payload=await directExtra.json();if(Array.isArray(payload))extraData=payload;}}catch(error){console.warn('CoinGecko extra direct fallback unavailable:',error);}
+  }
+
+  // نمایش سریع داده اولیه؛ تأیید صرافی‌ها و صفحه‌بندی کامل در ادامه انجام می‌شود.
+  // این مرحله رابط را از انتظار برای پایان کاتالوگ کامل مستقل می‌کند.
+  const earlyById=new Map(),earlySymbols=new Set();
+  [...topData,...extraData].forEach(coin=>{
+   if(!coin||!coin.id||!coin.symbol||NON_TRADABLE_COIN_IDS.has(coin.id))return;
+   const symbol=String(coin.symbol).toUpperCase();
+   if(NON_TRADABLE_SYMBOLS.has(symbol)||earlyById.has(coin.id)||earlySymbols.has(symbol))return;
+   earlyById.set(coin.id,coin);earlySymbols.add(symbol);
+  });
+  const earlyCoins=orderPrimaryCoins([...earlyById.values()]);
+  if(earlyCoins.length){
+   cachedCoinsData=earlyCoins;
+   lastMarket.crypto={};
+   earlyCoins.forEach(coin=>{
+    const symbol=String(coin.symbol||"").toUpperCase();
+    if(symbol==="BTC")lastMarket.crypto.BTC={usd:Number(coin.current_price),change24h:coin.price_change_percentage_24h};
+    if(symbol==="ETH")lastMarket.crypto.ETH={usd:Number(coin.current_price),change24h:coin.price_change_percentage_24h};
+   });
+   renderHeroCards();
+   renderCoinsTables(earlyCoins);
+   updateDropdowns(earlyCoins);
+   $("updated").textContent="داده اولیه دریافت شد؛ تکمیل بررسی بازار در پس‌زمینه ادامه دارد.";
   }
 
   // نگه‌داشتن ۱۰۰ دارایی قابل معامله با نمادهای یکتا؛ ارزهای تکراری حذف می‌شوند؛ استیبل‌کوین‌ها و توکن‌های رَپ‌شده از منوی کندل/تحلیل کنار گذاشته می‌شوند.
@@ -3469,7 +3446,7 @@ async function refreshAll(){
     const batch=validItems.slice(i,i+120);
     const symbols=[...new Set(batch.map(c=>String(c.symbol).toUpperCase()))];
     try{
-     const response=await fetch(AI_ANALYSIS_ENDPOINT+"/support-check?symbols="+encodeURIComponent(symbols.join(",")),{cache:"no-store"});
+     const response=await fetchMarketBounded(AI_ANALYSIS_ENDPOINT+"/support-check?symbols="+encodeURIComponent(symbols.join(",")),{cache:"no-store"},9000);
      if(!response.ok)throw new Error("HTTP "+response.status);
      const payload=await response.json();
      if(!Array.isArray(payload.assets))throw new Error("Invalid support-check payload");
@@ -3507,7 +3484,7 @@ async function refreshAll(){
         :marketMetadataSource==="CoinGecko Direct"
          ?"https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page="+pageNumber+"&sparkline=false&price_change_percentage=1h%2C24h%2C7d"
          :AI_ANALYSIS_ENDPOINT+"/market-proxy?source=coingecko-top&page="+pageNumber;
-       const response=await fetch(url,{cache:"no-store"});
+       const response=await fetchMarketBounded(url,{cache:"no-store"},10000);
        if(!response.ok)throw new Error("HTTP "+response.status);
        const payload=await response.json();
        return marketMetadataSource==="CoinLore"?normalizeCoinLoreAssets(payload):payload;
@@ -3573,6 +3550,7 @@ async function refreshAll(){
    coinGeckoConnectionStatus=marketMetadataSource==="CoinGecko"?"ok":"down";renderCoinGeckoConnection();
   data = await enrichWithBinance(data);
   cachedCoinsData = data;
+  mergeLiveSignalsIntoMainAssetCatalog();
   
   lastMarket.crypto = {};
   // CoinLore may use numeric IDs; identify the two benchmark assets by symbol as well.
@@ -3585,9 +3563,7 @@ async function refreshAll(){
   renderHeroCards();
   renderCoinsTables(data);
   updateDropdowns(data);  renderOpportunities();
-  // رادار فقط snapshot موتور هوشمند مرکزی را می‌خواند؛ اسکن محلی مستقل برای شکارچی حفظ شده است.
-  setTimeout(()=>loadUnifiedRadarSnapshot(),0);
-  setTimeout(()=>runFastRadarScan(),0);
+  // Snapshot رادار فقط با زمان‌بندی مستقل دریافت می‌شود تا درخواست تکراری ایجاد نشود.
 
   // قیمت XAU از ابتدای چرخه و مستقل از کاتالوگ بازار دریافت شده است.
 
@@ -3629,21 +3605,43 @@ function renderHeroCards() {
 }
 
 
+function mergeLiveSignalsIntoMainAssetCatalog(){
+ if(!Array.isArray(cachedCoinsData))return;
+ const incoming=[];
+ try{if(typeof unifiedRadarSignals!=="undefined")for(const signal of unifiedRadarSignals.values())incoming.push(signal);}catch(e){}
+ for(const snapshot of [window.__mmpDigitalHunterSnapshot,window.__mmpDigitalHunterFuturesSnapshot]){
+  for(const signal of Array.isArray(snapshot?.signals)?snapshot.signals:[])incoming.push(signal);
+ }
+ const bySymbol=new Map(cachedCoinsData.map(coin=>[String(coin?.symbol||"").toUpperCase(),coin]));
+ for(const signal of incoming){
+  const symbol=String(signal?.symbol||signal?.coin?.symbol||"").toUpperCase();
+  if(!/^[A-Z0-9]{2,24}$/.test(symbol))continue;
+  const existing=bySymbol.get(symbol)||{},coin=signal.coin||{},price=Number(signal.price??coin.current_price??existing.current_price);
+  if(!(price>0))continue;
+  bySymbol.set(symbol,{...existing,...coin,id:existing.id||coin.id||("mmp-signal:"+symbol),symbol,name:coin.name||existing.name||symbol,
+   current_price:price,total_volume:Number(coin.total_volume??existing.total_volume)||0,
+   price_change_percentage_24h:Number(signal.change24h??signal.change5m??existing.price_change_percentage_24h)||0,
+   isMmpSignal:true,mmpSignalScore:Number(signal.score)||0,mmpSignalDirection:signal.trend||"neutral",
+   hasUsdtMarket:true,marketPairs:Array.isArray(coin.marketPairs)?coin.marketPairs:(existing.marketPairs||[])});
+ }
+ cachedCoinsData=[...bySymbol.values()];
+}
 function renderCoinsTables(data) {
  const rows=Array.isArray(data)?data:[];
  const grid=$("market-catalog-grid"),count=$("market-catalog-count"),result=$("market-catalog-result-count"),toggle=$("market-catalog-toggle");
  const query=String($("market-catalog-search")?.value||"").trim().toLowerCase();
  const filtered=rows.filter(c=>!query||String(c.name||"").toLowerCase().includes(query)||String(c.symbol||"").toLowerCase().includes(query));
- const ranked=[...filtered].sort((a,b)=>{const ar=Number(a.market_cap_rank)||Infinity,br=Number(b.market_cap_rank)||Infinity;if(ar!==br)return ar-br;return (Number(b.market_cap)||0)-(Number(a.market_cap)||0);});
+ const ranked=[...filtered].sort((a,b)=>{if(!!a.isMmpSignal!==!!b.isMmpSignal)return a.isMmpSignal?-1:1;const ar=Number(a.market_cap_rank)||Infinity,br=Number(b.market_cap_rank)||Infinity;if(ar!==br)return ar-br;return (Number(b.market_cap)||0)-(Number(a.market_cap)||0);});
  const expanded=!!(toggle&&toggle.getAttribute("aria-expanded")==="true"),showAll=!!query||expanded;
  if(count)count.textContent=rows.length.toLocaleString("fa-IR");
  if(result)result.textContent=query?filtered.length.toLocaleString("fa-IR")+" نتیجه از "+rows.length.toLocaleString("fa-IR")+" دارایی معتبر":rows.length.toLocaleString("fa-IR")+" دارایی معتبر شناسایی‌شده";
- const visible=showAll?ranked:ranked.slice(0,6),hiddenCount=Math.max(0,ranked.length-6),visibleCount=$("market-catalog-visible-count");
- if(visibleCount)visibleCount.textContent=(showAll?ranked.length:Math.min(6,ranked.length)).toLocaleString("fa-IR")+" / "+ranked.length.toLocaleString("fa-IR");
- if(toggle){toggle.hidden=!!query||ranked.length<=6;toggle.setAttribute("aria-expanded",String(expanded));toggle.querySelector("span").textContent=expanded?"بستن فهرست کامل":"نمایش همه "+hiddenCount.toLocaleString("fa-IR")+" دارایی دیگر";toggle.querySelector("b").textContent=expanded?"⌃":"⌄";}
+ const featuredCount=4,visible=showAll?ranked:ranked.slice(0,featuredCount),hiddenCount=Math.max(0,ranked.length-featuredCount),visibleCount=$("market-catalog-visible-count");
+ if(visibleCount)visibleCount.textContent=(showAll?ranked.length:Math.min(featuredCount,ranked.length)).toLocaleString("fa-IR")+" / "+ranked.length.toLocaleString("fa-IR");
+ if(toggle){toggle.hidden=!!query||ranked.length<=4;toggle.setAttribute("aria-expanded",String(expanded));toggle.querySelector("span").textContent=expanded?"بستن فهرست کامل":"نمایش همه "+hiddenCount.toLocaleString("fa-IR")+" دارایی دیگر";toggle.querySelector("b").textContent=expanded?"⌃":"⌄";}
  if(grid){
+  grid.classList.toggle("is-expanded",expanded&&!query);grid.classList.toggle("is-searching",!!query);
   if(!ranked.length)grid.innerHTML='<div class="ai-empty">'+(rows.length?'ارزی با این نام یا نماد در فهرست پشتیبانی‌شده پیدا نشد.':'فهرست دارایی‌ها هنوز دریافت نشده است.')+'</div>';
-  else grid.innerHTML=visible.map(c=>{
+  else grid.innerHTML=(showAll?'<button type="button" class="mmp-market-drawer-close" id="market-catalog-close"><span>فهرست کامل دارایی‌ها · '+ranked.length.toLocaleString("fa-IR")+' مورد</span><b>بستن ×</b></button>':"")+visible.map(c=>{
    const id=aiEscape(String(c.id||"")),symbol=aiEscape(String(c.symbol||"").toUpperCase()),name=aiEscape(c.name||symbol),price=Number(c.current_price);
    const priceText=Number.isFinite(price)&&price>0?(price<1?money(price,8):money(price,2))+" USDT":"قیمت ناموجود",tomanText=currentTetherPrice>0&&price>0?toman(price*currentTetherPrice)+" تومان":"— تومان";
    const change=Number(c.price_change_percentage_24h),changeText=Number.isFinite(change)?(change>=0?"+":"")+change.toFixed(2)+"%":"—";
@@ -3665,6 +3663,7 @@ function renderCoinsTables(data) {
  const $=id=>document.getElementById(id);let selectedMarketCoin=null;
  const close=()=>{const modal=$("mmp-coin-detail");if(modal)modal.hidden=true;};
  document.addEventListener("click",event=>{
+  if(event.target.closest("#market-catalog-close")){const t=$("market-catalog-toggle");if(t)t.setAttribute("aria-expanded","false");renderCoinsTables(cachedCoinsData);return;}
   const toggle=event.target.closest("#market-catalog-toggle");
   if(toggle){toggle.setAttribute("aria-expanded",String(toggle.getAttribute("aria-expanded")!=="true"));renderCoinsTables(cachedCoinsData);return;}
   const card=event.target.closest("[data-market-coin-id]");
@@ -3673,7 +3672,10 @@ function renderCoinsTables(data) {
    selectedMarketCoin=(Array.isArray(cachedCoinsData)?cachedCoinsData:[]).find(c=>String(c.id)===id)||(typeof hunterCoinIndex!=="undefined"?hunterCoinIndex.get(id):null);
    if(!selectedMarketCoin)return;
    const c=selectedMarketCoin,symbol=aiEscape(String(c.symbol||"").toUpperCase()),name=aiEscape(c.name||symbol),price=Number(c.current_price),change=Number(c.price_change_percentage_24h),host=$("mmp-coin-detail-content");
-   host.innerHTML='<div class="mmp-coin-detail-identity"><img src="'+aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"))+'" alt="" onerror="handleAiCoinIconError(this)" data-symbol="'+symbol+'" data-fallback-step="0"><div><h3 id="mmp-coin-detail-title">'+name+'</h3><small>'+symbol+'</small></div></div><div class="mmp-coin-detail-metrics"><div><small>قیمت دلاری</small><b>'+(price>0?money(price,price<1?8:2)+" USDT":"ناموجود")+'</b></div><div><small>قیمت تومانی</small><b>'+(price>0&&currentTetherPrice>0?toman(price*currentTetherPrice)+" تومان":"ناموجود")+'</b></div><div><small>تغییر ۲۴ ساعته</small><b class="'+(change>=0?"positive":"negative")+'">'+(Number.isFinite(change)?(change>=0?"+":"")+change.toFixed(2)+"%":"—")+'</b></div><div><small>رتبه بازار</small><b>'+(Number(c.market_cap_rank)>0?"#"+Number(c.market_cap_rank):"نامشخص")+'</b></div></div><p class="mmp-coin-detail-note">برای بررسی عمیق‌تر، این دارایی را مستقیماً به تحلیلگر هوشمند منتقل کن. داده‌های ناموجود به‌صورت ساختگی نمایش داده نمی‌شوند.</p>';
+    const cap=Number(c.market_cap),volume=Number(c.total_volume),supply=Number(c.circulating_supply),pairList=Array.isArray(c.marketPairs)?[...new Set(c.marketPairs.map(x=>x.exchange).filter(Boolean))]:[];
+    const detailMetric=(label,value)=>'<div><small>'+label+'</small><b>'+value+'</b></div>';
+    const detailMoney=value=>Number.isFinite(value)&&value>0?money(value,0)+" USDT":"ناموجود";
+    host.innerHTML='<div class="mmp-coin-detail-identity"><img src="'+aiEscape(c.image||("https://assets.coincap.io/assets/icons/"+String(c.symbol||"").toLowerCase()+"@2x.png"))+'" alt="" onerror="handleAiCoinIconError(this)" data-symbol="'+symbol+'" data-fallback-step="0"><div><h3 id="mmp-coin-detail-title">'+name+'</h3><small>'+symbol+'</small></div></div><div class="mmp-coin-detail-metrics">'+detailMetric("قیمت دلاری",price>0?money(price,price<1?8:2)+" USDT":"ناموجود")+detailMetric("قیمت تومانی",price>0&&currentTetherPrice>0?toman(price*currentTetherPrice)+" تومان":"ناموجود")+detailMetric("تغییر ۲۴ ساعته",Number.isFinite(change)?(change>=0?"+":"")+change.toFixed(2)+"%":"ناموجود")+detailMetric("رتبه بازار",Number(c.market_cap_rank)>0?"#"+Number(c.market_cap_rank):"نامشخص")+detailMetric("ارزش بازار",detailMoney(cap))+detailMetric("حجم معاملات ۲۴ساعته",detailMoney(volume))+detailMetric("عرضه در گردش",supply>0?money(supply,0)+" "+symbol:"ناموجود")+detailMetric("بازارهای شناسایی‌شده",pairList.length?pairList.length.toLocaleString("fa-IR")+" بازار":"نامشخص")+'</div><div class="mmp-coin-detail-note"><b>بازارهای شناسایی‌شده:</b> '+(pairList.length?aiEscape(pairList.join(" · ")):"اطلاعات صرافی برای این دارایی موجود نیست")+'<br>برای دیدن اطلاعات کامل، روی هر ارز بزنید. داده‌های بدون منبع معتبر ساختگی نمایش داده نمی‌شوند.</div><div class="mmp-coin-detail-actions"><button type="button" class="btn primary" id="mmp-coin-analyze">تحلیل این ارز در موتور هوشمند</button></div>';
    $("mmp-coin-detail").hidden=false;return;
   }
   if(event.target.closest("#mmp-coin-detail-close")||event.target.id==="mmp-coin-detail"){close();return;}
@@ -3684,7 +3686,7 @@ function renderCoinsTables(data) {
   }
  });
  document.addEventListener("keydown",event=>{if(event.key==="Escape")close();});
- const search=$("market-catalog-search");if(search)search.addEventListener("input",()=>{const t=$("market-catalog-toggle");if(t)t.setAttribute("aria-expanded","false");});
+ const search=$("market-catalog-search");if(search)search.addEventListener("input",()=>{const t=$("market-catalog-toggle");if(t)t.setAttribute("aria-expanded","false");const grid=$("market-catalog-grid");if(grid){grid.classList.remove("is-expanded");grid.classList.add("is-searching");}});
 })();
 document.addEventListener("input",event=>{if(event.target?.id==="market-catalog-search")renderCoinsTables(cachedCoinsData);});
 function handleAiCoinIconError(img){
@@ -3814,8 +3816,13 @@ function setupConnectionsToggle(){
   button.innerHTML=(!expanded?"بستن منابع دیگر":"نمایش "+(button.dataset.extraCount||"4")+" منبع دیگر")+' <span class="chevron" aria-hidden="true">⌄</span>';
  });
 }
-setupConnectionsToggle();
-async function checkConnections(){
+let connectionCheckPromise=null,connectionCheckLastAt=0,connectionCheckCache=[];
+function checkConnections(force=false){
+ const now=Date.now();
+ if(connectionCheckPromise)return connectionCheckPromise;
+ if(!force&&now-connectionCheckLastAt<20*60*1000)return Promise.resolve(connectionCheckCache);
+ connectionCheckLastAt=now;
+ const task=(async()=>{
  const endpoint="https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/connections-health";
  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),30000);
  try{
@@ -3892,7 +3899,7 @@ async function checkConnections(){
    probeDirectFallback(checks.get("okx spot"),["https://us.okx.com/api/v5/market/ticker?instId=BTC-USDT","https://openapi.okx.com/api/v5/market/ticker?instId=BTC-USDT"],d=>d?.code==="0"&&Number(d?.data?.[0]?.last)>0,"قیمت لحظه‌ای Spot"),
    probeDirectFallback(checks.get("gate.io spot"),["https://api.gate.us/api/v4/spot/tickers?currency_pair=BTC_USDT"],d=>Array.isArray(d)&&Number(d?.[0]?.last)>0,"قیمت لحظه‌ای Spot"),
    probeDirectFallback(checks.get("kucoin spot"),["https://api.kucoin.tr/api/v1/market/orderbook/level1?symbol=BTC-USDT"],d=>d?.code==="200000"&&Number(d?.data?.price)>0,"قیمت لحظه‌ای Spot"),
-   probeDirectFallback(checks.get("nobitex"),["https://api.nobitex.ir/market/stats?srcCurrency=usdt&dstCurrency=rls"],d=>d?.status==="ok"&&Number(d?.stats?.["usdt-rls"]?.latest)>0,"نرخ تتر به تومان")
+   probeDirectFallback(checks.get("nobitex"),[AI_ANALYSIS_ENDPOINT+"/market-proxy?source=nobitex-tether"],d=>d?.status==="ok"&&Number(d?.stats?.["usdt-rls"]?.latest)>0,"نرخ تتر به تومان · مسیر سروری امن")
   ]);
   const ordered=expected.map(name=>checks.get(name)).filter(Boolean);
   if(ordered.length!==expected.length)throw new Error("پاسخ بررسی اتصال کامل نیست");
@@ -3908,13 +3915,14 @@ async function checkConnections(){
    const icon=brand[1]?'<img class="conn-brand-icon" src="'+brand[1]+'" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement(\'span\'),{className:\'conn-brand-fallback\',textContent:\''+brand[0]+'\'}))">':'<span class="conn-brand-fallback">'+brand[0]+'</span>';
    return '<div class="conn"><div class="conn-top"><span class="conn-brand">'+icon+'<span class="conn-name">'+aiEscape(c.name)+'</span></span><span class="lamp '+lamp+'"></span></div><div class="conn-meta"><span>'+label+'</span><b dir="ltr">'+latency+'</b></div>'+detail+'</div>';
   };
-  const primary=ordered.slice(0,6),extra=ordered.slice(6);
+  const primary=ordered.slice(0,8),extra=ordered.slice(8);
   $("connections").innerHTML=primary.map(makeCard).join("");
   $("connections-extra").innerHTML=extra.map(makeCard).join("");
   const toggle=$("connections-toggle");
   if(toggle){const expanded=toggle.getAttribute("aria-expanded")==="true";toggle.dataset.extraCount=String(extra.length);toggle.hidden=!extra.length;toggle.innerHTML=(expanded?"بستن منابع دیگر":"نمایش "+extra.length+" منبع دیگر")+' <span class="chevron" aria-hidden="true">⌄</span>';}
   const summary=$("conn-summary");
   if(summary){const connected=ordered.filter(x=>x.status==="ok"||x.status==="slow").length;summary.textContent=connected+" از "+expected.length+" اتصال فعال · "+(expected.length-connected)+" قطع";}
+  connectionCheckCache=ordered;
   return ordered;
  }catch(error){
   connectionCheckLastAt=Date.now()-19*60*1000;
@@ -3923,8 +3931,11 @@ async function checkConnections(){
   $("connections-extra").innerHTML="";
   const toggle=$("connections-toggle");if(toggle)toggle.hidden=true;
   const summary=$("conn-summary");if(summary)summary.textContent="وضعیت اتصال نامشخص";
-  return [];
+  return connectionCheckCache;
  }finally{clearTimeout(timer);}
+ })();
+ connectionCheckPromise=task.finally(()=>{connectionCheckPromise=null;});
+ return connectionCheckPromise;
 }
 
 const AI_ANALYSIS_ENDPOINT = "https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev"; // بعد از انتشار Worker، نشانی ...workers.dev/analyze در این متغیر قرار می‌گیرد.
@@ -3983,7 +3994,7 @@ async function loadUnifiedRadarSnapshot(){
    const removed=snapshot.removed_signals&&typeof snapshot.removed_signals==="object"?snapshot.removed_signals:{};
    Object.keys(removed).forEach(id=>unifiedRadarSignals.delete(String(id)));
    for(const [id,signal] of unifiedRadarSignals){if(Date.now()-Number(signal.updatedAt||0)>5*60*1000)unifiedRadarSignals.delete(id);}
-   renderOpportunities();
+   mergeLiveSignalsIntoMainAssetCatalog();renderCoinsTables(cachedCoinsData);renderOpportunities();
   }
   const total=Number(snapshot.cycle_total||snapshot.universe_count)||0,done=Math.max(0,Number(snapshot.cycle_scanned_count??snapshot.next_cursor)||0);
   const percent=Math.max(0,Math.min(100,Number(snapshot.cycle_percent??(total?done/total*100:0))));
@@ -4767,16 +4778,38 @@ function renderMarketHunter(){
  if($("hunter-dh-errors"))$("hunter-dh-errors").textContent=n(Number(spotSnap.failed_count||0)+Number(futuresSnap.failed_count||0),0);
  if($("hunter-feed-status"))$("hunter-feed-status").textContent="Quantum Hunter · Spot: "+n(spotSnap.scanned_count,0)+"/"+n(spotSnap.universe_count,0)+" · Futures: "+n(futuresSnap.scanned_count,0)+"/"+n(futuresSnap.universe_count,0)+" · خطاها: "+n(Number(spotSnap.failed_count||0)+Number(futuresSnap.failed_count||0),0);
 }
+let hunterSpotSnapshotBusy=false,hunterSpotSnapshotLast=0,hunterCombinedSnapshotPromise=null;
+async function loadDigitalHunterSnapshot(force=false){
+ if(hunterCombinedSnapshotPromise)return hunterCombinedSnapshotPromise;
+ if(!force&&Date.now()-hunterSpotSnapshotLast<60000)return window.__mmpDigitalHunterSnapshot||null;
+ hunterSpotSnapshotBusy=true;
+ const status=$("hunter-feed-status"),controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
+ hunterCombinedSnapshotPromise=(async()=>{
+  try{
+   const response=await fetch("https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/hunter-combined-snapshot",{cache:"no-store",signal:controller.signal});
+   if(!response.ok)throw new Error("HTTP "+response.status);
+   const combined=await response.json(),spot=combined.spot,futures=combined.futures;
+   if(!spot||!futures)throw new Error("Combined Spot/Futures snapshot incomplete");
+   if(!["online","warming_up","partial"].includes(spot.status))throw new Error(spot.error||"Spot Hunter snapshot unavailable");
+   if(!["online","warming_up","partial"].includes(futures.status))throw new Error(futures.error||"Futures Hunter snapshot unavailable");
+   window.__mmpDigitalHunterSnapshot=spot;window.__mmpQuantumHomeSnapshot=spot;window.__mmpDigitalHunterFuturesSnapshot=futures;
+   document.dispatchEvent(new Event("mmp-hunter-snapshot-updated"));
+   hunterSpotSnapshotLast=Date.now();
+   if(typeof dualHunterState==="object")dualHunterState.lastScan=hunterSpotSnapshotLast;
+   mergeLiveSignalsIntoMainAssetCatalog();renderCoinsTables(cachedCoinsData);renderMarketHunter();
+   return spot;
+  }catch(error){
+   if(status)status.textContent="دریافت Snapshot مشترک شکارچی Spot/Futures ناموفق بود: "+String(error?.message||error).slice(0,140);
+   return null;
+  }finally{clearTimeout(timer);hunterSpotSnapshotBusy=false;hunterCombinedSnapshotPromise=null;}
+ })();
+ return hunterCombinedSnapshotPromise;
+}
 async function runDedicatedHunterScan(force=false){
- if(dualHunterState.busy)return;
- if(!force&&Date.now()-dualHunterState.lastScan<4*60*1000)return;
- dualHunterState.busy=true;const status=$("hunter-feed-status"),button=$("hunter-refresh-btn");
- try{
-  const response=await fetch("https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/hunter-futures-run",{cache:"no-store"});
-  const snapshot=await response.json();if(!response.ok||snapshot.status==="error")throw new Error(snapshot.error||"Futures Hunter unavailable");
-  window.__mmpDigitalHunterFuturesSnapshot=snapshot;dualHunterState.lastScan=Date.now();renderMarketHunter();
- }catch(error){if(status)status.textContent="به‌روزرسانی موتور Futures ناموفق بود: "+String(error?.message||error).slice(0,140);}
- finally{dualHunterState.busy=false;if(button&&!button.classList.contains("is-refreshing"))button.disabled=false;}
+ if(hunterCombinedSnapshotPromise){await hunterCombinedSnapshotPromise;return window.__mmpDigitalHunterFuturesSnapshot||null;}
+ if(!force&&Date.now()-hunterSpotSnapshotLast<60000)return window.__mmpDigitalHunterFuturesSnapshot||null;
+ await loadDigitalHunterSnapshot(force);
+ return window.__mmpDigitalHunterFuturesSnapshot||null;
 }
 document.addEventListener("click",function(event){
  const detail=event.target.closest("[data-hunter-detail]");if(detail){event.preventDefault();openHunterDetail(detail.getAttribute("data-hunter-detail"),detail.getAttribute("data-hunter-market")||"spot");return;}
@@ -4964,13 +4997,10 @@ $("market-refresh-btn")?.addEventListener("click",()=>refreshAll());
   const button=$("hunter-refresh-btn"),label=button?.querySelector("span");
   if(button){button.disabled=true;button.classList.add("is-refreshing");if(label)label.textContent="در حال شکار…";}
   const status=$("hunter-feed-status"),last=$("hunter-last-scan");
-  if(status)status.textContent="در حال دریافت تازه‌ترین فهرست نمادها و اجرای شکار دوباره…";
+  if(status)status.textContent="در حال دریافت تازه‌ترین Snapshot شکارچی از سرور…";
   if(last)last.textContent="در حال بروزرسانی";
   try{
-   const API="https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev";
-   const response=await fetch(API+"/hunter-run",{cache:"no-store"}),snapshot=await response.json();
-   if(!response.ok||snapshot.status==="error")throw new Error(snapshot.error||"اجرای موتور Spot ناموفق بود");
-   window.__mmpDigitalHunterSnapshot=snapshot;if(typeof renderMarketHunter==="function")renderMarketHunter();
+   await loadDigitalHunterSnapshot(true);
    await runDedicatedHunterScan(true);
   }catch(error){if(status)status.textContent="بروزرسانی شکار کامل نشد: "+String(error?.message||error).slice(0,160);}
   finally{if(button){button.disabled=false;button.classList.remove("is-refreshing");if(label)label.textContent="بروزرسانی شکار";}}
@@ -4983,20 +5013,17 @@ $("risk-calc")?.addEventListener("click",calcRisk);
 // شروع دریافت قیمت‌ها را به راه‌اندازی اجزای غیرضروری رابط وابسته نکن.
 // حتی اگر منوی انتخاب ارز یا ساعت بازار خطا بدهد، دریافت قیمت باید آغاز شود.
 refreshAll();
+mmpWhenVisible("#opportunities",loadUnifiedRadarSnapshot,{rootMargin:"650px 0px"});
 try{setupAiCoinPicker();}catch(error){console.error("AI coin picker initialization failed:",error);}
 try{renderMarketHours();setInterval(renderMarketHours,15000);}catch(error){console.error("Market hours initialization failed:",error);}
-checkConnections();setInterval(()=>{if(document.visibilityState!=="hidden")checkConnections();},60000);window.addEventListener("online",()=>checkConnections());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"){checkConnections();loadUnifiedRadarSnapshot();}});
-try{initTradingView("BINANCE:BTCUSDT");}catch(error){console.error("TradingView initialization failed:",error);}
-setInterval(refreshAll, 60000);
-setInterval(()=>{if(document.visibilityState!=="hidden")refreshBenchmarkQuotes();},15000);
-setInterval(()=>{if(document.visibilityState!=="hidden")refreshLiveQuotes();},60000);
-setInterval(()=>{if(document.visibilityState!=="hidden")refreshGoldQuote();},30000);
-setTimeout(()=>loadUnifiedRadarSnapshot(),12000);
-setInterval(()=>{if(document.visibilityState!=="hidden")loadUnifiedRadarSnapshot();},30000);
-setTimeout(()=>runFastRadarScan(),12000);
-setTimeout(()=>runDedicatedHunterScan(),18000);
-setInterval(()=>{if(document.visibilityState!=="hidden")runDedicatedHunterScan();},5*60*1000);
-setInterval(()=>runFastRadarScan(),60000);
+checkConnections();setInterval(()=>{if(document.visibilityState!=="hidden")checkConnections();},1800000);window.addEventListener("online",()=>checkConnections());document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")checkConnections();});
+mmpWhenVisible("#chart-section",()=>{try{initTradingView("BINANCE:BTCUSDT");}catch(error){console.error("TradingView initialization failed:",error)}},{rootMargin:"500px 0px"});
+setInterval(refreshAll, 600000);
+setInterval(()=>{if(document.visibilityState!=="hidden")refreshBenchmarkQuotes();},180000);
+setInterval(()=>{if(document.visibilityState!=="hidden")refreshLiveQuotes();},300000);
+setInterval(()=>{if(document.visibilityState!=="hidden")refreshGoldQuote();},300000);
+setInterval(()=>{if(document.visibilityState!=="hidden"&&document.getElementById("opportunities")?.getBoundingClientRect().top<window.innerHeight+650)loadUnifiedRadarSnapshot();},300000);
+
 </script>
 
 
@@ -5126,7 +5153,8 @@ html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!i
     try{if(typeof refreshAll==="function")jobs.push(Promise.resolve(refreshAll()));}catch(e){jobs.push(Promise.reject(e));}
     try{if(typeof checkConnections==="function")jobs.push(Promise.resolve(checkConnections()));}catch(e){jobs.push(Promise.reject(e));}
     try{if(typeof loadUnifiedRadarSnapshot==="function")jobs.push(Promise.resolve(loadUnifiedRadarSnapshot()));}catch(e){jobs.push(Promise.reject(e));}
-    try{if(typeof runDedicatedHunterScan==="function")jobs.push(Promise.resolve(runDedicatedHunterScan()));}catch(e){jobs.push(Promise.reject(e));}
+    try{if(typeof loadDigitalHunterSnapshot==="function")jobs.push(Promise.resolve(loadDigitalHunterSnapshot(true)));}catch(e){jobs.push(Promise.reject(e));}
+    try{if(typeof runDedicatedHunterScan==="function")jobs.push(Promise.resolve(runDedicatedHunterScan(true)));}catch(e){jobs.push(Promise.reject(e));}
     Promise.allSettled(jobs).then(function(){showNativeUpdateMessage("درخواست تازه‌سازی داده‌ها ارسال شد.");}).finally(function(){setTimeout(function(){button.disabled=false;button.classList.remove("is-refreshing");},700);});
    }
    if(refreshButton)refreshButton.addEventListener("click",function(){performNativeRefresh(refreshButton);});
@@ -5218,7 +5246,7 @@ function mmpAppType(){return (location.protocol==="capacitor:"||(window.Capacito
 function mmpSendEvent(type){try{fetch(MMP_ANALYTICS_ENDPOINT+"/analytics/event",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify({event_type:type,path:location.pathname,app_type:mmpAppType(),visitor_id:mmpVisitorId()})}).catch(()=>{});}catch(e){}}
 function mmpSendAiResult(analysis,market,mode,coin){try{fetch(MMP_ANALYTICS_ENDPOINT+"/analytics/ai-result",{method:"POST",headers:{"Content-Type":"application/json"},keepalive:true,body:JSON.stringify({analysis:analysis,market:market,market_mode:mode,asset:coin?.name||market?.asset,symbol:coin?.symbol||market?.symbol,app_type:mmpAppType(),visitor_id:mmpVisitorId()})}).catch(()=>{});}catch(e){}}
 mmpSendEvent("page_view");
-setInterval(()=>mmpSendEvent("heartbeat"),240000);
+setInterval(()=>mmpSendEvent("heartbeat"),1800000);
 </script>
 <div id="hunter-chart-modal" class="hunter-chart-modal" aria-live="polite"></div>
 
@@ -5367,7 +5395,7 @@ setInterval(()=>mmpSendEvent("heartbeat"),240000);
    $("boom-oscillator").innerHTML=drawOsc(smooth.slice(-120),signals.slice(-120));
    const unusual=flowRatio>=2?" · حجم غیرعادی در آخرین کندل":"";
    status.className="boom-status";status.textContent=pair+" · "+interval+" · "+rows.length+" کندل شامل کندل جاری · منبع: "+provider+" · سبز/قرمز: خرید/فروش تهاجمی · بروزرسانی "+new Date().toLocaleTimeString("fa-IR")+unusual;
-   boomLiveRows=rows;boomLiveLastTick=0;startBoomLive(pair,interval);boomLiveEnabled=true;if(!boomLiveTimer)boomLiveTimer=setInterval(()=>{if(boomLiveEnabled&&!document.hidden&&!button.disabled&&(!boomLiveLastTick||Date.now()-boomLiveLastTick>20000))run();},25000);
+   boomLiveRows=rows;boomLiveLastTick=0;startBoomLive(pair,interval);boomLiveEnabled=true;if(!boomLiveTimer)boomLiveTimer=setInterval(()=>{if(boomLiveEnabled&&!document.hidden&&!button.disabled&&(!boomLiveLastTick||Date.now()-boomLiveLastTick>45000))run();},180000);
    syncBoomExpanded();
   }catch(error){status.className="boom-status error";status.textContent="دریافت/تحلیل ناموفق: "+(error&&error.message?error.message:"خطای نامشخص");}
   finally{button.disabled=false;}
@@ -5887,7 +5915,7 @@ body{background:radial-gradient(ellipse at 74% 0,#1b626755,transparent 29%),radi
 .mmp-symbol-picker{position:relative;display:flex;align-items:center;gap:6px;min-width:0;width:100%}.mmp-symbol-picker>input{flex:1;min-width:0}.mmp-symbol-trigger{width:34px;height:36px;flex:none;display:grid;place-items:center;border:1px solid #435c70;border-radius:9px;background:#102030;color:#f1d38e;cursor:pointer;padding:3px}.mmp-symbol-trigger img{width:25px;height:25px;object-fit:contain;border-radius:50%;background:#fff}.mmp-symbol-add{width:34px;height:36px;flex:none;border:1px solid #947542;border-radius:9px;background:linear-gradient(145deg,#5a4728,#1a2631);color:#f8dfa0;font-size:20px;cursor:pointer}
 .mmp-symbol-menu{position:absolute;z-index:12000;top:calc(100% + 6px);right:0;left:0;min-width:240px;max-height:330px;padding:8px;border:1px solid #8d7447;border-radius:12px;background:#0b1521;box-shadow:0 18px 45px #000d}.mmp-symbol-menu[hidden]{display:none}.mmp-symbol-menu input{width:100%;height:36px;padding:7px 10px;margin-bottom:7px;border:1px solid #3b5367;border-radius:8px;background:#101f2e;color:#fff}.mmp-symbol-options{max-height:225px;overflow:auto}.mmp-symbol-option{width:100%;display:flex;align-items:center;gap:9px;padding:7px;border:0;border-bottom:1px solid #ffffff12;background:transparent;color:#e8edf2;text-align:right;cursor:pointer}.mmp-symbol-option:hover{background:#d7b46a1b}.mmp-symbol-option img{width:27px;height:27px;flex:none;border-radius:50%;object-fit:contain;background:#fff}.mmp-symbol-option span{display:grid;gap:2px}.mmp-symbol-option b{font-size:11px}.mmp-symbol-option small{font-size:9px;color:#a6b6c5;direction:ltr;text-align:right}.mmp-symbol-manual{display:flex;gap:6px;padding-top:7px;border-top:1px solid #ffffff18;margin-top:6px}.mmp-symbol-manual input{margin:0;min-width:0}.mmp-symbol-manual button{white-space:nowrap;border:1px solid #947542;border-radius:8px;background:#47391f;color:#f7dfa0;padding:5px 8px;font-size:10px}
 .mmp-tv-picker{position:relative;min-width:180px}.mmp-tv-picker>.mmp-symbol-trigger{width:100%;height:39px;display:flex;justify-content:flex-start;gap:8px;padding:5px 9px;color:#eee}.mmp-tv-picker>.mmp-symbol-trigger span{flex:1;text-align:right;font-size:11px}.mmp-tv-picker .mmp-symbol-menu{width:min(310px,85vw);right:auto;left:0}#tv-symbol.mmp-native-select-hidden{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
-#connections{grid-template-columns:repeat(3,minmax(0,1fr))}#connections .conn{min-height:104px}#connections .conn-brand-icon{width:29px;height:29px;object-fit:contain;border-radius:8px;background:#fff;padding:4px;flex:none}#connections .conn-brand-fallback{width:29px;height:29px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(145deg,#e5c67e,#8a6734);color:#111;font-weight:900;flex:none}#connections .conn-brand{display:flex;align-items:center;gap:8px;min-width:0}#connections .conn-name{font-size:11px;white-space:normal}#connections .conn-meta{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-size:10px}#connections .conn-purpose{display:block;font-size:9px;margin-top:6px;color:#90a4b6;line-height:1.5}.connection-more{display:block!important}#connections-toggle{display:flex!important}#connections-toggle[hidden]{display:none!important}
+#connections{grid-template-columns:repeat(4,minmax(0,1fr))}#connections .conn{min-height:104px}#connections .conn-brand-icon{width:29px;height:29px;object-fit:contain;border-radius:8px;background:#fff;padding:4px;flex:none}#connections .conn-brand-fallback{width:29px;height:29px;display:grid;place-items:center;border-radius:8px;background:linear-gradient(145deg,#e5c67e,#8a6734);color:#111;font-weight:900;flex:none}#connections .conn-brand{display:flex;align-items:center;gap:8px;min-width:0}#connections .conn-name{font-size:11px;white-space:normal}#connections .conn-meta{display:flex;justify-content:space-between;gap:8px;margin-top:9px;font-size:10px}#connections .conn-purpose{display:block;font-size:9px;margin-top:6px;color:#90a4b6;line-height:1.5}.connection-more{display:none!important}#connections-toggle{display:none!important}
 .radar-side{padding:9px!important}.radar-side .section-head{margin-bottom:7px!important}.radar-list{gap:6px!important}.radar-group .radar-item,.radar-side .radar-item{min-height:0!important;padding:8px 9px!important;gap:7px!important;border-radius:10px!important}.radar-item .radar-asset img{width:25px;height:25px;flex-basis:25px}.radar-item .radar-asset b{font-size:11px}.radar-item .radar-score{padding:3px 6px}.radar-item .radar-score b{font-size:16px!important}.radar-item .radar-stats{gap:4px}.radar-item .radar-stats b{font-size:10px}.radar-more>summary{min-height:40px!important;padding:8px 10px!important;font-size:10px!important}.radar-below-threshold{margin-top:6px}
 @media(max-width:900px){#connections{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){#connections{gap:7px}#connections .conn{padding:9px;min-height:98px}.mmp-symbol-menu{max-height:290px}.mmp-symbol-options{max-height:185px}.radar-item .radar-stats span{font-size:8px}}
 </style>
@@ -5909,7 +5937,7 @@ body{background:radial-gradient(ellipse at 74% 0,#1b626755,transparent 29%),radi
  function attachTv(){const s=$("tv-symbol");if(!s||s.dataset.mmpPicker)return;s.dataset.mmpPicker="1";s.classList.add("mmp-native-select-hidden");const w=document.createElement("div");w.className="mmp-tv-picker";s.parentNode.insertBefore(w,s);w.appendChild(s);const t=document.createElement("button");t.type="button";t.className="mmp-symbol-trigger";t.innerHTML='<img src="'+icon({symbol:"BTC"})+'" alt=""><span>Bitcoin · BTC</span><b>⌄</b>';w.appendChild(t);const a=document.createElement("button");a.type="button";a.className="mmp-symbol-add";a.textContent="＋";a.title="افزودن نماد به نمودار";w.appendChild(a);const p=build(w,s,"tv"),update=()=>{const sym=String(s.value||"").split(":").pop().replace(/USDT$/,""),c=pool().find(x=>x.symbol===sym)||{symbol:sym};t.querySelector("img").src=icon(c);t.querySelector("span").textContent=(c.name||sym)+" · "+sym;};s.addEventListener("change",update);a.addEventListener("click",()=>{p.menu.hidden=false;p.menu.querySelector(".mmp-symbol-manual input").focus();p.render();});new MutationObserver(update).observe(s,{childList:true});update();}
  function refreshAi(){const s=$("ai-coin-select");if(!s||typeof syncAiCoinOptions!=="function")return;const old=s.value,all=pool(),manual=all.filter(c=>c.manual).map(c=>({id:"manual:"+c.symbol,symbol:c.symbol,name:c.name,image:c.image}));syncAiCoinOptions([...(typeof cachedCoinsData!=="undefined"?cachedCoinsData:[]),...(typeof hunterUniverseCache!=="undefined"?hunterUniverseCache.coins||[]:[]),...manual]);if(old&&[...s.options].some(o=>o.value===old))s.value=old;}
  function init(){["intel-symbol"].forEach(attachInput);attachTv();refreshAi();setInterval(refreshAi,30000);}
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+ const start=()=>window.mmpWhenVisible?window.mmpWhenVisible("#market-intelligence",init,{rootMargin:"450px 0px"}):init();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
 </script>
 <style id="mmp-symbol-icon-fallbacks">.radar-icon-fallback,.boom-icon-fallback{width:27px;height:27px;flex:0 0 27px;display:inline-grid;place-items:center;border-radius:50%;background:linear-gradient(145deg,#e8ca82,#80602e);color:#15120b;font-size:8px;font-weight:900;direction:ltr}</style>
@@ -6096,14 +6124,12 @@ body{background:radial-gradient(ellipse at 74% 0,#1b626755,transparent 29%),radi
  }
  $("market-heatmap-refresh")?.addEventListener("click",loadMarketHeatmap);
  $("performance-refresh")?.addEventListener("click",loadPublicPerformance);
- loadMarketHeatmap();loadPublicPerformance();
- setInterval(loadMarketHeatmap,60000);setInterval(loadPublicPerformance,300000);
+ mmpWhenVisible("#market-intelligence",()=>{loadMarketHeatmap();loadPublicPerformance();setInterval(()=>{if(!document.hidden&&document.querySelector("#market-intelligence")?.getBoundingClientRect().top<window.innerHeight+700)loadMarketHeatmap();},900000);setInterval(()=>{if(!document.hidden&&document.querySelector("#market-intelligence")?.getBoundingClientRect().top<window.innerHeight+700)loadPublicPerformance();},1800000);},{rootMargin:"550px 0px"});
  orderButton?.addEventListener("click",loadOrderflowViaWorker);
  derivButton?.addEventListener("click",loadOrderflowViaWorker);
  $("intel-symbol")?.addEventListener("change",loadOrderflowViaWorker);
  $("orderflow-market")?.addEventListener("change",loadOrderflowViaWorker);
- loadOrderflowViaWorker();loadDerivativesViaWorker();
- setInterval(loadOrderflowViaWorker,60000);
+ mmpWhenVisible("#market-intelligence",()=>{loadOrderflowViaWorker();loadDerivativesViaWorker();setInterval(()=>{if(!document.hidden&&document.querySelector("#market-intelligence")?.getBoundingClientRect().top<window.innerHeight+700)loadOrderflowViaWorker();},900000);},{rootMargin:"550px 0px"});
 
  // The original intelligence engine remains authoritative for futures; this adds a working BTC large-transfer feed without inventing exchange labels.
  const whale=$("whale-panel");
@@ -6113,7 +6139,7 @@ body{background:radial-gradient(ellipse at 74% 0,#1b626755,transparent 29%),radi
   const metrics=document.createElement("div");metrics.id="whale-metrics";metrics.className="whale-metrics";state?.after(metrics);const result=document.createElement("div");result.id="whale-transfer-list";result.className="whale-transfers";metrics.after(result);
   const note=document.createElement("div");note.className="intel-foot";note.textContent="دامنه داده: تراکنش‌های بزرگِ در انتظار تأیید شبکه بیت‌کوین از چند منبع عمومی مم‌پول با مسیر جایگزین. آدرس صرافی‌ها برچسب‌گذاری نمی‌شوند؛ بنابراین ورودی/خروجی صرافی گزارش نمی‌شود.";result.after(note);
   const load=async()=>{button.disabled=true;button.textContent="در حال دریافت…";result.textContent="در حال دریافت تراکنش‌های بزرگ شبکه بیت‌کوین…";try{const d=await get(api()+"/whale-watch",32000);const scanned=Number(d.scanned_count??d.sample_count??0);metrics.innerHTML='<div class="whale-metric"><small>تراکنش‌های نمونه بررسی‌شده</small><b>'+fmt(scanned,0)+'</b><span>نمونه اخیر مم‌پول</span></div><div class="whale-metric"><small>انتقال‌های بالای ۱۰ BTC</small><b>'+fmt(d.count||0,0)+'</b><span>در نمونه فعلی</span></div><div class="whale-metric"><small>آستانه پایش</small><b>۱۰ BTC</b><span>حداقل ارزش انتقال</span></div><div class="whale-metric"><small>آخرین بررسی</small><b>'+new Date(d.checked_at||Date.now()).toLocaleTimeString("fa-IR")+'</b><span>به‌روزرسانی خودکار</span></div>';result.innerHTML=d.transfers?.length?d.transfers.map(x=>'<div class="whale-transfer"><span><b>'+fmt(x.value_btc,3)+' BTC</b><br><a href="https://mempool.space/tx/'+encodeURIComponent(x.txid)+'" target="_blank" rel="noopener">'+esc(x.txid.slice(0,14))+'…'+esc(x.txid.slice(-8))+'</a></span><span>کارمزد '+fmt(x.fee_rate,1)+' sat/vB</span></div>').join(""):'<div class="whale-empty"><span class="whale-empty-icon">₿</span><div><b>در نمونه اخیر، انتقال بالای ۱۰ BTC پیدا نشد</b><p>این به معنی نبود انتقال بزرگ در کل شبکه نیست؛ این نما فقط نمونه اخیر تراکنش‌های در انتظار تأیید را بررسی می‌کند.</p><a href="https://mempool.space/mempool" target="_blank" rel="noopener">مشاهده مم‌پول زنده ↗</a></div></div>';if(state){state.querySelector("b").textContent="پایش انتقال‌های بزرگ بیت‌کوین";state.querySelector("p").textContent="منبع دریافت: "+(d.provider||"منبع عمومی مم‌پول")+" · "+fmt(d.scanned_count??d.sample_count??0,0)+" تراکنش نمونه بررسی شد؛ این داده برچسب مالک کیف‌پول ندارد.";}}catch(e){const message=String(e.message||"خطای دریافت");const unavailable=/HTTP (?:502|503|504)/.test(message);result.textContent=unavailable?"منابع عمومی موقتاً پاسخ‌گو نیستند؛ سیستم در تلاش بعدی دوباره از منابع جایگزین استفاده می‌کند. ("+message+")":"ردیابی فعلاً در دسترس نیست: "+message;}finally{button.disabled=false;button.textContent="↻ دریافت انتقال‌های بزرگ BTC";}};
-  button.addEventListener("click",load);load();setInterval(()=>{if(!document.hidden)load();},180000);
+  button.addEventListener("click",load);mmpWhenVisible("#whale-panel",()=>{load();setInterval(()=>{if(!document.hidden&&document.getElementById("whale-panel")?.getBoundingClientRect().top<window.innerHeight+600)load();},900000);},{rootMargin:"500px 0px"});
  }
 })();
 </script>
@@ -6338,13 +6364,13 @@ window.mmpShareDownloadLink = async function () {
   ["Nobitex","نوبیتکس","nobitex","اسپات"],
   ["Wallex","والکس","wallex","اسپات"]
  ];
- async function renderExchanges(){
+ async function renderExchanges(force=false){
   const host=$id("exchange-directory-list"),summary=$id("exchange-directory-summary"),count=$id("exchange-directory-count");
   if(!host)return;
   summary.textContent="در حال دریافت فهرست بازارها و بررسی اتصال…";
   const jobs=await Promise.allSettled([
    typeof getHunterExchangeMarkets==="function"?getHunterExchangeMarkets():Promise.resolve(new Map()),
-   checkConnections()
+   checkConnections(force)
   ]);
   const sets=jobs[0].status==="fulfilled"?jobs[0].value:new Map();
   const checks=jobs[1].status==="fulfilled"&&Array.isArray(jobs[1].value)?jobs[1].value:[];
@@ -6368,7 +6394,7 @@ window.mmpShareDownloadLink = async function () {
   const search=$id("asset-directory-search");
   if(search)search.addEventListener("input",()=>renderAssets(search.value));
   const refresh=$id("exchange-directory-refresh");
-  if(refresh)refresh.addEventListener("click",()=>{refresh.disabled=true;renderExchanges().finally(()=>refresh.disabled=false);});
+  if(refresh)refresh.addEventListener("click",()=>{refresh.disabled=true;renderExchanges(true).finally(()=>refresh.disabled=false);});
   const coinDetails=document.querySelector("#asset-directory .mmp-directory-details");
   if(coinDetails)coinDetails.addEventListener("toggle",()=>{if(coinDetails.open&&allAssets.length===0)loadAssets();});
   loadAssets();
@@ -6382,7 +6408,7 @@ window.mmpShareDownloadLink = async function () {
   if(!allAssets.length&&$id("asset-directory-list"))$id("asset-directory-list").innerHTML='<div class="ai-empty">فعلاً فهرست ارزها دریافت نشد؛ پس از بروزرسانی بازار دوباره تلاش کنید.</div>';
  }
  window.addEventListener("mmp-market-data-updated",mergeAssets);
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+ const start=()=>window.mmpWhenVisible?window.mmpWhenVisible("#coins-section",init,{rootMargin:"450px 0px"}):init();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
 </script>
 <script>
@@ -6396,7 +6422,8 @@ window.mmpShareDownloadLink = async function () {
  const signed=value=>{const n=Number(value);return Number.isFinite(n)?(n>0?"+":"")+number(n,2)+"%":"—";};
  const money=value=>{const n=Number(value);if(!Number.isFinite(n)||n<=0)return "—";return "$"+number(n,n<1?8:4);};
  function render(snapshot){
-  window.__mmpDigitalHunterSnapshot=snapshot;
+  window.__mmpDigitalHunterSnapshot=snapshot;window.__mmpQuantumHomeSnapshot=snapshot;
+  document.dispatchEvent(new Event("mmp-hunter-snapshot-updated"));
   const signals=Array.isArray(snapshot.signals)?snapshot.signals.filter(s=>s&&/^[A-Z0-9]{2,24}$/.test(String(s.symbol||"").toUpperCase())&&s.confirmed===true):[];
   const status=$("hunter-feed-status");
   if(status)status.textContent=(snapshot.engine||"Quantum Hunter")+" · Spot فعال · "+number(snapshot.scanned_count||0,0)+"/"+number(snapshot.universe_count||0,0)+" · خطا: "+number(snapshot.failed_count||0,0);
@@ -6409,48 +6436,30 @@ window.mmpShareDownloadLink = async function () {
   if(busy)return;busy=true;
   const status=$("hunter-feed-status");
   try{
-   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);
-   let spotResponse,futuresResponse;
-   try{
-    [spotResponse,futuresResponse]=await Promise.all([
-     fetch(API+"/hunter-snapshot",{cache:"no-store",signal:controller.signal}),
-     fetch(API+"/hunter-futures-snapshot",{cache:"no-store",signal:controller.signal})
-    ]);
-   }finally{clearTimeout(timer);}
-   if(!spotResponse.ok)throw new Error("Spot HTTP "+spotResponse.status);
-   if(!futuresResponse.ok)throw new Error("Futures HTTP "+futuresResponse.status);
-   const [spotSnapshot,futuresSnapshot]=await Promise.all([spotResponse.json(),futuresResponse.json()]);
-   if(!["online","warming_up"].includes(spotSnapshot.status))throw new Error(spotSnapshot.error||"Spot engine unavailable");
-   if(!["online","warming_up"].includes(futuresSnapshot.status))throw new Error(futuresSnapshot.error||"Futures engine unavailable");
+   const spotSnapshot=await loadDigitalHunterSnapshot(true);
+   const futuresSnapshot=window.__mmpDigitalHunterFuturesSnapshot;
+   if(!spotSnapshot||!futuresSnapshot)throw new Error("Combined Spot/Futures snapshot unavailable");
    render(spotSnapshot);renderFutures(futuresSnapshot);
   }catch(error){
-   if(status)status.textContent="دریافت وضعیت یکی از موتورهای شکار ناموفق بود: "+String(error?.message||error).slice(0,150)+" · تلاش خودکار ادامه دارد.";
+   if(status)status.textContent="دریافت وضعیت موتورهای شکار ناموفق بود: "+String(error?.message||error).slice(0,150)+" · تلاش خودکار ادامه دارد.";
   }finally{busy=false;}
  } async function refresh(){
   if(busy)return;busy=true;
   const button=$("hunter-refresh-btn"),status=$("hunter-feed-status");
-  if(button){button.disabled=true;const label=button.querySelector("span");if(label)label.textContent="در حال اجرای اسکن…";}
-  if(status)status.textContent="درخواست اجرای هر دو موتور Spot و Futures ارسال شد…";
+  if(button){button.disabled=true;const label=button.querySelector("span");if(label)label.textContent="در حال دریافت آخرین وضعیت…";}
+  if(status)status.textContent="در حال دریافت آخرین Snapshot مشترک Spot و Futures…";
   try{
-   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),65000);
-   let spotResponse,futuresResponse;
-   try{
-    [spotResponse,futuresResponse]=await Promise.all([
-     fetch(API+"/hunter-run",{cache:"no-store",signal:controller.signal}),
-     fetch(API+"/hunter-futures-run",{cache:"no-store",signal:controller.signal})
-    ]);
-   }finally{clearTimeout(timer);}
-   const [spotSnapshot,futuresSnapshot]=await Promise.all([spotResponse.json(),futuresResponse.json()]);
-   if(!spotResponse.ok||spotSnapshot.status==="error")throw new Error(spotSnapshot.error||"Spot scan failed");
-   if(!futuresResponse.ok||futuresSnapshot.status==="error")throw new Error(futuresSnapshot.error||"Futures scan failed");
+   const spotSnapshot=await loadDigitalHunterSnapshot(true);
+   const futuresSnapshot=window.__mmpDigitalHunterFuturesSnapshot;
+   if(!spotSnapshot||!futuresSnapshot)throw new Error("Combined snapshot unavailable");
    render(spotSnapshot);renderFutures(futuresSnapshot);
-  }catch(error){if(status)status.textContent="اجرای یکی از موتورهای شکار ناموفق بود: "+String(error?.message||error).slice(0,150);}
-  finally{busy=false;if(button){button.disabled=false;const label=button.querySelector("span");if(label)label.textContent="بروزرسانی شکار";}}
+  }catch(error){if(status)status.textContent="دریافت آخرین وضعیت شکار ناموفق بود: "+String(error?.message||error).slice(0,150);}
+  finally{busy=false;if(button){button.disabled=false;const label=button.querySelector("span");if(label)label.textContent="به‌روزرسانی شکار";}}
  } function init(){
   // Unified hunter refresh handler owns the single refresh button; this module only polls snapshots.
-  load();setInterval(load,60000);
+  load();setInterval(load,600000);
  }
- if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});else init();
+ const start=()=>window.mmpWhenVisible?window.mmpWhenVisible("#market-hunter",init,{rootMargin:"550px 0px"}):init();if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",start,{once:true});else start();
 })();
 </script>
 <section id="radar-signal-page" data-quantum-module="signal-lab" hidden aria-hidden="true"></section>
@@ -6486,12 +6495,32 @@ window.mmpShareDownloadLink = async function () {
 @media(max-width:680px){#quantum-center-entry.quantum-command-hero{grid-template-columns:minmax(0,1fr) 82px;gap:5px;padding:12px 12px;margin:10px 0 14px;border-radius:14px}#quantum-center-entry .quantum-hero-art{width:100px;height:100px;transform:scale(.72)}#quantum-center-entry .hero-title{font-size:18px}#quantum-center-entry .hero-title span+span{font-size:10px}#quantum-center-entry .quantum-hero-copy>p{font-size:10px;line-height:1.7}#quantum-center-entry .quantum-hero-tags{gap:4px;margin:5px 0 7px}#quantum-center-entry .quantum-hero-tags span{font-size:8px;padding:3px 6px}#quantum-center-entry .quantum-hero-actions{gap:6px;flex-wrap:wrap}#quantum-center-entry .quantum-enter-btn{font-size:10px;padding:8px 10px}#quantum-center-entry .quantum-hero-actions>.badge{font-size:8px}#quantum-center-entry .quantum-hero-foot{font-size:8px;gap:5px 10px}}
 @media(max-width:390px){#quantum-center-entry.quantum-command-hero{grid-template-columns:minmax(0,1fr) 64px;padding:10px}#quantum-center-entry .quantum-hero-art{width:82px;height:86px;transform:scale(.65)}#quantum-center-entry .quantum-hero-eyebrow{font-size:7px}#quantum-center-entry .quantum-hero-foot span:last-child{display:none}}
 </style>
-<style id="mmp-market-drawer-v2">
-.mmp-market-drawer-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:8px 0 10px}.mmp-market-drawer-head b,.mmp-market-drawer-head small{display:block}.mmp-market-drawer-head b{font-size:12px;color:var(--gold2)}.mmp-market-drawer-head small{font-size:10px;color:var(--muted);margin-top:4px}.mmp-market-visible-count{font-size:10px;color:var(--muted);white-space:nowrap}
-.mmp-market-grid{max-height:none!important;overflow:visible!important;display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:9px}.mmp-market-coin{width:100%;min-height:145px;text-align:right;cursor:pointer;font:inherit;color:inherit;justify-content:space-between}.mmp-market-coin:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}.mmp-market-coin-head>span{min-width:0;display:block}.mmp-market-coin-sources{font-size:9px;color:#b7a77f}
-.mmp-market-drawer-toggle{width:100%;display:flex;justify-content:center;align-items:center;gap:12px;margin-top:12px;padding:12px 15px;border:1px solid #927344;border-radius:12px;background:linear-gradient(110deg,#d9b66d18,#121a26);color:#f2d99b;font:inherit;font-size:12px;font-weight:800;cursor:pointer}.mmp-market-drawer-toggle[hidden]{display:none!important}.mmp-market-drawer-toggle b{font-size:18px;line-height:1}
-.mmp-coin-detail-backdrop[hidden]{display:none!important}.mmp-coin-detail-backdrop{position:fixed;inset:0;z-index:5000;display:grid;place-items:center;padding:16px;background:#03060bd9;backdrop-filter:blur(10px)}.mmp-coin-detail-panel{position:relative;width:min(520px,100%);padding:22px;border:1px solid #9c7a43;border-radius:18px;background:linear-gradient(145deg,#182230,#0b111a);box-shadow:0 25px 80px #000c}.mmp-coin-detail-close{position:absolute;top:9px;left:12px;width:34px;height:34px;border:1px solid #536074;border-radius:9px;background:#101722;color:#f4dfaa;font-size:23px;cursor:pointer}.mmp-coin-detail-identity{display:flex;align-items:center;gap:12px;padding-left:35px}.mmp-coin-detail-identity img{width:46px;height:46px;border-radius:50%;background:#fff;padding:3px;object-fit:contain}.mmp-coin-detail-identity h3{font-size:18px;margin:0 0 4px;color:var(--gold2)}.mmp-coin-detail-identity small{direction:ltr;display:block;text-align:right;color:var(--muted)}.mmp-coin-detail-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:20px 0}.mmp-coin-detail-metrics>div{padding:12px;border:1px solid #303d50;border-radius:11px;background:#0d1520;min-width:0}.mmp-coin-detail-metrics small,.mmp-coin-detail-metrics b{display:block}.mmp-coin-detail-metrics small{font-size:10px;color:var(--muted);margin-bottom:7px}.mmp-coin-detail-metrics b{font-size:13px;direction:ltr;text-align:right;overflow-wrap:anywhere}.mmp-coin-detail-note{font-size:11px;line-height:1.9;color:var(--muted)}.mmp-coin-detail-actions{display:flex;justify-content:stretch;margin-top:14px}.mmp-coin-detail-actions button{width:100%}
-@media(max-width:560px){.mmp-market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.mmp-market-coin{padding:9px;min-height:135px}.mmp-market-coin-price{font-size:12px}.mmp-market-drawer-head small{max-width:230px;line-height:1.7}.mmp-coin-detail-panel{padding:18px 14px}}
+<style id="mmp-market-drawer-v3">
+.mmp-market-drawer-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:7px 0 8px}.mmp-market-drawer-head b,.mmp-market-drawer-head small{display:block}.mmp-market-drawer-head b{font-size:11px;color:var(--gold2)}.mmp-market-drawer-head small{font-size:9px;color:var(--muted);margin-top:3px}.mmp-market-visible-count{font-size:9px;color:var(--muted);white-space:nowrap}
+.mmp-market-grid{max-height:initial!important;overflow:visible!important;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}
+.mmp-market-grid.is-expanded,.mmp-market-grid.is-searching{position:relative;max-height:min(58vh,520px)!important;overflow:auto!important;overscroll-behavior:contain;padding:5px 4px 8px;border:1px solid #46536a;border-radius:12px;background:#080f18;scrollbar-width:thin;scrollbar-color:#b08c4e #17202b}
+.mmp-market-coin{width:100%;min-height:0!important;text-align:right;cursor:pointer;font:inherit;color:inherit;justify-content:flex-start;gap:5px!important;padding:8px!important;border-radius:10px!important}
+.mmp-market-coin:focus-visible{outline:2px solid var(--gold2);outline-offset:2px}
+.mmp-market-coin-head{gap:7px!important}.mmp-market-coin-head img{width:23px!important;height:23px!important;flex-basis:23px!important}.mmp-market-coin-head b{font-size:10px!important}.mmp-market-coin-head small{font-size:8px!important}
+.mmp-market-coin-price{font-size:11px!important}.mmp-market-coin-meta{font-size:8px!important;gap:3px!important}.mmp-market-coin-sources{font-size:8px;color:#b7a77f}
+.mmp-market-drawer-close{position:sticky;top:0;z-index:3;grid-column:1/-1;width:100%;display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border:1px solid #8c7042;border-radius:8px;background:#202b3a;color:#f4d58d;font:inherit;font-size:10px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px #0008}
+.mmp-market-hint{margin:7px 0 0;color:#9eacbd;font-size:9px;line-height:1.7}
+.mmp-market-drawer-toggle{width:100%;display:flex;justify-content:center;align-items:center;gap:12px;margin-top:9px;padding:9px 12px;border:1px solid #927344;border-radius:10px;background:linear-gradient(110deg,#d9b66d18,#121a26);color:#f2d99b;font:inherit;font-size:10px;font-weight:800;cursor:pointer}
+.mmp-market-drawer-toggle[hidden]{display:none!important}.mmp-market-drawer-toggle b{font-size:16px;line-height:1}
+.mmp-coin-detail-backdrop[hidden]{display:none!important}.mmp-coin-detail-backdrop{position:fixed;inset:0;z-index:5000;display:grid;place-items:center;padding:16px;background:#03060bd9;backdrop-filter:blur(10px)}.mmp-coin-detail-panel{position:relative;width:min(520px,100%);max-height:88vh;overflow:auto;padding:22px;border:1px solid #9c7a43;border-radius:18px;background:linear-gradient(145deg,#182230,#0b111a);box-shadow:0 25px 80px #000c}.mmp-coin-detail-close{position:absolute;top:9px;left:12px;width:34px;height:34px;border:1px solid #536074;border-radius:9px;background:#101722;color:#f4dfaa;font-size:23px;cursor:pointer}.mmp-coin-detail-identity{display:flex;align-items:center;gap:12px;padding-left:35px}.mmp-coin-detail-identity img{width:42px;height:42px;border-radius:50%;background:#fff;padding:3px;object-fit:contain}.mmp-coin-detail-identity h3{font-size:16px;margin:0 0 4px;color:var(--gold2)}.mmp-coin-detail-identity small{direction:ltr;display:block;text-align:right;color:var(--muted)}.mmp-coin-detail-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:13px 0}.mmp-coin-detail-metrics>div{padding:9px;border:1px solid #303d50;border-radius:9px;background:#0d1520;min-width:0}.mmp-coin-detail-metrics small,.mmp-coin-detail-metrics b{display:block}.mmp-coin-detail-metrics small{font-size:9px;color:var(--muted);margin-bottom:5px}.mmp-coin-detail-metrics b{font-size:11px;direction:ltr;text-align:right;overflow-wrap:anywhere}.mmp-coin-detail-note{font-size:10px;line-height:1.9;color:var(--muted)}.mmp-coin-detail-actions{display:flex;justify-content:stretch;margin-top:12px}.mmp-coin-detail-actions button{width:100%}
+.server-performance-drawer{margin:10px 0 14px;padding:0!important;overflow:hidden;border:1px solid #78633b88;border-radius:13px;background:linear-gradient(145deg,#121b27,#0b1119)}
+.server-performance-details>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 13px;cursor:pointer}
+.server-performance-details>summary::-webkit-details-marker{display:none}
+.server-performance-details>summary b,.server-performance-details>summary small{display:block}
+.server-performance-details>summary b{font-size:11px;color:#f4d58d}
+.server-performance-details>summary small{font-size:8px;color:#9aa7b7;margin-top:3px}
+.server-performance-details>summary em{font-style:normal;white-space:nowrap;font-size:9px;color:#e7ce91;border:1px solid #92734488;border-radius:8px;padding:6px 8px}
+.server-performance-details>summary i{font-style:normal;margin-inline-start:5px}
+.server-performance-details[open]>summary{border-bottom:1px solid #78633b55;background:#d9b66d0c}
+.server-performance-details[open]>summary i{display:inline-block;transform:rotate(180deg)}
+.server-performance-panel{margin:0!important;padding:11px!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+@media(max-width:560px){.mmp-market-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.mmp-market-coin{padding:7px!important}.mmp-market-coin-price{font-size:10px!important}.mmp-market-drawer-head small{max-width:230px;line-height:1.7}.mmp-coin-detail-panel{padding:16px 12px}}
+
 
 /* MMP NEW GLASS DRAWER — distinct expandable menus for Radar and Hunter */
 .signal-drawer{margin:14px 0 4px;border:1px solid rgba(218,183,111,.55);border-radius:16px;overflow:hidden;background:linear-gradient(135deg,rgba(30,40,54,.94),rgba(10,17,27,.97));box-shadow:0 10px 28px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.07);transition:border-color .2s,box-shadow .2s}
@@ -6646,7 +6675,6 @@ window.mmpShareDownloadLink = async function () {
 (function(){
  "use strict";
  const root=document.getElementById("mmp-command-progress");if(!root||root.dataset.bound==="1")return;root.dataset.bound="1";
- const endpoint="https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/hunter-snapshot";
  const el=id=>document.getElementById(id),fmt=v=>Number(v).toLocaleString("fa-IR");
  const keys=["momentum","flow","structure","liquidity","multiTimeframe","regime","volatility","sentiment","smartMoney","scenario","risk","dataQuality"];
  function fail(message){
@@ -6658,9 +6686,8 @@ window.mmpShareDownloadLink = async function () {
  async function refresh(){
   if(document.hidden)return;const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
   try{
-   const response=await fetch(endpoint,{cache:"no-store",headers:{"Accept":"application/json"},signal:controller.signal});
-   if(!response.ok)throw new Error("HTTP "+response.status);
-   const snap=await response.json();if(!snap||snap.status==="offline")throw new Error(snap?.message||"موتور مرکزی آفلاین است");
+   const snap=window.__mmpDigitalHunterSnapshot;
+   if(!snap||snap.status==="offline")throw new Error("منتظر Snapshot موتور مرکزی هستیم");
    const total=Number(snap.universe_count),batchDone=Math.max(0,Number(snap.scanned_count)||0),batchSize=Math.max(0,Number(snap.batch_size)||0),cursor=Math.max(0,Number(snap.next_cursor)||0);
    if(!Number.isFinite(total)||total<=0||!Number.isFinite(batchDone))throw new Error("شمارنده معتبر اسکن در snapshot موجود نیست");
    const covered=cursor===0&&batchDone>0?total:Math.min(total,cursor||batchDone),pct=Math.max(0,Math.min(100,Math.round(covered/total*100))),signals=Array.isArray(snap.signals)?snap.signals:[],activity=snap.engine_activity&&typeof snap.engine_activity==="object"?snap.engine_activity:{};
@@ -6676,7 +6703,7 @@ window.mmpShareDownloadLink = async function () {
   }catch(error){fail("اتصال یا داده معتبر در دسترس نیست · "+(error?.message||"خطای نامشخص"));}
   finally{clearTimeout(timer);}
  }
- refresh();setInterval(refresh,20000);document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh();});
+ let started=false;window.mmpWhenVisible?window.mmpWhenVisible("#mmp-command-progress",()=>{started=true;refresh();setInterval(()=>{if(!document.hidden&&document.getElementById("mmp-command-progress")?.getBoundingClientRect().top<window.innerHeight+500)refresh();},180000);},{rootMargin:"450px 0px"}):(started=true,refresh());document.addEventListener("mmp-hunter-snapshot-updated",()=>{if(started)refresh();});document.addEventListener("visibilitychange",()=>{if(started&&!document.hidden)refresh();});
 })();
 </script><style id="mmp-home-engine-live-style">
 #quantum-center-entry .quantum-engine-link{position:relative;overflow:hidden}
@@ -6747,17 +6774,18 @@ window.mmpShareDownloadLink = async function () {
  }
  async function refresh(){
   try{
-   const response=await fetch(API+"/hunter-snapshot",{cache:"no-store",headers:{Accept:"application/json"}});
-   if(!response.ok)throw new Error("snapshot "+response.status);
-   const snap=await response.json();window.__mmpQuantumHomeSnapshot=snap;paint(snap);
+   const snap=window.__mmpDigitalHunterSnapshot;
+   if(!snap)throw new Error("منتظر Snapshot موتور مرکزی هستیم");
+   window.__mmpQuantumHomeSnapshot=snap;paint(snap);
   }catch(e){
    cards.forEach(card=>{card.classList.remove("is-live");card.classList.add("is-stale");const t=card.querySelector(".engine-live-state span");if(t)t.textContent="اتصال ناموفق"}); 
    const badge=document.querySelector("#quantum-center-entry .quantum-engine-board-head>span");if(badge)badge.textContent="◷ CONNECTION WAIT";
   }
  }
- refresh();if(window.__mmpHomeEngineTimer)clearInterval(window.__mmpHomeEngineTimer);
- window.__mmpHomeEngineTimer=setInterval(refresh,15000);
- document.addEventListener("visibilitychange",()=>{if(!document.hidden)refresh()});
+ let started=false;const start=()=>{started=true;refresh();if(window.__mmpHomeEngineTimer)clearInterval(window.__mmpHomeEngineTimer);window.__mmpHomeEngineTimer=setInterval(()=>{if(!document.hidden&&root.getBoundingClientRect().top<window.innerHeight+500)refresh();},180000);};
+ if(window.mmpWhenVisible)window.mmpWhenVisible("#quantum-center-entry",start,{rootMargin:"450px 0px"});else start();
+ document.addEventListener("mmp-hunter-snapshot-updated",()=>{if(started)refresh()});
+ document.addEventListener("visibilitychange",()=>{if(started&&!document.hidden)refresh()});
 })();
 </script>
 <style id="mmp-native-chart-quality-20261110">
@@ -7310,26 +7338,73 @@ main,.app-main,.container,.terminal-grid,.intel-suite{min-width:0}
 <style id="mmp-chart-heading-layout-20261110">
 /* Layout-only correction for the chart heading and its existing actions.
    Candle renderer, data, timeframe controls and menu behavior are untouched. */
-html body #chart-section .chart-top-bar{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:10px 16px!important;padding:10px 12px!important;margin:0 0 10px!important}
-html body #chart-section .chart-heading-lockup{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important;flex:0 1 auto!important}
-html body #chart-section .chart-heading-lockup .mmp-module-logo{width:38px!important;height:38px!important;flex:0 0 38px!important;object-fit:contain!important}
-html body #chart-section .chart-heading-lockup h2{margin:0!important;font-size:clamp(15px,1.35vw,19px)!important;line-height:1.45!important;white-space:normal!important}
-html body #chart-section .chart-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:7px!important;flex-wrap:wrap!important;width:auto!important;min-width:0!important}
-html body #chart-section .chart-actions #tv-symbol,html body #chart-section .chart-actions .mmp-tv-picker{flex:0 1 185px!important;min-width:145px!important;max-width:210px!important}
-html body #chart-section .chart-actions>a,html body #chart-section .chart-actions>button{min-height:38px!important;padding:8px 11px!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;font-size:11px!important;line-height:1.3!important}
+html body #chart-section .chart-top-bar{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:10px 16px!important;
+  padding:10px 12px!important;
+  margin:0 0 10px!important;
+}
+html body #chart-section .chart-heading-lockup{
+  display:flex!important;align-items:center!important;gap:9px!important;
+  min-width:0!important;flex:0 1 auto!important;
+}
+html body #chart-section .chart-heading-lockup .mmp-module-logo{
+  width:38px!important;height:38px!important;flex:0 0 38px!important;
+  object-fit:contain!important;
+}
+html body #chart-section .chart-heading-lockup h2{
+  margin:0!important;font-size:clamp(15px,1.35vw,19px)!important;
+  line-height:1.45!important;white-space:normal!important;
+}
+html body #chart-section .chart-actions{
+  display:flex!important;align-items:center!important;justify-content:flex-end!important;
+  gap:7px!important;flex-wrap:wrap!important;width:auto!important;min-width:0!important;
+}
+html body #chart-section .chart-actions #tv-symbol,
+html body #chart-section .chart-actions .mmp-tv-picker{
+  flex:0 1 185px!important;min-width:145px!important;max-width:210px!important;
+}
+html body #chart-section .chart-actions > a,
+html body #chart-section .chart-actions > button{
+  min-height:38px!important;padding:8px 11px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  white-space:nowrap!important;font-size:11px!important;line-height:1.3!important;
+}
 @media(max-width:760px){
-html body #chart-section .chart-top-bar{grid-template-columns:minmax(0,1fr)!important;gap:8px!important;padding:9px 8px!important}
-html body #chart-section .chart-heading-lockup{width:100%!important}
-html body #chart-section .chart-heading-lockup .mmp-module-logo{width:34px!important;height:34px!important;flex-basis:34px!important}
-html body #chart-section .chart-heading-lockup h2{font-size:15px!important;line-height:1.5!important}
-html body #chart-section .chart-actions{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;align-items:stretch!important;justify-content:stretch!important;gap:7px!important;width:100%!important}
-html body #chart-section .chart-actions #tv-symbol,html body #chart-section .chart-actions .mmp-tv-picker{grid-column:1/-1!important;width:100%!important;max-width:none!important;min-width:0!important;flex:none!important}
-html body #chart-section .chart-actions>a,html body #chart-section .chart-actions>button{width:100%!important;min-width:0!important;min-height:40px!important;padding:8px 6px!important;font-size:10px!important}
+  html body #chart-section .chart-top-bar{
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:8px!important;padding:9px 8px!important;
+  }
+  html body #chart-section .chart-heading-lockup{width:100%!important}
+  html body #chart-section .chart-heading-lockup .mmp-module-logo{
+    width:34px!important;height:34px!important;flex-basis:34px!important;
+  }
+  html body #chart-section .chart-heading-lockup h2{
+    font-size:15px!important;line-height:1.5!important;
+  }
+  html body #chart-section .chart-actions{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;
+    align-items:stretch!important;justify-content:stretch!important;
+    gap:7px!important;width:100%!important;
+  }
+  html body #chart-section .chart-actions #tv-symbol,
+  html body #chart-section .chart-actions .mmp-tv-picker{
+    grid-column:1/-1!important;width:100%!important;max-width:none!important;
+    min-width:0!important;flex:none!important;
+  }
+  html body #chart-section .chart-actions > a,
+  html body #chart-section .chart-actions > button{
+    width:100%!important;min-width:0!important;min-height:40px!important;
+    padding:8px 6px!important;font-size:10px!important;
+  }
 }
 @media(max-width:360px){
-html body #chart-section .chart-heading-lockup h2{font-size:13px!important}
-html body #chart-section .chart-actions{gap:5px!important}
-html body #chart-section .chart-actions>a,html body #chart-section .chart-actions>button{font-size:9px!important;padding-inline:4px!important}
+  html body #chart-section .chart-heading-lockup h2{font-size:13px!important}
+  html body #chart-section .chart-actions{gap:5px!important}
+  html body #chart-section .chart-actions > a,
+  html body #chart-section .chart-actions > button{font-size:9px!important;padding-inline:4px!important}
 }
 </style>
 
@@ -7337,7 +7412,10 @@ html body #chart-section .chart-actions>a,html body #chart-section .chart-action
 <style id="mmp-market-snapshot-mini-four-20261110">
 /* Only the four top benchmark cards: reduce footprint without changing data or behavior. */
 html body section#market-snapshot.mmp-market-snapshot{gap:9px!important;margin-block:8px 13px!important}
-html body section#market-snapshot.mmp-market-snapshot>article.mmp-market-card{height:126px!important;min-height:126px!important;max-height:126px!important;padding:8px 10px 7px!important;border-radius:13px!important}
+html body section#market-snapshot.mmp-market-snapshot>article.mmp-market-card{
+ height:126px!important;min-height:126px!important;max-height:126px!important;
+ padding:8px 10px 7px!important;border-radius:13px!important
+}
 html body section#market-snapshot .mmp-card-top{min-height:25px!important;margin:0 0 4px!important;gap:5px!important}
 html body section#market-snapshot .mmp-asset-icon{width:25px!important;height:25px!important;min-width:25px!important;flex-basis:25px!important;border-radius:7px!important;font-size:13px!important}
 html body section#market-snapshot .mmp-card-tag{font-size:9px!important;line-height:1.2!important}
@@ -7358,5 +7436,6 @@ html body section#market-snapshot .mmp-card-track{height:2px!important;padding-t
 }
 </style>
 
+<!-- MMP quota recovery: background polling is deliberately throttled -->
 </body>
 </html>
