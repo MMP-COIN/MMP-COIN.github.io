@@ -1,0 +1,36 @@
+name: Validate MMP Pages smoke workflow
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/validate-pages-workflow.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+      - name: Parse embedded browser smoke-test scripts
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, textwrap
+          source = Path(".github/workflows/pages.yml").read_text(encoding="utf-8")
+          blocks = re.findall(r"(?m)^\\s*node <<'NODE'\\s*\\n(.*?)^\\s*NODE\\s*$", source, re.S)
+          if not blocks:
+              raise SystemExit("No embedded Node smoke-test blocks were found")
+          for index, block in enumerate(blocks, 1):
+              Path(f"/tmp/mmp-pages-smoke-{index}.js").write_text(textwrap.dedent(block), encoding="utf-8")
+          print(f"Extracted {len(blocks)} Node smoke-test blocks.")
+          PY
+          for file in /tmp/mmp-pages-smoke-*.js; do node --check "$file"; done
