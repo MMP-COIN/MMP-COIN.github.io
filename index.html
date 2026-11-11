@@ -3264,100 +3264,56 @@ async function enrichWithBinance(coins){
 }
 
 
-async function fetchTetherRate(){
-  const requests=[
-   {source:"Nobitex",url:AI_ANALYSIS_ENDPOINT+"/market-proxy?source=nobitex-tether",read:d=>Number(d?.stats?.["usdt-rls"]?.latest)/10},
-   {source:"Wallex",url:AI_ANALYSIS_ENDPOINT+"/market-proxy?source=wallex-markets",read:d=>{
-    const raw=d?.result?.symbols||d?.result?.markets||{};
-    const markets=Array.isArray(raw)?raw:Object.values(raw);
-    const tomanMarket=markets.find(m=>String(m?.symbol||"").toUpperCase()==="USDTTMN");
-    const rialMarket=markets.find(m=>String(m?.symbol||"").toUpperCase()==="USDTIRT");
-    const toman=Number(tomanMarket?.stats?.lastPrice??tomanMarket?.lastPrice);
-    const rial=Number(rialMarket?.stats?.lastPrice??rialMarket?.lastPrice);
-    return toman>0?toman:rial/10;
-   }},
-  ];
-  const results=await Promise.all(requests.map(async item=>{
-   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),9000);
-   try{
-    const response=await fetch(item.url,{cache:"no-store",signal:controller.signal});
-    if(!response.ok)throw new Error("HTTP "+response.status);
-    const data=await response.json(),price=item.read(data);
-    if(!Number.isFinite(price)||price<1000||price>100000000)throw new Error("invalid rate");
-    return {source:item.source,price};
-   }catch(error){return null;}
-   finally{clearTimeout(timer);}
-  }));
-  const valid=results.filter(Boolean);
-  if(!valid.length)return {price:0,sources:[],warning:"نرخ تتر موقتاً از منابع داخلی دریافت نشد"};
-  if(valid.length===1)return {price:valid[0].price,sources:[valid[0].source],warning:"فقط یک منبع نرخ تتر پاسخ داد"};
-  const a=valid[0],b=valid[1],diff=Math.abs(a.price-b.price)/((a.price+b.price)/2);
-  if(diff>0.03)return {price:a.price,sources:[a.source],warning:"اختلاف بیش از ۳٪ میان منابع؛ نرخ منبع اصلی نمایش داده شد"};
-  return {price:(a.price+b.price)/2,sources:valid.map(x=>x.source),warning:""};
- }
-
-function normalizeCoinLoreAssets(payload){
- const rows=Array.isArray(payload?.data)?payload.data:[];
- const stamp=Number(payload?.info?.time)||Math.floor(Date.now()/1000);
- const updated=new Date(stamp*1000).toISOString();
- return rows.map(item=>({
-  id:String(item?.nameid||item?.id||""),
-  symbol:String(item?.symbol||""),
-  name:String(item?.name||item?.symbol||""),
-  image:"https://assets.coincap.io/assets/icons/"+String(item?.symbol||"").toLowerCase()+"@2x.png",
-  current_price:Number(item?.price_usd),
-  market_cap:Number(item?.market_cap_usd),
-  market_cap_rank:Number(item?.rank),
-  total_volume:Number(item?.volume24),
-  price_change_percentage_1h:Number(item?.percent_change_1h),
-  price_change_percentage_24h:Number(item?.percent_change_24h),
-  price_change_percentage_7d:Number(item?.percent_change_7d),
-  last_updated:updated,
-  price_source:"CoinLore"
- })).filter(item=>item.id&&item.symbol&&Number.isFinite(item.current_price)&&item.current_price>0);
-}
-
-let refreshInFlight=false;
-let benchmarkQuoteInFlight=false,goldQuoteInFlight=false;
-async function refreshBenchmarkQuotes(){
- if(benchmarkQuoteInFlight||document.visibilityState==="hidden")return false;
- benchmarkQuoteInFlight=true;
+async async function fetchTetherRate(){
+ // Prefer the server-side local market monitor: it checks Nobitex, Wallex and Bitpin,
+ // normalizes Rial/Toman units and returns the number of genuinely fresh sources.
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),13000);
  try{
-  const seed=["BTC","ETH"].map(symbol=>{
-   const old=cachedCoinsData.find(c=>String(c.symbol||"").toUpperCase()===symbol)||{};
-   return {id:symbol==="BTC"?"bitcoin":"ethereum",symbol,name:old.name||symbol,current_price:Number(old.current_price)||0,price_change_percentage_24h:old.price_change_percentage_24h,price_source:old.price_source||"آخرین داده معتبر",price_updated_at:old.price_updated_at||null};
-  });
-  const quotes=await enrichWithBinance(seed);
-  const now=Date.now(),fresh=quotes.filter(c=>Number(c.current_price)>0&&Number.isFinite(Date.parse(c.price_updated_at||""))&&now-Date.parse(c.price_updated_at)<=60000&&["Binance Spot","Bitget Spot","OKX Spot","Bybit Spot"].includes(c.price_source));
-  if(!fresh.length)return false;
-  const bySymbol=new Map(fresh.map(c=>[String(c.symbol).toUpperCase(),c]));
-  cachedCoinsData=cachedCoinsData.map(c=>bySymbol.get(String(c.symbol||"").toUpperCase())?{...c,...bySymbol.get(String(c.symbol||"").toUpperCase())}:c);
-  lastMarket.crypto=lastMarket.crypto||{};
-  fresh.forEach(c=>{lastMarket.crypto[c.symbol.toUpperCase()]={usd:Number(c.current_price),change24h:c.price_change_percentage_24h};});
-  renderHeroCards();
-  return true;
- }catch(error){console.warn("Independent BTC/ETH quote refresh failed:",error);return false;}
- finally{benchmarkQuoteInFlight=false;}
-}
-async function refreshGoldQuote(){
- if(goldQuoteInFlight||document.visibilityState==="hidden")return false;
- goldQuoteInFlight=true;
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),4500);
- try{
-  const response=await fetch("https://api.gold-api.com/price/XAU",{cache:"no-store",signal:controller.signal});
-  if(!response.ok)throw new Error("Gold API HTTP "+response.status);
-  const payload=await response.json(),price=Number(payload?.price);
-  if(!Number.isFinite(price)||price<=0)throw new Error("Invalid XAU quote");
-  $("gold").textContent="$"+money(price,2);
-  const sub=$("gold-sub");if(sub)sub.textContent="منبع: Gold-API · بروزرسانی "+new Date().toLocaleTimeString("fa-IR");
-  try{localStorage.setItem("mmp_gold_quote_v1",JSON.stringify({price,updatedAt:Date.now()}));}catch(e){}
-  return true;
+  const response=await fetch(AI_ANALYSIS_ENDPOINT+"/local-market-watch",{cache:"no-store",signal:controller.signal,headers:{"Accept":"application/json"}});
+  if(!response.ok)throw new Error("HTTP "+response.status);
+  const data=await response.json();
+  const sources=Array.isArray(data?.sources)?data.sources.filter(x=>x?.fresh===true&&Number(x.price_toman)>0).map(x=>String(x.exchange||"")).filter(Boolean):[];
+  const price=Number(data?.median_toman);
+  if(Number.isFinite(price)&&price>=1000&&price<=100000000&&sources.length){
+   return {price,sources,warning:String(data.warning||"")};
+  }
+  throw new Error(data?.warning||"هیچ نرخ تازه‌ای از پایشگر بازار داخلی دریافت نشد");
  }catch(error){
-  console.warn("Gold quote refresh failed:",error);
-  try{const saved=JSON.parse(localStorage.getItem("mmp_gold_quote_v1")||"null");if(Number(saved?.price)>0&&Date.now()-Number(saved.updatedAt)<30*60*1000){$("gold").textContent="$"+money(Number(saved.price),2);const sub=$("gold-sub");if(sub)sub.textContent="آخرین قیمت معتبر ذخیره‌شده · منبع: Gold-API";return false;}}catch(e){}
-  return false;
- }finally{clearTimeout(timer);goldQuoteInFlight=false;}
+  console.warn("Local market monitor unavailable; trying independent exchange proxies:",error?.message||error);
+ }finally{clearTimeout(timer);}
+ // Independent fallback: preserve the existing Nobitex/Wallex proxy path if the
+ // consolidated local-market endpoint itself is temporarily unavailable.
+ const requests=[
+  {source:"Nobitex",url:AI_ANALYSIS_ENDPOINT+"/market-proxy?source=nobitex-tether",read:d=>Number(d?.stats?.["usdt-rls"]?.latest)/10},
+  {source:"Wallex",url:AI_ANALYSIS_ENDPOINT+"/market-proxy?source=wallex-markets",read:d=>{
+   const raw=d?.result?.symbols||d?.result?.markets||{};
+   const markets=Array.isArray(raw)?raw:Object.values(raw);
+   const tomanMarket=markets.find(m=>String(m?.symbol||"").toUpperCase()==="USDTTMN");
+   const rialMarket=markets.find(m=>String(m?.symbol||"").toUpperCase()==="USDTIRT");
+   const toman=Number(tomanMarket?.stats?.lastPrice??tomanMarket?.lastPrice);
+   const rial=Number(rialMarket?.stats?.lastPrice??rialMarket?.lastPrice);
+   return toman>0?toman:rial/10;
+  }}
+ ];
+ const results=await Promise.all(requests.map(async item=>{
+  const requestController=new AbortController(),requestTimer=setTimeout(()=>requestController.abort(),9000);
+  try{
+   const response=await fetch(item.url,{cache:"no-store",signal:requestController.signal});
+   if(!response.ok)throw new Error("HTTP "+response.status);
+   const data=await response.json(),price=item.read(data);
+   if(!Number.isFinite(price)||price<1000||price>100000000)throw new Error("invalid rate");
+   return {source:item.source,price};
+  }catch(error){return null;}
+  finally{clearTimeout(requestTimer);}
+ }));
+ const valid=results.filter(Boolean);
+ if(!valid.length)return {price:0,sources:[],warning:"نرخ تتر موقتاً از منابع داخلی دریافت نشد"};
+ if(valid.length===1)return {price:valid[0].price,sources:[valid[0].source],warning:"فقط یک منبع نرخ تتر پاسخ داد"};
+ const a=valid[0],b=valid[1],diff=Math.abs(a.price-b.price)/((a.price+b.price)/2);
+ if(diff>0.03)return {price:a.price,sources:[a.source],warning:"اختلاف بیش از ۳٪ میان منابع؛ نرخ منبع اصلی نمایش داده شد"};
+ return {price:(a.price+b.price)/2,sources:valid.map(x=>x.source),warning:""};
 }
+
 async function refreshAll(){
  if(refreshInFlight)return false;
  refreshInFlight=true;
