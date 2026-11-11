@@ -82,6 +82,33 @@ jobs:
           # Do not commit generated mirror files from inside the deployment job:
           # doing so creates a dirty worktree and makes git pull --rebase fail.
           printf '{"build":"%s","updatedAt":"%s"}\n' "$BUILD_ID" "$(date -u +%FT%TZ)" > version.json
+      - name: Validate mirrored page assets exist before deployment
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import html.parser, pathlib, re, sys
+          pages = [pathlib.Path(p) for p in ("index.html", "quantum-lab.html", "admin.html", "market-heatmap.html")]
+          missing = []
+          class Refs(html.parser.HTMLParser):
+              def __init__(self): super().__init__(); self.refs=[]
+              def handle_starttag(self, tag, attrs):
+                  for key, value in attrs:
+                      if key in ("src", "href") and value:
+                          value=value.strip()
+                          if value.startswith(("https://","http://","//","data:","mailto:","tel:","#","javascript:")): continue
+                          path=value.split("?",1)[0].split("#",1)[0]
+                          if path and re.search(r"\\.(?:js|css|svg|png|jpe?g|webp|ico|woff2?|webmanifest)$", path, re.I):
+                              self.refs.append(path.lstrip("/"))
+          for page in pages:
+              parser=Refs(); parser.feed(page.read_text(encoding="utf-8"))
+              for ref in parser.refs:
+                  if not pathlib.Path(ref).is_file(): missing.append(f"{page}: {ref}")
+          if missing:
+              print("Missing local deployment assets:")
+              print("\\n".join(missing))
+              sys.exit(1)
+          print("All local JS/CSS/image/font/manifest references exist in the Pages artifact.")
+          PY
       - name: Validate inline JavaScript syntax
         run: |
           set -euo pipefail
