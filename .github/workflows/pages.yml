@@ -137,6 +137,12 @@ jobs:
           ! grep -q 'api.wallex.ir' /tmp/mmp-home.html
           ! grep -q 'mmp-command-progress' /tmp/mmp-home.html
           grep -q 'mmp-web-build' /tmp/mmp-home.html
+          grep -q 'mmp-quantum-terminal-v1.js' /tmp/mmp-home.html
+          grep -q 'mmp-quantum-terminal-v1.css' /tmp/mmp-home.html
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/assets/mmp-quantum-terminal-v1.js?v=$GITHUB_RUN_ID" -o /tmp/mmp-terminal.js
+          grep -q 'mmp-terminal-hub' /tmp/mmp-terminal.js
+          curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/assets/mmp-quantum-terminal-v1.css?v=$GITHUB_RUN_ID" -o /tmp/mmp-terminal.css
+          grep -q 'mmp-hub-grid' /tmp/mmp-terminal.css
           ! grep -q 'refreshInFlight' /tmp/mmp-home.html
           grep -q 'window.__mmpRefreshInFlight' /tmp/mmp-home.html
           ! grep -q 'api.binance.com/api/v3/klines' /tmp/mmp-home.html
@@ -217,8 +223,9 @@ jobs:
             try {
               for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile",width:390,height:844}]) {
                 const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
-                page.on("pageerror", error => failures.push(viewport.name + ": " + (error.stack || error.message)));
-                page.on("requestfailed", request => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => request.url().includes(host))) console.log(viewport.name + " RESOURCE REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); });
+                page.on("pageerror", error => { const detail = error.stack || error.message; failures.push(viewport.name + ": " + detail); console.log(viewport.name + " PAGE ERROR: " + detail); });
+                page.on("response", response => { if (response.url().includes("mmp-quantum-terminal-v1")) console.log(viewport.name + " TERMINAL ASSET RESPONSE: " + response.status() + " " + response.url()); });
+                page.on("requestfailed", request => { if (request.url().includes("mmp-quantum-terminal-v1")) console.log(viewport.name + " TERMINAL ASSET REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => request.url().includes(host))) console.log(viewport.name + " RESOURCE REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); });
                 page.on("response", response => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => response.url().includes(host))) console.log(viewport.name + " RESOURCE RESPONSE: " + response.status() + " " + response.url() + " ACAO=" + (response.headers()["access-control-allow-origin"] || "MISSING")); });
                 page.on("console", message => { if (message.type() === "error") console.log(viewport.name + " BROWSER CONSOLE ERROR: " + message.text()); });
                 const siteOrigin = new URL(process.env.SITE_URL).origin;
@@ -227,6 +234,17 @@ jobs:
                 const response = await page.goto(homeUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
                 await page.waitForTimeout(7000);
+                const terminalState = await page.evaluate(() => ({
+                  ready: document.body?.dataset?.mmpTerminalReady || null,
+                  view: document.body?.dataset?.mmpView || null,
+                  bodyClass: document.body?.className || null,
+                  script: [...document.scripts].filter(s => s.src.includes("mmp-quantum-terminal-v1")).map(s => s.src),
+                  hub: !!document.querySelector("#mmp-terminal-hub"),
+                  hubCards: document.querySelectorAll("#mmp-terminal-hub .mmp-hub-card").length,
+                  main: !!document.querySelector("#hero"),
+                  sections: document.querySelectorAll("#hero > section").length
+                }));
+                console.log(viewport.name + " TERMINAL INIT STATE: " + JSON.stringify(terminalState));
                 const apiProbe = await page.evaluate(async () => {
                   const url = "https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/market-candles?symbol=BTCUSDT&interval=1h&market=spot";
                   try {
