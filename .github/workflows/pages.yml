@@ -179,8 +179,9 @@ jobs:
               for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile",width:390,height:844}]) {
                 const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
                 page.on("pageerror", error => failures.push(viewport.name + ": " + error.message));
-                page.on("requestfailed", request => { if (request.url().includes("workers.dev")) console.log(viewport.name + " WORKER REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); });
-                page.on("response", response => { if (response.url().includes("workers.dev")) console.log(viewport.name + " WORKER RESPONSE: " + response.status() + " " + response.url() + " ACAO=" + (response.headers()["access-control-allow-origin"] || "MISSING")); });
+                page.on("requestfailed", request => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => request.url().includes(host))) console.log(viewport.name + " RESOURCE REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); });
+                page.on("response", response => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => response.url().includes(host))) console.log(viewport.name + " RESOURCE RESPONSE: " + response.status() + " " + response.url() + " ACAO=" + (response.headers()["access-control-allow-origin"] || "MISSING")); });
+                page.on("console", message => { if (message.type() === "error") console.log(viewport.name + " BROWSER CONSOLE ERROR: " + message.text()); });
                 const response = await page.goto(process.env.SITE_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
                 await page.waitForTimeout(7000);
