@@ -254,7 +254,7 @@ jobs:
             const browser = await chromium.launch({ headless: true, channel: "chrome" });
             const failures = [];
             try {
-              for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile",width:390,height:844}]) {
+              for (const viewport of [{name:"desktop",width:1440,height:1000},{name:"mobile-web",width:390,height:844},{name:"mobile-app",width:390,height:844}]) {
                 const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
                 page.on("pageerror", error => { const detail = error.stack || error.message; failures.push(viewport.name + ": " + detail); console.log(viewport.name + " PAGE ERROR: " + detail); });
                 page.on("response", response => { if (response.url().includes("mmp-quantum-terminal-v1")) console.log(viewport.name + " TERMINAL ASSET RESPONSE: " + response.status() + " " + response.url()); });
@@ -265,7 +265,7 @@ jobs:
                 await page.route("**/*", route => { const u = new URL(route.request().url()); if (u.origin === siteOrigin) return route.continue({ headers: { ...route.request().headers(), "cache-control": "no-cache", "pragma": "no-cache" } }); return route.continue(); });
                 const homeUrl = new URL(process.env.SITE_URL); homeUrl.searchParams.set("mmp_smoke", process.env.GITHUB_RUN_ID || "test");
                 // The mobile pass represents the native Capacitor WebView, which always supplies this marker.
-                if (viewport.name === "mobile") homeUrl.searchParams.set("mmp_native_version", "2.0.0");
+                if (viewport.name === "mobile-app") homeUrl.searchParams.set("mmp_native_version", "2.0.0");
                 const response = await page.goto(homeUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
                 let terminalState = null;
@@ -329,7 +329,7 @@ jobs:
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
                 }
-                const appMode = viewport.name === "mobile";
+                const appMode = viewport.name === "mobile-app";
                 const openCenter = async center => {
                   const selector = appMode ? "#mmp-app-page-dock [data-mmp-app-page='" + center + "']" : "#mmp-terminal-hub [data-mmp-open-center='" + center + "']";
                   await page.locator(selector).click();
