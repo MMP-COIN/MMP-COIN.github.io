@@ -447,12 +447,17 @@ jobs:
           NODE
 
       - name: Persist canonical mirror for legacy Pages source
-        if: success()
+        if: always() && !cancelled()
         id: mirror
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          if [ ! -s version.json ] || [ ! -s index.html ]; then
+            echo "Canonical artifact was not prepared; skip mirror sync safely."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git add index.html quantum-lab.html admin.html market-heatmap.html assets manifest.webmanifest version.json
           if git diff --cached --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
