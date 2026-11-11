@@ -3216,7 +3216,7 @@ async function enrichWithBinance(coins){
   {name:"Bitget Spot",load:async()=>{
    const normalize=d=>{
     if(d?.code!=="00000"||!Array.isArray(d.data)||!d.data.length)throw new Error("Invalid Bitget ticker response");
-    return d.data.map(t=>({symbol:t.symbol,lastPrice:t.lastPrice,priceChangePercent:Number(t.price24hPcnt)*100,closeTime:t.ts}));
+    return d.data.map(t=>({symbol:t.symbol,lastPrice:t.lastPr??t.lastPrice,priceChangePercent:Number.isFinite(Number(t.change24h))?Number(t.change24h)*100:Number(t.price24hPcnt)*100,closeTime:t.ts??t.tsMs??Date.now()}));
    };
    try{return normalize(await fetchJson(AI_ANALYSIS_ENDPOINT+"/market-proxy?source=bitget-tickers",7000));}
    catch(proxyError){console.warn("Bitget Worker feed unavailable; trying direct endpoint:",proxyError?.message||proxyError);}
