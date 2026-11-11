@@ -2500,18 +2500,7 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 }
 </style>
 
-<style id="mmp-compact-server-performance">
-/* Compact collapsed server performance drawer; preserve the full report inside. */
-.server-performance-drawer{margin:6px 0 9px!important;border-radius:10px!important}
-.server-performance-details>summary{min-height:42px;padding:7px 10px;gap:8px}
-.server-performance-details>summary>span{min-width:0;display:block}
-.server-performance-details>summary b{font-size:10px;line-height:1.45}
-.server-performance-details>summary small{font-size:7.5px;line-height:1.4;margin-top:2px}
-.server-performance-details>summary em{font-size:8px;padding:4px 7px;border-radius:7px}
-.server-performance-details>summary i{margin-inline-start:3px}
-.server-performance-panel{padding:9px!important}
-@media(max-width:420px){.server-performance-details>summary{padding:7px 8px;gap:6px}.server-performance-details>summary em{font-size:7.5px;padding:4px 6px}}
-</style>
+
 
 <style id="mmp-unified-core-and-menu-v2">
 .quantum-engine-single{grid-column:1/-1;margin-top:12px;padding:15px;border:1px solid #a98a50;border-radius:15px;background:linear-gradient(115deg,#1c2633,#111923 60%,#191a18);box-shadow:0 12px 30px #0005}
@@ -2532,6 +2521,20 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 #dropdownMenu>a.menu-admin-link b{font-size:20px}
 .mmp-sidebar .side-link>i{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid #9b7b455c;border-radius:9px;background:linear-gradient(145deg,#263746,#101923);color:#f0d18a;font-style:normal;font-size:15px}
 @media(max-width:560px){.quantum-engine-single{padding:11px}.quantum-core-flow{justify-content:center}.quantum-core-flow span,.quantum-core-flow b{font-size:9px}.quantum-engine-single-head b{font-size:12px}}
+</style>
+<style id="mmp-core-currency-menu">
+.mmp-core-currency{margin:12px 0 5px;padding:12px;border:1px solid #b99a5b66;border-radius:12px;background:linear-gradient(120deg,#101b27,#171b20);color:#e9edf3}
+.mmp-core-currency-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
+.mmp-core-currency-head b{font-size:12px;color:#f0d18a}
+.mmp-core-currency-head span{font-size:9px;color:#aebdca;text-align:left}
+.mmp-core-currency-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mmp-core-currency-values>div{padding:8px;border:1px solid #ffffff14;border-radius:8px;background:#080e1780;min-width:0}
+.mmp-core-currency-values small{display:block;color:#9eabb9;font-size:9px;margin-bottom:5px}
+.mmp-core-currency-values strong{display:block;color:#f4dfa8;font-size:12px;overflow-wrap:anywhere;direction:ltr;text-align:right}
+.mmp-core-currency-actions{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.mmp-core-currency-actions button{border:1px solid #b99a5b88;border-radius:8px;background:#d9b66d12;color:#e8d19b;padding:7px 10px;font:inherit;font-size:10px;cursor:pointer}
+.mmp-core-currency-actions button.active{background:#d9b66d2b;border-color:#e2c47e;color:#fff0c8}
+@media(max-width:520px){.mmp-core-currency-values{grid-template-columns:1fr 1fr}.mmp-core-currency-values>div:last-child{grid-column:1/-1}}
 </style>
 </head>
 <body class="mmp-app-mode">
@@ -2560,7 +2563,6 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <a href="#chart-section"><i class="menu-icon">▥</i><span>نمودار حرفه‌ای</span></a>
   <a href="#trading-tools"><i class="menu-icon">⌗</i><span>ابزارهای معامله</span></a>
   <div class="menu-divider"></div>
-  <a class="menu-admin-link" href="https://mmp-coin.github.io/admin.html"><i class="menu-icon">⚙</i><span>پنل مدیریت</span><b>›</b></a>
 </div>
 </header>
 
@@ -2584,7 +2586,6 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <a class="side-link" href="#connections"><i>◉</i><span>سلامت منابع داده</span><em>13</em></a>
   <a class="side-link" href="#app-download"><i>⬇</i><span>دانلود اپلیکیشن</span><em>14</em></a>
   <a class="side-link" href="#contact-us"><i>✉</i><span>ارتباط با مدیریت</span><em>15</em></a>
-  <a class="side-link" href="https://mmp-coin.github.io/admin.html"><i>⚙</i><span>پنل مدیریت</span><em>16</em></a>
   <div class="side-footer"><span class="live-dot"></span><span>اتصال زنده بازار</span><small>DATA STREAM ACTIVE</small></div>
 </aside>
 <!-- منوی پایین حذف شد؛ منوی اصلی در سربرگ قرار دارد. -->
@@ -2650,21 +2651,22 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <div class="quantum-hero-eyebrow">MMP QUANTUM INTELLIGENCE · MARKET INTELLIGENCE</div>
   <h2 class="hero-title" id="quantum-center-title"><span class="quantum-gold-title">هسته هوشمند بازار MMP</span><span>تحلیل، کشف فرصت و مدیریت ریسک</span></h2>
   <p>اتاق تصمیم‌گیری یکپارچه برای رصد بازار، کشف فرصت‌های زودهنگام، تحلیل جریان سفارش و سنجش سناریوهای معاملاتی؛ متصل به رادار، شکارچی بازار و تحلیلگر هوشمند.</p>
-  <div class="quantum-hero-tags"><span>۱۲ قابلیت یکپارچه</span><span>اسکن پویای جفت‌های واجد شرایط USDT</span><span>تحلیل چندلایه و مدیریت ریسک</span></div>
+  <div class="mmp-core-currency" id="mmp-core-currency" aria-label="نرخ تبدیل تتر و تومان">
+   <div class="mmp-core-currency-head"><b>نرخ تتر و تومان</b><span id="mmp-core-currency-status">در انتظار نرخ معتبر</span></div>
+   <div class="mmp-core-currency-values"><div><small>۱ تتر (USDT)</small><strong id="mmp-core-usdt">۱٫۰۰۰۰ USDT</strong></div><div><small>معادل به تومان</small><strong id="mmp-core-toman">— تومان</strong></div><div><small>۱,۰۰۰,۰۰۰ تومان</small><strong id="mmp-core-reverse">— USDT</strong></div></div>
+   <div class="mmp-core-currency-actions"><button type="button" id="mmp-core-show-irt" onclick="setCurrency('IRT')">نمایش قیمت‌ها به تومان</button><button type="button" id="mmp-core-show-usdt" onclick="setCurrency('USDT')">نمایش قیمت‌ها به تتر</button></div>
+  </div>
+  <div class="quantum-hero-tags"><span>۱۲ لایه تحلیلی در یک هسته</span><span>اسکن پویای جفت‌های واجد شرایط USDT</span><span>تحلیل چندلایه و مدیریت ریسک</span></div>
   <div class="quantum-hero-actions"><a class="quantum-enter-btn" href="/quantum-lab.html"><span>ورود به مرکز کوانتومی</span><b>←</b></a><a class="quantum-run-compact" href="/quantum-lab.html?run-engines=1" aria-label="ورود و اجرای چرخه ابرموتور"><span>⟳ اجرای چرخه ابرموتور</span><small>اسکن واقعی بازار</small></a><span class="badge">مرکز یکپارچه تحلیل بازار</span></div>
  </div>
  <div class="quantum-hero-art" aria-label="نشان سه‌بعدی کوانتومی MMP"><div class="quantum-art-grid"></div><div class="quantum-art-orbit orbit-one"></div><div class="quantum-art-orbit orbit-two"></div><div class="quantum-art-orbit orbit-three"></div><div class="quantum-art-core mmp-quantum-emblem"><img src="assets/mmp-coin-mark.svg?v=20261109-hero" alt="نشان اصلی سکه MMP"></div><i class="quantum-node node-one"></i><i class="quantum-node node-two"></i><i class="quantum-node node-three"></i><div class="quantum-art-caption">QUANTUM COMMAND<small>MMP MARKET INTELLIGENCE</small></div></div>
- <section class="quantum-engine-single" id="quantum-engine-single" aria-label="هسته هوشمند واحد MMP">
-  <div class="quantum-engine-single-head"><span class="quantum-core-mark">M</span><div><small>MMP QUANTUM INTELLIGENCE · QIE-4</small><b>هسته هوشمند واحد MMP</b><p>یک هسته مرکزی؛ همه شواهد بازار در یک مسیر تصمیم‌گیری هماهنگ می‌شوند.</p></div></div>
-  <div class="quantum-core-flow"><span>داده زنده</span><i>←</i><span>تحلیل و پیش‌آگاهی</span><i>←</i><span>اعتبارسنجی</span><i>←</i><b>تصمیم نهایی</b></div>
-  <a class="quantum-engine-enter" href="/quantum-lab.html">ورود به مرکز فرماندهی کوانتومی <b>←</b></a>
-</section>
+ <div class="quantum-core-flow" aria-label="مسیر تصمیم‌گیری QIE-4"><span>داده زنده</span><i>←</i><span>تحلیل و پیش‌آگاهی</span><i>←</i><span>اعتبارسنجی</span><i>←</i><b>تصمیم نهایی</b></div>
  <section class="mmp-command-progress" id="mmp-command-progress" aria-live="polite" aria-label="پیشرفت واقعی موتور مرکزی">
 <div class="mcp-head"><div><span class="mcp-kicker">QUANTUM CORE · LIVE CYCLE</span><b id="mcp-state">در انتظار دریافت وضعیت موتور مرکزی</b></div><strong id="mcp-percent">—</strong></div>
 <div class="mcp-track" role="progressbar" aria-label="پیشرفت اسکن موتور مرکزی" aria-valuemin="0" aria-valuemax="100"><i id="mcp-bar"></i></div>
 <div class="mcp-metrics"><span>پوشش چرخه <b id="mcp-done">—</b> از <b id="mcp-total">—</b> نماد</span><span>موفق در نوبت اخیر <b id="mcp-batch">—</b></span><span>لایه‌های دارای شواهد واقعی <b id="mcp-engines">—</b></span><span>خطاهای نوبت اخیر <b id="mcp-errors">—</b></span></div>
 <small id="mcp-updated">این نوار فقط از snapshot واقعی موتور مرکزی تغذیه می‌شود؛ در نبود داده، درصد نمایش داده نمی‌شود.</small></section>
-<div class="quantum-hero-foot"><span>اسکن پویا جفت‌های واجد شرایط USDT Spot</span><span>۱۲ موتور تحلیل و تصمیم</span><span>داده ناموجود = بدون امتیازسازی جعلی</span></div>
+<div class="quantum-hero-foot"><span>اسکن پویا جفت‌های واجد شرایط USDT Spot</span><span>۳ سرویس تحلیلی اصلی · ۱۲ مؤلفه تحلیلی</span><span>داده ناموجود = بدون امتیازسازی جعلی</span></div>
 </section>
 
 <section class="market-heatmap-entry" aria-label="ورود به نقشه حرارتی بازار">
@@ -2837,17 +2839,7 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   </article>
  </div>
 </section>
-<section class="server-performance-drawer" id="server-performance">
- <details class="server-performance-details" id="server-performance-details">
-  <summary><span><b>سنجش اعتبار موتورهای تحلیل</b><small>کارنامه سروری · فقط نتایج بسته‌شده و قابل‌ردیابی</small></span><em>نمایش کارنامه <i>⌄</i></em></summary>
-  <div class="server-performance-panel" id="server-performance-panel">
-   <div class="server-performance-head"><div><b>گزارش عملکرد موتورهای تحلیل</b><small>فقط معاملات بسته‌شده و نتایج قابل‌ردیابی</small></div><button class="intel-refresh" id="performance-refresh" type="button">↻ تازه‌سازی آمار</button></div>
-   <div class="performance-summary" id="performance-summary"><div><small>نمونه‌های ثبت‌شده</small><b>—</b></div><div><small>نتایج قطعی</small><b>—</b></div><div><small>موفق</small><b>—</b></div><div><small>ناموفق</small><b>—</b></div><div><small>نرخ موفقیت</small><b>—</b></div><div><small>میانگین R</small><b>—</b></div></div>
-   <div class="performance-engine-list" id="performance-engine-list"><div class="heatmap-empty">در انتظار دریافت کارنامه سرور…</div></div>
-   <div class="performance-status" id="performance-status">نتایج مبهم، منقضی و بدون معامله از نرخ موفقیت حذف می‌شوند. تا تشکیل نمونه کافی، نرخ موفقیت نمایش داده نخواهد شد.</div>
-  </div>
- </details>
-</section>
+
 
 
 
@@ -2975,6 +2967,17 @@ async function refreshLiveQuotes(){
 const money=(v,d=2)=>Number(v).toLocaleString('en-US',{maximumFractionDigits:d});
 const toman=(v)=>Math.round(v).toLocaleString('en-US');
 
+function renderCoreCurrencyMenu(){
+ const rate=Number(currentTetherPrice)||0;
+ const status=$("mmp-core-currency-status"),tomanEl=$("mmp-core-toman"),reverseEl=$("mmp-core-reverse");
+ if(tomanEl)tomanEl.textContent=rate>0?toman(rate)+" تومان":"— تومان";
+ if(reverseEl)reverseEl.textContent=rate>0?(1000000/rate).toLocaleString("en-US",{maximumFractionDigits:4})+" USDT":"— USDT";
+ if(status)status.textContent=rate>0?("منبع: "+(currentTetherSources.join(" + ")||"نرخ ذخیره‌شده")+(currentTetherWarning?" · "+currentTetherWarning:"")):"نرخ زنده در دسترس نیست";
+ const irt=$("mmp-core-show-irt"),usdt=$("mmp-core-show-usdt");
+ if(irt)irt.classList.toggle("active",currentCurrency==="IRT");
+ if(usdt)usdt.classList.toggle("active",currentCurrency==="USDT");
+}
+
 function clock(){$('clock').textContent=new Date().toLocaleTimeString('fa-IR')}
 setInterval(clock,1000);clock();
 
@@ -3025,10 +3028,10 @@ function setCurrency(curr) {
   });
   const indicator=$('currency-indicator');
   if(indicator)indicator.innerText='واحد انتخاب‌شده: '+(isToman?'تومان':'تتر · USDT');
+  renderCoreCurrencyMenu();
   if(cachedCoinsData.length > 0) {
     renderCoinsTables(cachedCoinsData);
-    renderHeroCards(); 
-    
+    renderHeroCards();
   }
 }
 
@@ -3375,6 +3378,7 @@ async function refreshAll(){
   }else{
    currentTetherPrice=0;currentTetherSources=[];currentTetherWarning=tether.warning;
   }
+  renderCoreCurrencyMenu();
   if(currentTetherPrice>0){$("usdt").textContent=money(currentTetherPrice,0)+" تومان";$("usdt-source").textContent="منبع: "+currentTetherSources.join(" + ")+(currentTetherWarning?" · "+currentTetherWarning:"");}
   else{$("usdt").textContent="داده در دسترس نیست";$("usdt-source").textContent=currentTetherWarning;}
   const marketController=new AbortController(),marketTimer=setTimeout(()=>marketController.abort(),16000);
