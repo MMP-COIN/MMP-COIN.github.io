@@ -266,6 +266,17 @@ jobs:
                 await hubCards.first().waitFor({state:"visible",timeout:5000});
                 if (await hubCards.count() !== 8) throw new Error(viewport.name + " homepage must expose exactly eight specialist centers");
                 if (await page.locator("#btn-irt").count() !== 1 || await page.locator("#btn-usdt").count() !== 1 || await page.locator("#usdt").count() !== 1) throw new Error(viewport.name + " missing primary Toman/USDT controls or tether quote");
+                await page.locator("#btn-usdt").click();
+                if (!await page.locator("#btn-usdt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " USDT switch did not activate");
+                await page.locator("#btn-irt").click();
+                if (!await page.locator("#btn-irt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " Toman switch did not activate");
+                for (const [center,selector] of [["command","#mmp-home-hero"],["hunter","#market-hunter"],["charts","#chart-section"],["flow","#market-intelligence"],["ai","#ai-section"],["strategy","#trading-tools"],["markets","#coins-section"]]) {
+                  await page.locator("#mmp-terminal-hub [data-mmp-open-center='" + center + "']").click();
+                  await page.locator(selector).waitFor({state:"visible",timeout:5000});
+                  const activeCenter = await page.locator("body").getAttribute("data-mmp-view");
+                  if (activeCenter !== center) throw new Error(viewport.name + " wrong workspace opened for " + center);
+                  await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
+                }
                 await page.locator("#mmp-terminal-hub [data-mmp-open-center='ai']").click();
                 await page.locator("#ai-section").waitFor({state:"visible",timeout:5000});
                 const analyzer = await page.locator("#ai-section").evaluate(el => {
