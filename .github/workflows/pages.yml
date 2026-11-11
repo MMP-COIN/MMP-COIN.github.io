@@ -216,7 +216,8 @@ jobs:
                 page.on("requestfailed", request => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => request.url().includes(host))) console.log(viewport.name + " RESOURCE REQUEST FAILED: " + request.url() + " :: " + (request.failure()?.errorText || "unknown")); });
                 page.on("response", response => { if (["workers.dev","lightweight-charts","jsdelivr.net","unpkg.com"].some(host => response.url().includes(host))) console.log(viewport.name + " RESOURCE RESPONSE: " + response.status() + " " + response.url() + " ACAO=" + (response.headers()["access-control-allow-origin"] || "MISSING")); });
                 page.on("console", message => { if (message.type() === "error") console.log(viewport.name + " BROWSER CONSOLE ERROR: " + message.text()); });
-                await page.setExtraHTTPHeaders({ "Cache-Control": "no-cache", "Pragma": "no-cache" });
+                const siteOrigin = new URL(process.env.SITE_URL).origin;
+                await page.route("**/*", route => { const u = new URL(route.request().url()); if (u.origin === siteOrigin) return route.continue({ headers: { ...route.request().headers(), "cache-control": "no-cache", "pragma": "no-cache" } }); return route.continue(); });
                 const homeUrl = new URL(process.env.SITE_URL); homeUrl.searchParams.set("mmp_smoke", process.env.GITHUB_RUN_ID || "test");
                 const response = await page.goto(homeUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
@@ -284,7 +285,8 @@ jobs:
               }
               const lab = await browser.newPage({ viewport: { width: 390, height: 844 } });
               lab.on("pageerror", error => failures.push("Quantum Lab: " + error.message));
-              await lab.setExtraHTTPHeaders({ "Cache-Control": "no-cache", "Pragma": "no-cache" });
+              const labOrigin = new URL(process.env.SITE_URL).origin;
+              await lab.route("**/*", route => { const u = new URL(route.request().url()); if (u.origin === labOrigin) return route.continue({ headers: { ...route.request().headers(), "cache-control": "no-cache", "pragma": "no-cache" } }); return route.continue(); });
               const labUrl = new URL("quantum-lab.html", process.env.SITE_URL); labUrl.searchParams.set("mmp_smoke", process.env.GITHUB_RUN_ID || "test");
               const labResponse = await lab.goto(labUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
               if (!labResponse || !labResponse.ok()) throw new Error("Quantum Lab HTTP response is not successful");
