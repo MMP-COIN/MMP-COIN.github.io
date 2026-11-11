@@ -3214,19 +3214,31 @@ async function enrichWithBinance(coins){
    throw new Error("Binance ticker endpoints unavailable");
   }},
   {name:"Bitget Spot",load:async()=>{
-   const d=await fetchJson("https://api.bitget.com/api/v3/market/tickers?category=SPOT",6500);
-   if(d?.code!=="00000"||!Array.isArray(d.data)||!d.data.length)throw new Error("Invalid Bitget ticker response");
-   return d.data.map(t=>({symbol:t.symbol,lastPrice:t.lastPrice,priceChangePercent:Number(t.price24hPcnt)*100,closeTime:t.ts}));
+   const normalize=d=>{
+    if(d?.code!=="00000"||!Array.isArray(d.data)||!d.data.length)throw new Error("Invalid Bitget ticker response");
+    return d.data.map(t=>({symbol:t.symbol,lastPrice:t.lastPrice,priceChangePercent:Number(t.price24hPcnt)*100,closeTime:t.ts}));
+   };
+   try{return normalize(await fetchJson(AI_ANALYSIS_ENDPOINT+"/market-proxy?source=bitget-tickers",7000));}
+   catch(proxyError){console.warn("Bitget Worker feed unavailable; trying direct endpoint:",proxyError?.message||proxyError);}
+   return normalize(await fetchJson("https://api.bitget.com/api/v3/market/tickers?category=SPOT",6500));
   }},
   {name:"OKX Spot",load:async()=>{
-   const d=await fetchJson("https://www.okx.com/api/v5/market/tickers?instType=SPOT",6500);
-   if(d?.code!=="0"||!Array.isArray(d.data)||!d.data.length)throw new Error("Invalid OKX ticker response");
-   return d.data.filter(t=>String(t.instId||"").endsWith("-USDT")).map(t=>({symbol:String(t.instId).replace("-",""),lastPrice:t.last,priceChangePercent:Number(t.open24h)>0?(Number(t.last)/Number(t.open24h)-1)*100:NaN,closeTime:t.ts}));
+   const normalize=d=>{
+    if(d?.code!=="0"||!Array.isArray(d.data)||!d.data.length)throw new Error("Invalid OKX ticker response");
+    return d.data.filter(t=>String(t.instId||"").endsWith("-USDT")).map(t=>({symbol:String(t.instId).replace("-",""),lastPrice:t.last,priceChangePercent:Number(t.open24h)>0?(Number(t.last)/Number(t.open24h)-1)*100:NaN,closeTime:t.ts}));
+   };
+   try{return normalize(await fetchJson(AI_ANALYSIS_ENDPOINT+"/market-proxy?source=okx-tickers",7000));}
+   catch(proxyError){console.warn("OKX Worker feed unavailable; trying direct endpoint:",proxyError?.message||proxyError);}
+   return normalize(await fetchJson("https://www.okx.com/api/v5/market/tickers?instType=SPOT",6500));
   }},
   {name:"Bybit Spot",load:async()=>{
-   const d=await fetchJson("https://api.bybit.com/v5/market/tickers?category=spot",6500);
-   if(d?.retCode!==0||!Array.isArray(d.result?.list)||!d.result.list.length)throw new Error("Invalid Bybit ticker response");
-   return d.result.list.map(t=>({symbol:t.symbol,lastPrice:t.lastPrice,priceChangePercent:Number(t.price24hPcnt)*100,closeTime:d.time||Date.now()}));
+   const normalize=d=>{
+    if(d?.retCode!==0||!Array.isArray(d.result?.list)||!d.result.list.length)throw new Error("Invalid Bybit ticker response");
+    return d.result.list.map(t=>({symbol:t.symbol,lastPrice:t.lastPrice,priceChangePercent:Number(t.price24hPcnt)*100,closeTime:d.time||Date.now()}));
+   };
+   try{return normalize(await fetchJson(AI_ANALYSIS_ENDPOINT+"/market-proxy?source=bybit-tickers",7000));}
+   catch(proxyError){console.warn("Bybit Worker feed unavailable; trying direct endpoint:",proxyError?.message||proxyError);}
+   return normalize(await fetchJson("https://api.bybit.com/v5/market/tickers?category=spot",6500));
   }}
  ];
  let tickers=[],priceSource="",failures=[];
