@@ -347,9 +347,9 @@ jobs:
                     target.dispatchEvent(new TouchEvent("touchend",{touches:[],targetTouches:[],changedTouches:[b],bubbles:true,cancelable:true}));
                   },{from,to});
                   await swipe(320,100);
-                  await page.waitForFunction(() => document.body.dataset.mmpView === "hunter", {timeout:3000});
+                  await page.waitForFunction(() => document.body.dataset.mmpView === "hunter", null, {timeout:3000});
                   await swipe(100,320);
-                  await page.waitForFunction(() => document.body.dataset.mmpView === "command", {timeout:3000});
+                  await page.waitForFunction(() => document.body.dataset.mmpView === "command", null, {timeout:3000});
                   await page.locator(".menu-btn").click();
                   await page.locator("#dropdownMenu [data-mmp-open-center='support']").click();
                   await page.locator("#app-download").waitFor({state:"visible",timeout:5000});
@@ -415,7 +415,7 @@ jobs:
                 console.log(viewport.name + " verified chart status: " + chartStatus);
                 if (appMode) {
                   await openCenter("lab");
-                  await page.waitForURL(/quantum-lab\\.html/, {timeout:10000});
+                  await page.waitForURL(/quantum-lab\.html/, {timeout:10000});
                   await page.locator("#mmp-app-page-dock").waitFor({state:"visible",timeout:5000});
                   if (await page.locator("#mmp-app-page-dock a").count() !== 8) throw new Error("Quantum Lab native dock must expose all eight pages");
                   await page.locator("#mmp-app-page-dock a[href*='center=markets']").click();
