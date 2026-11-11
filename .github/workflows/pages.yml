@@ -193,7 +193,7 @@ jobs:
                   } catch(e) { return {error:String(e)}; }
                 });
                 console.log(viewport.name + " DIRECT WORKER PROBE: " + JSON.stringify(apiProbe));
-                if (apiProbe.error || !apiProbe.ok || apiProbe.status !== 200 || apiProbe.acao !== "https://mmp-coin.github.io" || apiProbe.candles < 1) {
+                // A successful cross-origin fetch from this page already proves browser CORS access.\n                // Do not require JavaScript to read the ACAO header itself: the response header may be omitted from the exposed header list even when CORS succeeds.\n                if (apiProbe.error || !apiProbe.ok || apiProbe.status !== 200 || apiProbe.candles < 1) {
                   throw new Error(viewport.name + " live Worker candle/CORS probe failed: " + JSON.stringify(apiProbe));
                 }
                 const title = await page.title();
