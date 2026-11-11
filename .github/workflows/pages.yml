@@ -239,6 +239,7 @@ jobs:
                 await page.locator("#ai-coin-picker-trigger").click();
                 if (await page.locator("#mmp-chart-status").count() === 0) throw new Error(viewport.name + " missing native chart status");
                 if (await page.locator("[data-chart-tf]").count() !== 6) throw new Error(viewport.name + " missing chart timeframe controls");
+                await page.locator("#chart-section").scrollIntoViewIfNeeded();
                 await page.locator("#mmp-candle-canvas canvas").first().waitFor({state:"visible",timeout:20000});
                 await page.locator("#mmp-rsi-canvas canvas").first().waitFor({state:"visible",timeout:10000});
                 const chartStatus = await page.locator("#mmp-chart-status").innerText();
