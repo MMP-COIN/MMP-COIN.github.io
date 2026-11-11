@@ -3007,7 +3007,7 @@ function formatVal(usdPrice) {
   }
 }
 
-let mmpChartState={chart:null,candles:null,volume:null,emaFast:null,emaSlow:null,rsiChart:null,rsiSeries:null,abort:null,seq:0,interval:"1h",market:"spot",showEMA:true,showVolume:true,cache:new Map(),resizeObserver:null,refreshTimer:null,viewKey:null,stream:null,streamKey:"",streamRetry:null,liveRows:[],streamProvider:"",streamHasData:false,streamCandidates:[],streamCandidateIndex:0,streamLastTick:0};
+let mmpChartState={chart:null,candles:null,volume:null,emaFast:null,emaSlow:null,rsiChart:null,rsiSeries:null,abort:null,seq:0,interval:"1h",market:"spot",showEMA:true,showVolume:true,cache:new Map(),resizeObserver:null,refreshTimer:null,viewKey:null,stream:null,streamKey:"",streamRetry:null,liveRows:[],streamProvider:"",streamHasData:false,streamCandidates:[],streamCandidateIndex:0,streamHeartbeat:null,streamWatchdog:null,streamRequestedProvider:"",streamLastTick:0};
 function mmpChartSymbol(){const raw=String(document.getElementById("tv-symbol")?.value||"BINANCE:BTCUSDT").split(":").pop().toUpperCase();return raw.endsWith("USDT")?raw:raw+"USDT";}
 function mmpChartStatus(message,kind=""){const el=document.getElementById("mmp-chart-status");if(el){el.textContent=message;el.className="mmp-chart-status"+(kind?" "+kind:"");}}
 function mmpChartRsi(rows,period=14){const out=[];let gain=0,loss=0;for(let i=1;i<rows.length;i++){const d=rows[i].close-rows[i-1].close;if(i<=period){gain+=Math.max(0,d);loss+=Math.max(0,-d);if(i===period)out.push({time:rows[i].time,value:loss===0?100:100-100/(1+gain/loss)});}else{gain=(gain*(period-1)+Math.max(0,d))/period;loss=(loss*(period-1)+Math.max(0,-d))/period;out.push({time:rows[i].time,value:loss===0?100:100-100/(1+gain/loss)});}}return out;}
@@ -3067,6 +3067,8 @@ function mmpDisconnectChartStream(){
  const st=mmpChartState;
  if(st.stream){try{st.stream.onclose=null;st.stream.onerror=null;st.stream.close();}catch(e){}st.stream=null;}
  if(st.streamRetry){clearTimeout(st.streamRetry);st.streamRetry=null;}
+ if(st.streamHeartbeat){clearInterval(st.streamHeartbeat);st.streamHeartbeat=null;}
+ if(st.streamWatchdog){clearTimeout(st.streamWatchdog);st.streamWatchdog=null;}
  st.streamKey="";st.streamProvider="";st.streamHasData=false;st.streamCandidates=[];st.streamCandidateIndex=0;
 }
 function mmpChartStreamInterval(interval,provider){
@@ -3098,8 +3100,8 @@ function mmpConnectChartStream(symbol,interval,market,provider){
  const source=String(provider||"").toLowerCase();
  const preferred=source.includes("bybit")?"bybit":source.includes("okx")?"okx":source.includes("bitget")?"bitget":source.includes("gate")?"gate":source.includes("mexc")?"mexc":source.includes("binance")?"binance":"";
  const candidates=[preferred,"binance","bybit","okx","bitget","gate","mexc"].filter((x,i,a)=>x&&a.indexOf(x)===i&&mmpChartStreamConfig(x,symbol,interval,market));
- const key=view+"|"+(preferred||"auto");
- if(st.streamKey===key&&st.stream&&(st.stream.readyState===WebSocket.OPEN||st.stream.readyState===WebSocket.CONNECTING))return;
+ const key=view+"|"+(preferred||"auto");st.streamRequestedProvider=provider||st.streamRequestedProvider||"";
+ if(st.streamKey===key&&((st.stream&&(st.stream.readyState===WebSocket.OPEN||st.stream.readyState===WebSocket.CONNECTING))||st.streamRetry))return;
  mmpDisconnectChartStream();st.streamKey=key;st.streamCandidates=candidates;st.streamCandidateIndex=0;st.streamHasData=false;
  const connect=index=>{
   if(st.streamKey!==key||document.hidden)return;
@@ -3107,7 +3109,7 @@ function mmpConnectChartStream(symbol,interval,market,provider){
   const exchange=candidates[index],config=mmpChartStreamConfig(exchange,symbol,interval,market);if(!config){connect(index+1);return;}
   let ws;try{ws=new WebSocket(config.url);}catch(e){connect(index+1);return;}
   st.stream=ws;st.streamProvider=exchange;st.streamCandidateIndex=index;
-  ws.onopen=()=>{if(st.stream!==ws)return;try{if(config.onopen)config.onopen(ws);}catch(e){try{ws.close();}catch(x){}}mmpChartStatus("اتصال زنده "+exchange.toUpperCase()+" برقرار شد؛ منتظر داده بازار…","ok");};
+  ws.onopen=()=>{if(st.stream!==ws)return;try{if(config.onopen)config.onopen(ws);}catch(e){try{ws.close();}catch(x){}}mmpChartStatus("اتصال زنده "+exchange.toUpperCase()+" برقرار شد؛ منتظر داده بازار…","ok");if(st.streamWatchdog)clearTimeout(st.streamWatchdog);st.streamWatchdog=setTimeout(()=>{if(st.stream===ws&&!st.streamHasData)try{ws.close();}catch(e){}},12000);if(st.streamHeartbeat)clearInterval(st.streamHeartbeat);st.streamHeartbeat=setInterval(()=>{if(st.stream!==ws||ws.readyState!==WebSocket.OPEN)return;try{if(exchange==="bybit")ws.send(JSON.stringify({op:"ping"}));else if(exchange==="okx"||exchange==="bitget")ws.send("ping");else if(exchange==="gate")ws.send(JSON.stringify({time:Math.floor(Date.now()/1000),channel:market==="futures"?"futures.ping":"spot.ping",event:"ping"}));else if(exchange==="mexc")ws.send(JSON.stringify({method:"PING"}));}catch(e){}},20000);};
   ws.onmessage=event=>{
    if(st.stream!==ws||st.streamKey!==key)return;
    try{
@@ -3124,7 +3126,7 @@ function mmpConnectChartStream(symbol,interval,market,provider){
     if(st.showEMA){st.emaFast.setData(mmpChartEma(rows,20));st.emaSlow.setData(mmpChartEma(rows,50));}
     st.rsiSeries.setData(mmpChartRsi(rows));
     try{if(Math.abs(st.chart.timeScale().scrollPosition())<2)st.chart.timeScale().scrollToRealTime();}catch(e){}
-    st.streamHasData=true;st.streamLastTick=Date.now();
+    st.streamHasData=true;st.streamLastTick=Date.now();if(st.streamWatchdog){clearTimeout(st.streamWatchdog);st.streamWatchdog=null;}
     const status=document.getElementById("mmp-chart-status");
     if(status&&!status.classList.contains("warning"))mmpChartStatus("کندل و حجم زنده · "+exchange.toUpperCase()+" · "+symbol+" · "+interval+" · قیمت: "+candle.close,"ok");
    }catch(e){}
@@ -3132,6 +3134,7 @@ function mmpConnectChartStream(symbol,interval,market,provider){
   ws.onerror=()=>{try{ws.close();}catch(e){}};
   ws.onclose=()=>{
    if(st.stream===ws)st.stream=null;
+   if(st.streamHeartbeat){clearInterval(st.streamHeartbeat);st.streamHeartbeat=null;}if(st.streamWatchdog){clearTimeout(st.streamWatchdog);st.streamWatchdog=null;}
    if(st.streamKey!==key||document.hidden)return;
    const next=st.streamHasData?index:index+1;
    st.streamRetry=setTimeout(()=>{if(st.streamKey===key)connect(next);},st.streamHasData?5000:1200);
@@ -3141,12 +3144,10 @@ function mmpConnectChartStream(symbol,interval,market,provider){
  connect(0);
 }
 document.addEventListener("visibilitychange",()=>{
- if(!document.hidden&&mmpChartState.viewKey){
-  const [symbol,interval,market]=mmpChartState.viewKey.split(":");
-  mmpDisconnectChartStream();mmpConnectChartStream(symbol,interval,market,"");
- }
+ if(document.hidden){mmpDisconnectChartStream();return;}
+ if(mmpChartState.viewKey){const [symbol,interval,market]=mmpChartState.viewKey.split(":");mmpConnectChartStream(symbol,interval,market,mmpChartState.streamRequestedProvider||"");}
 });
-function initTradingView(){mmpLoadChart(true);if(mmpChartState.refreshTimer)clearInterval(mmpChartState.refreshTimer);mmpChartState.refreshTimer=setInterval(()=>{if(!document.hidden&&document.getElementById("chart-section")?.getBoundingClientRect().top<window.innerHeight+600)mmpLoadChart(false);},45000);}
+function initTradingView(){mmpLoadChart(true);if(mmpChartState.refreshTimer)clearInterval(mmpChartState.refreshTimer);mmpChartState.refreshTimer=setInterval(()=>{const st=mmpChartState,visible=document.getElementById("chart-section")?.getBoundingClientRect().top<window.innerHeight+600;if(!document.hidden&&visible&&(!st.stream||st.stream.readyState!==WebSocket.OPEN||Date.now()-Number(st.streamLastTick||0)>90000))mmpLoadChart(false);},15000);}
 function changeTradingViewSymbol(){mmpDisconnectChartStream();mmpLoadChart(true);}
 function mmpSetChartInterval(value){if(!["1m","5m","15m","1h","4h","1d"].includes(value))return;mmpChartState.interval=value;mmpDisconnectChartStream();mmpLoadChart(true);}
 function mmpSetChartMarket(value){mmpChartState.market=value==="futures"?"futures":"spot";mmpDisconnectChartStream();mmpLoadChart(true);}
