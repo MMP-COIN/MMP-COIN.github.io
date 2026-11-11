@@ -92,6 +92,10 @@ jobs:
       - name: Validate mirrored page assets exist before deployment
         run: |
           set -euo pipefail
+          # The 3D visual design is now a required release asset, not an optional follow-up.
+          grep -q 'mmp-real-depth-visuals.css?v=3' index.html
+          grep -q 'MMP VISIBLE 3D PASS' assets/mmp-real-depth-visuals.css
+          echo 'Required MMP 3D visual stylesheet and cache key verified.'
           python3 - <<'PY'
           import html.parser, pathlib, re, sys
           pages = [pathlib.Path(p) for p in ("index.html", "quantum-lab.html", "admin.html", "market-heatmap.html")]
