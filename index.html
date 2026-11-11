@@ -6693,8 +6693,14 @@ window.mmpShareDownloadLink = async function () {
  async function refresh(){
   if(document.hidden)return;const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
   try{
-   const snap=window.__mmpDigitalHunterSnapshot;
-   if(!snap||snap.status==="offline")throw new Error("منتظر Snapshot موتور مرکزی هستیم");
+   let snap=window.__mmpDigitalHunterSnapshot;
+   let stamp=snap?Date.parse(snap.checked_at||snap.scanned_at||""):0;
+   if((!snap||snap.status==="offline"||!stamp||Date.now()-stamp>120000)&&typeof loadDigitalHunterSnapshot==="function"){
+    const fresh=await loadDigitalHunterSnapshot(true);
+    if(fresh){snap=fresh;stamp=Date.parse(snap.checked_at||snap.scanned_at||"");}
+   }
+   if(!snap||snap.status==="offline")throw new Error("Snapshot موتور مرکزی از Worker دریافت نشد");
+   if(!Number.isFinite(stamp)||stamp<=0)throw new Error("زمان Snapshot موتور مرکزی معتبر نیست");
    const total=Number(snap.universe_count),batchDone=Math.max(0,Number(snap.scanned_count)||0),batchSize=Math.max(0,Number(snap.batch_size)||0),cursor=Math.max(0,Number(snap.next_cursor)||0);
    if(!Number.isFinite(total)||total<=0||!Number.isFinite(batchDone))throw new Error("شمارنده معتبر اسکن در snapshot موجود نیست");
    const covered=cursor===0&&batchDone>0?total:Math.min(total,cursor||batchDone),pct=Math.max(0,Math.min(100,Math.round(covered/total*100))),signals=Array.isArray(snap.signals)?snap.signals:[],activity=snap.engine_activity&&typeof snap.engine_activity==="object"?snap.engine_activity:{};
@@ -6710,7 +6716,7 @@ window.mmpShareDownloadLink = async function () {
   }catch(error){fail("اتصال یا داده معتبر در دسترس نیست · "+(error?.message||"خطای نامشخص"));}
   finally{clearTimeout(timer);}
  }
- let started=false;window.mmpWhenVisible?window.mmpWhenVisible("#mmp-command-progress",()=>{started=true;refresh();setInterval(()=>{if(!document.hidden&&document.getElementById("mmp-command-progress")?.getBoundingClientRect().top<window.innerHeight+500)refresh();},180000);},{rootMargin:"450px 0px"}):(started=true,refresh());document.addEventListener("mmp-hunter-snapshot-updated",()=>{if(started)refresh();});document.addEventListener("visibilitychange",()=>{if(started&&!document.hidden)refresh();});
+ let started=false;window.mmpWhenVisible?window.mmpWhenVisible("#mmp-command-progress",()=>{started=true;refresh();setInterval(()=>{if(!document.hidden&&document.getElementById("mmp-command-progress")?.getBoundingClientRect().top<window.innerHeight+500)refresh();},60000);},{rootMargin:"450px 0px"}):(started=true,refresh());document.addEventListener("mmp-hunter-snapshot-updated",()=>{if(started)refresh();});document.addEventListener("visibilitychange",()=>{if(started&&!document.hidden)refresh();});
 })();
 </script><style id="mmp-home-engine-live-style">
 #quantum-center-entry .quantum-engine-link{position:relative;overflow:hidden}
