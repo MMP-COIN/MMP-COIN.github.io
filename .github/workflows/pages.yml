@@ -1,4 +1,4 @@
-# Trigger root Pages mirror sync for canonical unified-core cleanup, report removal, and asset-picker fallback.
+# Trigger immediate root Pages sync for the merged eight-center currency/navigation update in canonical MMP-COIN-AI.
 # Trigger canonical www sync and full Pages smoke tests after 2026-11-11 UI and market-feed repairs.
 name: Deploy MMP COIN AI root site
 # Browser smoke tests use cache-busting URLs and retain full page-error stacks.
