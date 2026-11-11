@@ -264,6 +264,8 @@ jobs:
                 const siteOrigin = new URL(process.env.SITE_URL).origin;
                 await page.route("**/*", route => { const u = new URL(route.request().url()); if (u.origin === siteOrigin) return route.continue({ headers: { ...route.request().headers(), "cache-control": "no-cache", "pragma": "no-cache" } }); return route.continue(); });
                 const homeUrl = new URL(process.env.SITE_URL); homeUrl.searchParams.set("mmp_smoke", process.env.GITHUB_RUN_ID || "test");
+                // The mobile pass represents the native Capacitor WebView, which always supplies this marker.
+                if (viewport.name === "mobile") homeUrl.searchParams.set("mmp_native_version", "2.0.0");
                 const response = await page.goto(homeUrl.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
                 if (!response || !response.ok()) throw new Error(viewport.name + " homepage HTTP response is not successful");
                 let terminalState = null;
