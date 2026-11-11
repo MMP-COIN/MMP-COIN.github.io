@@ -116,6 +116,10 @@ jobs:
           SITE_URL="${SITE_URL%/}"
           curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 5 --max-time 25 -H "Cache-Control: no-cache" "$SITE_URL/?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-home.html
           grep -q 'MMP QUANTUM' /tmp/mmp-home.html
+          grep -q 'quantum-currency-irt' /tmp/mmp-home.html
+          grep -q 'market-flow?market=spot' /tmp/mmp-home.html
+          grep -q 'market-candles?symbol=' /tmp/mmp-home.html
+          ! grep -q 'mmp-command-progress' /tmp/mmp-home.html
           grep -q 'mmp-web-build' /tmp/mmp-home.html
           ! grep -q '__MMP_WEB_BUILD_ID__' /tmp/mmp-home.html
           ! grep -q 'QUANTUM HUNTER CORE · UNIFIED ENGINE' /tmp/mmp-home.html
