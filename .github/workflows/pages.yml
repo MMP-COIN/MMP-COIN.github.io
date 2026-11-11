@@ -354,7 +354,8 @@ jobs:
                   await page.locator("#dropdownMenu [data-mmp-open-center='support']").click();
                   await page.locator("#app-download").waitFor({state:"visible",timeout:5000});
                   await page.locator("#contact-us").waitFor({state:"visible",timeout:5000});
-                  if (await page.locator("#native-share-app").count() !== 1) throw new Error("native app combined share/contact page is missing its share action");
+                  if (await page.locator("#app-download button[onclick*='mmpShareDownloadLink']").count() !== 1) throw new Error("native app combined share/contact page is missing its share action");
+                  if (await page.locator("#contact-us a[href^='mailto:']").count() !== 1) throw new Error("native app combined share/contact page is missing its email action");
                   const apkLink=page.locator("#app-download a[href*='/releases/latest/download/app-release.apk']");
                   if (await apkLink.count() && await apkLink.isVisible()) throw new Error("APK download control must remain website-only");
                   await openCenter("command");
