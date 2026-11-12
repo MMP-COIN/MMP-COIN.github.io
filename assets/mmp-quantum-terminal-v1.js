@@ -47,7 +47,13 @@ function init(){
    // The global MMP hero and market snapshot belong only to the homepage.
    // The Quantum Command / Smart Core card belongs only to the AI center.
    let visible=view==="home"?(group==="command"||group==="footer"):view==="support"?group==="footer":group===view;
-   if(el.id==="mmp-home-hero"||el.id==="market-snapshot")visible=view==="home"||view==="command";
+   // Market Command is an operational dashboard, not a duplicate price-card page.
+   // Keep the homepage hero there, but replace repeated quote tiles with real market tools.
+   if(view==="command"){
+    const commandModules=new Set(["mmp-home-hero","opportunities","market-hunter","ai-section","chart-section","market-intelligence","coins-section"]);
+    visible=commandModules.has(el.id);
+   }
+   if(el.id==="market-snapshot")visible=view==="home";
    if(el.id==="quantum-center-entry")visible=view==="ai";
    el.hidden=!visible;
   });
