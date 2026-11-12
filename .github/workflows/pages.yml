@@ -407,6 +407,8 @@ jobs:
                     links.map(link => link.getAttribute("href").slice(1)).filter(id => !document.getElementById(id))
                   );
                   if (brokenLinks.length) throw new Error("navigation contains missing section targets: " + brokenLinks.join(", "));
+                  await groups.first().locator("summary").click();
+                  await page.waitForFunction(() => document.querySelector("#dropdownMenu .mmp-nav-group")?.open === true, null, {timeout:3000});
                   await page.locator("#dropdownMenu a.mmp-nav-link[href='#market-snapshot']").click();
                 }
                 const nexusAccordions = page.locator("#mmp-autonomous-health-center details.mmp-ah-accordion");
