@@ -334,7 +334,7 @@ jobs:
                 if (!layout) throw new Error(viewport.name + " missing header or first hero card");
                 console.log(viewport.name + " first-screen geometry: " + JSON.stringify(layout));
                 if (Math.abs(layout.headerTop) > 2) throw new Error(viewport.name + " top navigation does not start at page top");
-                const maxTopGap = viewport.name === "mobile-app" ? 80 : 12;
+                const maxTopGap = viewport.name === "mobile-app" ? 16 : 12;
                 if (layout.gap > maxTopGap || layout.gap < -2) throw new Error(viewport.name + " unwanted blank gap before first card: " + layout.gap + "px");
                 if (layout.heroHeight > (viewport.name === "desktop" ? 170 : 180)) throw new Error(viewport.name + " first hero card is still too tall: " + layout.heroHeight + "px");
                 if (!title.includes("MMP QUANTUM")) throw new Error(viewport.name + " homepage title is missing");
