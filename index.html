@@ -108,6 +108,9 @@ button:focus-visible{outline:2px solid var(--gold-hi);outline-offset:4px}
 @media(max-width:350px){.modules{grid-template-columns:1fr}.module{min-height:118px;display:grid;grid-template-columns:68px 1fr;grid-template-rows:auto auto auto;align-items:center}.module .art{grid-row:1/4}.module .enter{left:12px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
+
+.gold-word{color:var(--gold);background:linear-gradient(180deg,#fff0bd 0%,#e6c477 48%,#b17b2d 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 0 18px #d9b66d66;filter:drop-shadow(0 2px 0 #5a3d16)}
+.hero p{font-size:clamp(10px,1.5vw,13px);font-weight:500;letter-spacing:0;line-height:1.9}
 /* GLOBAL 3D DEPTH PASS — every visible section gets physical layers */
 .shell{perspective:1500px;transform-style:preserve-3d}
 .top{position:relative;padding:8px 12px;border:1px solid #d9b66d36;border-radius:16px;background:linear-gradient(150deg,#263244 0%,#141c29 48%,#090e16 100%);box-shadow:0 7px 0 #05070b,0 17px 30px #0009,inset 0 1px 0 #ffffff30,inset 0 -2px 0 #0008;transform:perspective(900px) rotateX(5deg);transform-style:preserve-3d}
@@ -159,8 +162,8 @@ button.module:focus-visible{outline:2px solid var(--gold-hi);outline-offset:5px}
 <section id="home" class="view active">
   <div class="hero">
     <div class="eyebrow">THE QUANTUM COMMAND ROOM</div>
-    <h1>مرکز فرماندهی MMP</h1>
-    <p>هشت سامانه مستقل در یک اتاق فرمان سه‌بعدی</p>
+    <h1>بازار را <span class="gold-word">زودتر</span> ببین</h1>
+    <p>مرکز یکپارچه هوش بازار؛ از جریان نقدینگی و ساختار قیمت تا کشف حرکت‌های اولیه.</p>
     <div class="stage" aria-label="نشان سه‌بعدی MMP">
       <div class="platform"></div>
       <div class="float-label one">QUANTUM CORE</div>
