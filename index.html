@@ -277,6 +277,51 @@ button.module:focus-visible{outline:2px solid var(--gold-hi);outline-offset:5px}
   .module{display:flex;min-height:166px}
 }
 
+
+/* Eight purpose-built sculptural 3D module emblems */
+.icon3d{--c:#e4bd68;--c2:#fff0b9;position:relative;width:66px;height:62px;display:block;transform-style:preserve-3d;transform:perspective(420px) rotateX(17deg) rotateY(-13deg);filter:drop-shadow(0 9px 7px #0009)}
+.icon3d:before{content:"";position:absolute;inset:8px 10px;border-radius:15px;background:linear-gradient(145deg,color-mix(in srgb,var(--c) 30%,#263142),#0b111b 72%);border:1px solid color-mix(in srgb,var(--c) 80%,white);box-shadow:0 5px 0 color-mix(in srgb,var(--c) 42%,#10131a),0 10px 17px #000a,inset 0 1px 0 #fff8}
+.icon3d:after{content:"";position:absolute;inset:13px 15px;border:1px solid color-mix(in srgb,var(--c) 75%,white);border-radius:11px;transform:translateZ(8px);opacity:.75}
+.icon3d i,.icon3d b,.icon3d em,.icon3d span,.icon3d small{position:absolute;display:block;z-index:2;transform-style:preserve-3d}
+.icon3d i{left:25px;top:19px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff,var(--c) 35%,color-mix(in srgb,var(--c) 45%,#171b24) 76%);box-shadow:0 3px 0 color-mix(in srgb,var(--c) 45%,#111),0 0 17px color-mix(in srgb,var(--c) 65%,transparent);transform:translateZ(16px)}
+.icon3d b{left:17px;top:11px;width:32px;height:32px;border:2px solid var(--c2);border-radius:50%;box-shadow:0 0 10px color-mix(in srgb,var(--c) 60%,transparent);transform:translateZ(9px)}
+.icon3d em{left:8px;top:28px;width:50px;height:2px;background:linear-gradient(90deg,transparent,var(--c2),transparent);transform:rotate(-28deg) translateZ(13px)}
+.icon3d span{left:30px;top:5px;width:7px;height:52px;border-radius:5px;background:linear-gradient(90deg,#ffffffaa,var(--c),#61451e);transform:rotate(42deg) translateZ(5px);opacity:.0}
+.icon3d small{left:13px;top:16px;width:40px;height:30px;border:1px solid color-mix(in srgb,var(--c) 70%,white);border-radius:50%;transform:rotateX(65deg) rotateZ(-25deg) translateZ(5px)}
+.icon3d.globe{--c:#48d7c2;--c2:#c9fff6}
+.icon3d.globe b{width:30px;height:34px;left:18px;top:12px;border-radius:50%;border-left:3px solid var(--c2);border-right:3px solid var(--c2)}
+.icon3d.globe em{left:17px;top:27px;width:33px;transform:translateZ(14px)}
+.icon3d.globe small{border-radius:50%;transform:rotateY(65deg) translateZ(10px)}
+.icon3d.radar{--c:#8cdb70;--c2:#e4ffd0}
+.icon3d.radar b{border-radius:50%;border-width:3px}
+.icon3d.radar em{left:32px;top:13px;width:2px;height:30px;transform:rotate(38deg) translateZ(15px);background:linear-gradient(var(--c2),transparent)}
+.icon3d.radar i{width:8px;height:8px;left:29px;top:23px}
+.icon3d.target{--c:#ed6d66;--c2:#ffd5ce}
+.icon3d.target b{width:36px;height:36px;left:16px;top:10px;border:3px dashed var(--c2)}
+.icon3d.target small{width:20px;height:20px;left:24px;top:18px;border:2px solid var(--c)}
+.icon3d.target em{left:32px;top:8px;width:2px;height:45px;transform:translateZ(14px)}
+.icon3d.prism{--c:#b69aff;--c2:#e8ddff}
+.icon3d.prism i{width:0;height:0;left:20px;top:13px;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:34px solid var(--c);border-radius:2px;background:none;filter:drop-shadow(0 4px 0 #514174)}
+.icon3d.prism b{width:28px;height:28px;left:20px;top:17px;border-radius:4px;transform:rotate(45deg) translateZ(12px)}
+.icon3d.prism em{left:32px;top:12px;width:2px;height:38px;transform:translateZ(16px)}
+.icon3d.rocket{--c:#f2a15b;--c2:#ffe0b9}
+.icon3d.rocket i{left:25px;top:12px;width:17px;height:32px;border-radius:70% 70% 35% 35%;background:linear-gradient(90deg,#9d4a25,var(--c2),var(--c));transform:rotate(38deg) translateZ(17px)}
+.icon3d.rocket b{left:17px;top:29px;width:13px;height:17px;border-radius:3px 3px 12px 12px;transform:rotate(-35deg) translateZ(12px)}
+.icon3d.rocket em{left:36px;top:36px;width:9px;height:19px;border-radius:50%;background:linear-gradient(var(--c2),#e65b2d,transparent);transform:rotate(38deg) translateZ(14px)}
+.icon3d.candles{--c:#69baff;--c2:#d9efff}
+.icon3d.candles i,.icon3d.candles b,.icon3d.candles em{width:7px;border-radius:2px;background:linear-gradient(90deg,#3978b4,var(--c2),#3978b4);box-shadow:0 2px 0 #173c62;transform:translateZ(15px)}
+.icon3d.candles i{height:25px;left:19px;top:20px}
+.icon3d.candles b{height:34px;left:30px;top:12px}
+.icon3d.candles em{height:20px;left:42px;top:24px}
+.icon3d.candles span{left:22px;top:8px;width:2px;height:44px;background:var(--c2);transform:translateZ(12px)}
+.icon3d.gear{--c:#bdc8d6;--c2:#f2f6ff}
+.icon3d.gear i{left:22px;top:16px;width:24px;height:24px;border:6px solid var(--c);background:#182331;box-shadow:0 0 0 3px #647181;border-radius:50%;transform:translateZ(16px)}
+.icon3d.gear b{left:18px;top:12px;width:32px;height:32px;border:3px dashed var(--c2);border-radius:50%;transform:translateZ(10px)}
+.icon3d.gear em{left:30px;top:7px;width:7px;height:43px;background:linear-gradient(90deg,#687687,#e4eaf2,#667587);transform:rotate(45deg) translateZ(13px)}
+.module .art{height:76px;min-height:76px;margin-bottom:6px}
+.module:hover .icon3d{transform:perspective(420px) rotateX(7deg) rotateY(-4deg) translateY(-3px) scale(1.08)}
+@media(prefers-reduced-motion:reduce){.module .icon3d{transition:none}}
+
 </style>
 </head>
 <body>
@@ -302,14 +347,14 @@ button.module:focus-visible{outline:2px solid var(--gold-hi);outline-offset:5px}
   </div>
   <div class="section-head"><h2>سامانه‌های اصلی</h2><span>08 MODULES · SELECT TO ENTER</span></div>
   <div class="modules">
-    <button class="module" data-id="quantum"><div class="art"><div class="emblem"><b>✧</b></div></div><h3>فرماندهی کوانتومی MMP</h3><small>QUANTUM COMMAND</small><p>هسته هوشمندی و هماهنگی تحلیل بازار</p><span class="enter">↙</span></button>
-    <button class="module atlas" data-id="atlas"><div class="art"><div class="emblem"><b>◉</b></div></div><h3>اطلس بازار MMP</h3><small>MARKET ATLAS</small><p>نقشه بازار و جریان دارایی‌ها</p><span class="enter">↙</span></button>
-    <button class="module radar" data-id="radar"><div class="art"><div class="emblem"><b>⌖</b></div></div><h3>رادار هوشمند MMP</h3><small>SMART RADAR</small><p>اسکن فرصت‌ها و حرکت‌های بازار</p><span class="enter">↙</span></button>
-    <button class="module hunter" data-id="hunter"><div class="art"><div class="emblem"><b>◎</b></div></div><h3>شکارچی کوانتومی MMP</h3><small>QUANTUM HUNTER</small><p>ردیابی حرکت‌های سریع و فرصت‌های تازه</p><span class="enter">↙</span></button>
-    <button class="module analyst" data-id="analyst"><div class="art"><div class="emblem"><b>⌘</b></div></div><h3>تحلیل‌گر هوشمند MMP</h3><small>SMART ANALYST</small><p>تحلیل چندلایه و سناریوهای بازار</p><span class="enter">↙</span></button>
-    <button class="module boom" data-id="boom"><div class="art"><div class="emblem"><b>✺</b></div></div><h3>آزمایشگاه جهش MMP</h3><small>BOOM LAB</small><p>بررسی جهش، ریزش و شتاب حرکت</p><span class="enter">↙</span></button>
-    <button class="module chart" data-id="chart"><div class="art"><div class="emblem"><b>⌁</b></div></div><h3>دیده‌بان نموداری MMP</h3><small>CHART WATCH</small><p>نمودار قیمت، کندل‌ها و حجم</p><span class="enter">↙</span></button>
-    <button class="module tools" data-id="tools"><div class="art"><div class="emblem"><b>⌘</b></div></div><h3>جعبه ابزار معامله‌گری MMP</h3><small>TRADING TOOLKIT</small><p>ابزار محاسبه معامله و مدیریت ریسک</p><span class="enter">↙</span></button>
+    <button class="module " data-id="quantum"><div class="art"><div class="icon3d core" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>فرماندهی کوانتومی MMP</h3><small>QUANTUM COMMAND</small><p>هسته هوشمندی و هماهنگی تحلیل بازار</p><span class="enter">↙</span></button>
+    <button class="module atlas" data-id="atlas"><div class="art"><div class="icon3d globe" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>اطلس بازار MMP</h3><small>MARKET ATLAS</small><p>نقشه بازار و جریان دارایی‌ها</p><span class="enter">↙</span></button>
+    <button class="module radar" data-id="radar"><div class="art"><div class="icon3d radar" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>رادار هوشمند MMP</h3><small>SMART RADAR</small><p>اسکن فرصت‌ها و حرکت‌های بازار</p><span class="enter">↙</span></button>
+    <button class="module hunter" data-id="hunter"><div class="art"><div class="icon3d target" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>شکارچی کوانتومی MMP</h3><small>QUANTUM HUNTER</small><p>ردیابی حرکت‌های سریع و فرصت‌های تازه</p><span class="enter">↙</span></button>
+    <button class="module analyst" data-id="analyst"><div class="art"><div class="icon3d prism" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>تحلیل‌گر هوشمند MMP</h3><small>SMART ANALYST</small><p>تحلیل چندلایه و سناریوهای بازار</p><span class="enter">↙</span></button>
+    <button class="module boom" data-id="boom"><div class="art"><div class="icon3d rocket" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>آزمایشگاه جهش MMP</h3><small>BOOM LAB</small><p>بررسی جهش، ریزش و شتاب حرکت</p><span class="enter">↙</span></button>
+    <button class="module chart" data-id="chart"><div class="art"><div class="icon3d candles" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>دیده‌بان نموداری MMP</h3><small>CHART WATCH</small><p>نمودار قیمت، کندل‌ها و حجم</p><span class="enter">↙</span></button>
+    <button class="module tools" data-id="tools"><div class="art"><div class="icon3d gear" aria-hidden="true"><i></i><b></b><em></em><span></span><small></small></div></div><h3>جعبه ابزار معامله‌گری MMP</h3><small>TRADING TOOLKIT</small><p>ابزار محاسبه معامله و مدیریت ریسک</p><span class="enter">↙</span></button>
   </div>
   <footer class="footer"><span>MMP COIN AI · 3D QUANTUM INTERFACE</span><span>پوسته بصری مستقل؛ بدون داده یا سیگنال ساختگی</span></footer>
 </section>
