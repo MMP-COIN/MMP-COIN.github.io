@@ -391,11 +391,13 @@ jobs:
                 await page.locator("#mmp-center-toolbar .mmp-center-jump[href='#mmp-usdt-card']").click();
                 await page.locator("#mmp-usdt-card").waitFor({state:"visible",timeout:5000});
                 await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
-                if (await page.locator("#btn-irt").count() !== 1 || await page.locator("#btn-usdt").count() !== 1 || await page.locator("#usdt").count() !== 1) throw new Error(viewport.name + " missing primary Toman/USDT controls or tether quote");
-                await page.locator("#btn-usdt").click();
-                if (!await page.locator("#btn-usdt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " USDT switch did not activate");
-                await page.locator("#btn-irt").click();
-                if (!await page.locator("#btn-irt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " Toman switch did not activate");
+                const tomanSwitch = page.locator(appMode ? "#native-currency-irt" : "#btn-irt");
+                const usdtSwitch = page.locator(appMode ? "#native-currency-usdt" : "#btn-usdt");
+                if (await tomanSwitch.count() !== 1 || await usdtSwitch.count() !== 1 || await page.locator("#usdt").count() !== 1) throw new Error(viewport.name + " missing visible Toman/USDT controls or tether quote");
+                await usdtSwitch.click();
+                if (!await usdtSwitch.evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " USDT switch did not activate");
+                await tomanSwitch.click();
+                if (!await tomanSwitch.evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " Toman switch did not activate");
                 for (const [center,selector] of [["command","#mmp-home-hero"],["hunter","#market-hunter"],["charts","#chart-section"],["flow","#market-intelligence"],["ai","#ai-section"],["strategy","#trading-tools"],["markets","#coins-section"]]) {
                   await openCenter(center);
                   await page.locator(selector).waitFor({state:"visible",timeout:5000});
