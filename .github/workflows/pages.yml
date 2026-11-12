@@ -343,6 +343,19 @@ jobs:
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
                 }
                 const appMode = viewport.name === "mobile-app";
+                await page.waitForFunction(() => {
+                  const panel=document.getElementById("mmp-chart-pro");
+                  const mode=document.getElementById("mmp-chart-candle-mode");
+                  return !!panel && !!mode && panel.querySelectorAll("[data-pro-ind]").length===4;
+                }, null, {timeout:8000});
+                const chartRuntime=await page.evaluate(() => ({
+                  state: typeof mmpChartState !== "undefined",
+                  renderer: typeof window.mmpRenderChart === "function",
+                  loader: typeof window.mmpLoadChart === "function",
+                  modes: document.querySelectorAll("#mmp-chart-candle-mode option").length,
+                  macd: !!document.getElementById("mmp-chart-macd-toggle")
+                }));
+                if (!chartRuntime.state || !chartRuntime.renderer || !chartRuntime.loader || chartRuntime.modes !== 3 || !chartRuntime.macd) throw new Error(viewport.name + " advanced chart controls or runtime bridge failed: " + JSON.stringify(chartRuntime));
                 const openCenter = async center => {
                   const selector = appMode ? "#mmp-app-page-dock [data-mmp-app-page='" + center + "']" : "#mmp-terminal-hub [data-mmp-open-center='" + center + "']";
                   await page.locator(selector).click();
