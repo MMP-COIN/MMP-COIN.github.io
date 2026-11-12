@@ -12,3 +12,15 @@
 .curr-btn.active{background:linear-gradient(120deg,#f2cb7d,#c78b38);color:#211608;box-shadow:0 3px 12px #dba54c22}
 @media(max-width:560px){.topbar{gap:7px;padding-left:10px;padding-right:10px}.top-actions{gap:6px}.currency-switch{gap:2px;padding:2px}.curr-btn{min-width:41px;padding:7px 7px;font-size:10px}.live-state{display:none}}
 @media(max-width:380px){.brand-copy small{display:none}.coin-mark{width:36px;height:36px}.top-actions{gap:4px}.curr-btn{min-width:38px;padding:7px 5px}.icon-btn,.menu-btn{width:33px;height:33px}}
+
+.market-cards-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0 28px}
+.market-asset-card{position:relative;min-width:0;overflow:hidden;padding:17px 16px 15px;border:1px solid rgba(174,190,211,.15);border-radius:15px;background:linear-gradient(145deg,#121e2c,#0b131f);box-shadow:0 12px 30px #0003}
+.btc-card{--accent:#f2a900}.eth-card{--accent:#8a9cff}.usdt-card{--accent:#26a17b}.gold-card{--accent:#d9b45d}
+.market-asset-card:after{content:"";position:absolute;inset:auto 0 0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.asset-card-top{display:flex;align-items:center;gap:8px;margin-bottom:16px}.asset-symbol{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:#ffffff0c;color:var(--accent);font-size:18px;font-weight:800}.asset-kind{font-size:10px;color:#9baabd}.asset-live{margin-inline-start:auto;color:#8ea69a;font:9px var(--mono)}
+.asset-name{font-size:13px;color:#d9e2ed;margin-bottom:8px}.asset-name b{margin-inline-start:5px;color:var(--accent);font:10px var(--mono)}
+.asset-price{min-height:28px;color:#f4f6fa;font:700 clamp(14px,1.45vw,20px) var(--mono);direction:ltr;text-align:right;overflow-wrap:anywhere}
+.asset-counterpart{min-height:17px;margin-top:6px;color:#a9b7c8;font:10px var(--mono);direction:rtl;text-align:right}
+.asset-source{margin-top:9px;padding-top:8px;border-top:1px solid #ffffff10;color:#77899e;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media(max-width:760px){.market-cards-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:13px 0 22px}.market-asset-card{padding:13px 11px}.asset-card-top{margin-bottom:12px}.asset-symbol{width:30px;height:30px}.asset-name{font-size:12px}.asset-price{font-size:clamp(12px,3.5vw,17px)}.asset-counterpart{font-size:9px}}
+@media(max-width:360px){.market-cards-grid{gap:7px}.market-asset-card{padding:11px 8px}.asset-kind{font-size:9px}.asset-name{font-size:11px}}
