@@ -24,6 +24,7 @@ name: Deploy MMP COIN AI root site
 # Keep root-domain mirror aligned with canonical UI; verify analyzer control widths on desktop and mobile. preserve yesterday's compact M coin hero proportions and keep header in document flow and apply final-cascade top-gap correction.
 # Trigger root mirror sync for the canonical Lightweight Charts 4.2.0 fix (77a30f5).
 # Republish canonical JS/CSS with bumped cache keys after stale-client regression.
+# Trigger root mirror sync for canonical MMP NEXUS autonomous diagnostics, merged 2026-11-12.
 
 on:
   push:
