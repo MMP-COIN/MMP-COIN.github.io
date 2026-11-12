@@ -322,6 +322,51 @@ button.module:focus-visible{outline:2px solid var(--gold-hi);outline-offset:5px}
 .module:hover .icon3d{transform:perspective(420px) rotateX(7deg) rotateY(-4deg) translateY(-3px) scale(1.08)}
 @media(prefers-reduced-motion:reduce){.module .icon3d{transition:none}}
 
+
+/* CINEMATIC COMMAND DECK — new visual direction */
+:root{--bg:#050609;--gold:#d7ad57;--gold-hi:#f7dda0;--muted:#9299a5}
+body{background:radial-gradient(ellipse at 50% 8%,#252016 0,#101116 30%,#07080c 68%,#030407 100%)}
+body:before{opacity:.07;background-size:72px 72px;mask-image:linear-gradient(#000,transparent 58%)}
+.shell{max-width:1240px;padding-top:18px}
+.top{height:62px;border:0;border-bottom:1px solid #d7ad5730;border-radius:0;background:linear-gradient(90deg,transparent,#17140e88,transparent);box-shadow:none;transform:none;padding:0 4px}
+.top:before{display:none}
+.brand-coin{width:46px;height:46px}
+.top-tag{border-radius:5px;background:#17140e;border-color:#d7ad5740;box-shadow:none}
+.hero{padding-top:28px}
+.eyebrow{border:0;background:none;box-shadow:none;letter-spacing:5px;color:#c9a65e;transform:none;padding:0}
+.hero h1{border:0;background:none;box-shadow:none;transform:none;text-shadow:0 4px 28px #000;margin:10px auto 5px;padding:0}
+.hero p{border:0;background:none;box-shadow:none;transform:none;padding:0;margin:8px auto 0;color:#aeb2bb}
+.stage{height:300px;margin:0 auto}
+.platform{border-color:#b68b3c66;box-shadow:0 0 0 18px #d7ad5708,0 0 0 38px #d7ad5705,0 0 60px #d7ad5720}
+.coin-scene{filter:drop-shadow(0 18px 32px #000)}
+.float-label{border-radius:3px;background:#0c0d10;border-color:#d7ad5745;box-shadow:0 8px 24px #000b;backdrop-filter:blur(14px)}
+.section-head{border:0;border-bottom:1px solid #d7ad5738;border-radius:0;background:transparent;box-shadow:none;transform:none;padding:0 2px 12px;margin:10px 0 15px}
+.section-head:before{display:none}
+.section-head h2{font-size:15px;transform:none;text-shadow:none;color:#f1e7d2}
+.section-head span{transform:none;text-shadow:none;color:#9b8a68}
+.modules{gap:12px;row-gap:12px;perspective:none}
+.module{min-height:168px;border:1px solid #ffffff17;border-radius:8px;padding:15px;background:linear-gradient(145deg,#17191e 0%,#101116 55%,#090a0e 100%);box-shadow:0 12px 25px #0008,inset 0 1px 0 #ffffff12;transform:none;transition:transform .25s,border-color .25s,background .25s}
+.module:before{background:linear-gradient(125deg,#ffffff0c,transparent 42%,#d7ad5709);opacity:1}
+.module:after{height:1px;inset-inline:14px;background:linear-gradient(90deg,transparent,#b68b3c88,transparent);box-shadow:none}
+.module:hover{transform:translateY(-4px);border-color:#d7ad5790;background:linear-gradient(145deg,#211d14,#111319 65%,#090a0e);box-shadow:0 18px 34px #000b,0 0 24px #d7ad5710,inset 0 1px 0 #ffffff18}
+.art{height:70px;filter:drop-shadow(0 7px 10px #0009)}
+.icon3d{transform:scale(.92);filter:drop-shadow(0 0 12px #d7ad5730)}
+.module h3{font-size:13px;color:#f0e9dc;transform:none;text-shadow:none;margin-top:3px}
+.module small{font-size:8px;color:#b99b5c;letter-spacing:1.8px;transform:none;text-shadow:none}
+.module p{font-size:9px;color:#9299a5;transform:none;text-shadow:none}
+.module .enter{color:#d7ad57;transform:none}
+.footer{border:0;border-top:1px solid #d7ad572b;border-radius:0;background:transparent;box-shadow:none;transform:none;padding:14px 2px}
+.footer span{text-shadow:none}
+.page-hero{border:1px solid #d7ad5755;border-radius:8px;background:radial-gradient(ellipse at 50% 0,#d7ad571c,transparent 62%),linear-gradient(145deg,#191a1d,#0a0b0f);box-shadow:0 18px 42px #000b,inset 0 1px 0 #ffffff16;transform:none}
+.page-hero:before{display:none}
+.page-hero:after{height:1px}
+.page-hero h2,.page-hero .en,.page-hero p{transform:none;text-shadow:none}
+.empty-state{border:1px solid #d7ad5740;border-radius:8px;background:#101116;box-shadow:0 12px 26px #0008;transform:none}
+.empty-state:before{display:none}
+.back{border-radius:5px;transform:none;box-shadow:0 6px 16px #0008}
+.back:hover{transform:translateY(-2px);box-shadow:0 9px 20px #0009}
+@media(max-width:520px){.shell{padding-top:10px}.stage{height:235px}.hero{padding-top:24px}.modules{gap:9px}.module{min-height:154px;padding:11px;border-radius:7px}.art{height:61px}.module h3{font-size:11px}}
+
 </style>
 </head>
 <body>
