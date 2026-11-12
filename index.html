@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="23aa9a8e7986df0184eab59054414db6c8abd629">
+<meta name="mmp-web-build" content="__MMP_WEB_BUILD_ID__">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -2527,6 +2527,7 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
 </style>
 <link rel="stylesheet" href="assets/mmp-quantum-terminal-v1.css?v=11">
 <link rel="stylesheet" href="assets/mmp-real-depth-visuals.css?v=4"><link rel="stylesheet" href="assets/mmp-quantum-nexus.css?v=2"><script defer src="assets/mmp-quantum-terminal-v1.js?v=9"></script><script defer src="assets/mmp-chart-pro-upgrade.js?v=1"></script>
+<link rel="stylesheet" href="assets/mmp-priority-layout-v1.css?v=2">
 </head>
 <body class="mmp-quantum-terminal" data-mmp-view="home">
 <script>try{if(new URLSearchParams(location.search).has("mmp_native_version"))document.body.classList.add("mmp-app-mode");}catch(e){}</script>
@@ -2855,6 +2856,8 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   serverHtml+=row("آخرین چرخه سروری",serverState,serverAge===null?(serverNexus?.message||"هنوز اجرا نشده"):serverAge+" ثانیه قبل · "+(serverNexus.ai_provider||"قواعد سلامت"));
   (serverNexus?.services||[]).forEach(x=>serverHtml+=row(x.name,x.status,x.detail));
   (serverNexus?.issues||[]).forEach(x=>serverHtml+=row(x.component,x.severity==="critical"?"critical":"warning",x.evidence));
+  (serverNexus?.ai_issues||[]).forEach(x=>serverHtml+=row("تحلیل AI · "+x.component,x.severity==="critical"?"critical":"warning",x.recommendation||x.evidence));
+  (serverNexus?.upgrade_recommendations||[]).forEach(x=>serverHtml+=row("ارتقای پیشنهادی · "+x.module,x.priority==="high"?"warning":"slow",x.reason));
   (serverNexus?.actions||[]).forEach(x=>serverHtml+=row("ترمیم "+(x.target||x.action),x.status==="accepted"?"ok":"down",x.detail));
   (serverNexus?.next_checks||[]).slice(0,4).forEach(x=>serverHtml+='<div class="mmp-ah-row"><span>'+esc(x)+'</span></div>');
   if(!serverNexus)serverHtml+=row("ارتباط با مغز سروری","down","NEXUS Worker پاسخ نداد");
@@ -7538,5 +7541,6 @@ html body section#market-snapshot .mmp-card-track{height:2px!important;padding-t
 }
 @media(prefers-reduced-motion:reduce){#quantum-center-entry .quantum-engine-link:before,#quantum-center-entry .quantum-engine-link .engine-live-dot{animation:none!important}}
 </style>
+<script src="assets/mmp-priority-layout-v1.js?v=2" defer></script>
 </body>
 </html>
