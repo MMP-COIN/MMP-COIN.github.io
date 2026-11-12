@@ -334,6 +334,8 @@ jobs:
                 if (layout.gap > 12 || layout.gap < -2) throw new Error(viewport.name + " unwanted blank gap before first card: " + layout.gap + "px");
                 if (layout.heroHeight > (viewport.name === "desktop" ? 170 : 180)) throw new Error(viewport.name + " first hero card is still too tall: " + layout.heroHeight + "px");
                 if (!title.includes("MMP QUANTUM")) throw new Error(viewport.name + " homepage title is missing");
+                const visibleQuantumCards = await page.locator("#quantum-center-entry .quantum-engine-link:visible").count();
+                if (visibleQuantumCards !== 12) throw new Error(viewport.name + " homepage must visibly render all 12 Quantum Command cards; found " + visibleQuantumCards);
                 if (bodyText.trim().length < 200) throw new Error(viewport.name + " homepage rendered almost no content");
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
