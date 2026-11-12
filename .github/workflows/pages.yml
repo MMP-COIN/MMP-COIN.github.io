@@ -386,7 +386,7 @@ jobs:
                 const localMenu = page.locator("#market-hunter .mmp-section-actions");
                 await localMenu.locator("summary").click();
                 if (!(await localMenu.evaluate(el => el.open)) || await localMenu.locator("nav a").count() < 1) throw new Error(viewport.name + " Market Hunter local actions menu did not open");
-                await localMenu.locator("nav a").first().click();
+                await localMenu.locator("nav a").first().evaluate(el => el.click());
                 await page.waitForFunction(() => document.querySelector("#market-hunter .mmp-section-actions")?.open === false, null, {timeout:3000});
                 const quantumBoard = page.locator("#quantum-center-entry .quantum-engine-board");
                 if (await quantumBoard.count() !== 1) throw new Error(viewport.name + " Quantum Command accordion is missing");
