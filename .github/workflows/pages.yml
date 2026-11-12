@@ -29,6 +29,7 @@ name: Deploy MMP COIN AI root site
 # Trigger root mirror sync for canonical MMP NEXUS autonomous diagnostics, merged 2026-11-12.
 # Verify workers.dev endpoint after enabling independent NEXUS status surface.
 # Sync NEXUS AI upgrade recommendations and persisted server report UI.
+# Trigger canonical MMP compact 3D navigation and four-asset homepage redesign from MMP-COIN-AI.
 
 on:
   push:
