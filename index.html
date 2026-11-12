@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="24f298620c946ea8519789ef203027620d92cb41">
+<meta name="mmp-web-build" content="c492de1d21b79accba670cf3a28839598adc29aa">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -2598,7 +2598,6 @@ html body #ai-section .tf-card{min-width:0!important;max-width:100%!important;ov
   <a class="side-link" href="#connections"><i>◉</i><span>سلامت منابع داده</span><em>13</em></a>
   <a class="side-link" href="#app-download"><i>⬇</i><span>دانلود اپلیکیشن</span><em>14</em></a>
   <a class="side-link" href="#contact-us"><i>✉</i><span>ارتباط با مدیریت</span><em>15</em></a>
-  <a class="side-link" href="https://mmp-coin.github.io/admin.html"><i>⚙</i><span>پنل مدیریت</span><em>16</em></a>
   <div class="side-footer"><span class="live-dot"></span><span>اتصال زنده بازار</span><small>DATA STREAM ACTIVE</small></div>
 </aside>
 <!-- منوی پایین حذف شد؛ منوی اصلی در سربرگ قرار دارد. -->
@@ -5002,9 +5001,13 @@ html.mmp-native-app .native-refresh-label{font:700 9px Tahoma,Arial,sans-serif!i
 @media(max-width:390px){html.mmp-native-app .native-refresh-btn{min-width:72px!important;height:32px!important;padding:0 5px!important}html.mmp-native-app .native-refresh-label{font-size:8px!important}}
 .hunter-head-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}.hunter-refresh-btn{white-space:nowrap}.hunter-refresh-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.hunter-refresh-btn.is-refreshing svg{animation:radar-spin 1s linear infinite}@media(max-width:640px){.hunter-topline{align-items:flex-start}.hunter-head-actions{gap:6px}.hunter-refresh-btn{padding:7px 9px;font-size:11px}}
 </style>
+<style id="mmp-native-app-header-fix-20261112">
+html.mmp-native-app header.top{display:none!important}
+</style>
 <script>
 (function(){
  try{
+  var liveUpdateChecking=false,lastLiveCheck=0,liveUpdateInitialCheck=false;
   var native=!!(window.Capacitor&&(window.Capacitor.isNativePlatform?.()||window.Capacitor.getPlatform?.()==="android"))||location.protocol==="capacitor:";
   if(!native)return;
   document.documentElement.classList.add("mmp-native-app");
