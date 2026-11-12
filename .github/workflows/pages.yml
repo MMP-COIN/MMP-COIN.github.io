@@ -98,6 +98,9 @@ jobs:
           test -s assets/mmp-quantum-nexus.css
           grep -q 'MMP VISIBLE 3D PASS' assets/mmp-real-depth-visuals.css
           echo 'Required MMP 3D visual stylesheet and cache key verified.'
+          test "$(grep -o 'class="quantum-engine-link"' index.html | wc -l)" -eq 12
+          grep -q 'mmp-home-quantum-12-card-grid-20261112' index.html
+          echo 'All 12 Quantum Command module cards are present in the Pages artifact.'
           python3 - <<'PY'
           import html.parser, pathlib, re, sys
           pages = [pathlib.Path(p) for p in ("index.html", "quantum-lab.html", "admin.html", "market-heatmap.html")]
