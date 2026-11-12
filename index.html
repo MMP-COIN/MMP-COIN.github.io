@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08090d">
 <meta name="mmp-app-version" content="2.0.0">
-<meta name="mmp-web-build" content="e210a4b36b3debce84fff2a3a1aee62c8c31edc6">
+<meta name="mmp-web-build" content="b81c73ffe013a61b33c7c1604a2456af1fec022f">
 <!-- Native app: bypass stale WebView HTML cache on every cold launch without requiring an APK rebuild. -->
 <script>
 (function(){
@@ -3781,7 +3781,7 @@ async function refreshAll(){
   // صفحه‌بندی پویا تا پایان واقعی کاتالوگ؛ هیچ سقف ثابت ۱۰۰/۵۰۰/۱۰۰۰ دارایی وجود ندارد.
   {
    const pageSize=marketMetadataSource==="CoinLore"||marketMetadataSource==="CoinGecko Direct"?100:250;
-   let nextPage=2,finished=false,emptyBatches=0;
+   let nextPage=2,finished=false,emptyBatches=0,consecutiveFailedPages=0;
    const knownIds=new Set(candidateCoins.map(c=>c.id));
    const knownSymbols=new Set(candidateCoins.map(c=>String(c.symbol||"").toUpperCase()));
    const extraCandidates=[];
@@ -3789,7 +3789,7 @@ async function refreshAll(){
     const pageNumbers=Array.from({length:MARKET_CATALOG_PAGE_BATCH_SIZE},(_,index)=>nextPage+index);
     const pageResults=await Promise.allSettled(pageNumbers.map(async pageNumber=>{
      let lastError=null;
-     for(let attempt=0;attempt<3;attempt++){
+     for(let attempt=0;attempt<2;attempt++){
       try{
        const url=marketMetadataSource==="CoinLore"
         ?AI_ANALYSIS_ENDPOINT+"/market-proxy?source=coinlore-top&offset="+((pageNumber-1)*100)
@@ -3812,9 +3812,11 @@ async function refreshAll(){
     let successfulPages=0,addedThisBatch=0,shortPage=false;
     pageResults.forEach((result,index)=>{
      if(result.status!=="fulfilled"||!Array.isArray(result.value)){
+      consecutiveFailedPages++;
       if(result.status==="rejected")console.warn("Market page "+pageNumbers[index]+" unavailable:",result.reason);
       return;
      }
+     consecutiveFailedPages=0;
      successfulPages++;
      if(result.value.length<pageSize)shortPage=true;
      result.value.forEach(coin=>{
@@ -3825,7 +3827,8 @@ async function refreshAll(){
     });
     if(!successfulPages||!addedThisBatch)emptyBatches++;else emptyBatches=0;
     nextPage+=pageNumbers.length;
-    finished=shortPage||emptyBatches>=2;
+    finished=shortPage||emptyBatches>=2||consecutiveFailedPages>=3;
+    if(consecutiveFailedPages>=3)console.warn("Market catalog pagination paused after three consecutive provider failures; retaining verified assets.");
    }
    if(extraCandidates.length){
     const extraVerified=await verifyCoinBatch(extraCandidates);
