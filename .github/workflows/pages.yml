@@ -97,7 +97,7 @@ jobs:
           # The generated root mirror is committed only at the end of the job,
           # after all deployment and rebase-sensitive steps have completed.
           SOURCE_DATE="$(git -C canonical show -s --format=%cI "$BUILD_ID")"
-          printf '{"build":"%s","updatedAt":"%s"}\\n' "$BUILD_ID" "$SOURCE_DATE" > version.json
+          printf '{"build":"%s","updatedAt":"%s"}\n' "$BUILD_ID" "$SOURCE_DATE" > version.json
           if [ "$PREVIOUS_BUILD" = "$BUILD_ID" ] && [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
