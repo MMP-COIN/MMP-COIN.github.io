@@ -189,9 +189,10 @@ jobs:
           grep -q 'mmp-quantum-terminal-v1.js' /tmp/mmp-home.html
           grep -q 'mmp-quantum-terminal-v1.css' /tmp/mmp-home.html
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/assets/mmp-quantum-terminal-v1.js?v=$GITHUB_RUN_ID" -o /tmp/mmp-terminal.js
-          grep -q 'mmp-terminal-hub' /tmp/mmp-terminal.js
+          grep -q 'view==="home"?true' /tmp/mmp-terminal.js
+          ! grep -q 'mmp-terminal-hub' /tmp/mmp-terminal.js
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/assets/mmp-quantum-terminal-v1.css?v=$GITHUB_RUN_ID" -o /tmp/mmp-terminal.css
-          grep -q 'mmp-hub-grid' /tmp/mmp-terminal.css
+          grep -q 'mmp-center-toolbar' /tmp/mmp-terminal.css
           ! grep -q 'refreshInFlight' /tmp/mmp-home.html
           grep -q 'window.__mmpRefreshInFlight' /tmp/mmp-home.html
           ! grep -q 'api.binance.com/api/v3/klines' /tmp/mmp-home.html
@@ -306,11 +307,11 @@ jobs:
                   bodyClass: document.body?.className || null,
                   script: [...document.scripts].filter(s => s.src.includes("mmp-quantum-terminal-v1")).map(s => s.src),
                   hub: !!document.querySelector("#mmp-terminal-hub"),
-                  hubCards: document.querySelectorAll("#mmp-terminal-hub .mmp-hub-card").length,
                   main: !!document.querySelector("#hero"),
-                  sections: document.querySelectorAll("#hero > section").length
+                  sections: document.querySelectorAll("#hero > section").length,
+                  visibleSections: [...document.querySelectorAll("#hero > section")].filter(el => !el.hidden).length
                   }));
-                  if (terminalState.ready === "1" && terminalState.hubCards === 8 && terminalState.script.length > 0) break;
+                  if (terminalState.ready === "1" && !terminalState.hub && terminalState.visibleSections >= 16 && terminalState.script.length > 0) break;
                   console.log(viewport.name + " stale Pages edge; retrying canonical index, attempt " + (attempt + 1));
                   if (attempt < 6) {
                     // A different query key forces a fresh Pages/CDN edge lookup; reloading the same stale URL can pin one edge response.
@@ -373,10 +374,13 @@ jobs:
                 }));
                 if (!chartRuntime.state || !chartRuntime.renderer || !chartRuntime.loader || chartRuntime.modes !== 3 || !chartRuntime.macd) throw new Error(viewport.name + " advanced chart controls or runtime bridge failed: " + JSON.stringify(chartRuntime));
                 const openCenter = async center => {
-                  const selector = appMode ? "#mmp-app-page-dock [data-mmp-app-page='" + center + "']" : "#mmp-terminal-hub [data-mmp-open-center='" + center + "']";
-                  await page.locator(selector).click();
+                  if (appMode) {
+                    await page.locator("#mmp-app-page-dock [data-mmp-app-page='" + center + "']").click();
+                  } else {
+                    await page.locator(".menu-btn").first().click();
+                    await page.locator("#dropdownMenu [data-mmp-open-center='" + center + "']").click();
+                  }
                 };
-                const hubCards = page.locator("#mmp-terminal-hub .mmp-hub-card");
                 if (appMode) {
                   await page.locator("#mmp-app-page-dock").waitFor({state:"visible",timeout:5000});
                   if (await page.locator("#mmp-app-page-dock [data-mmp-app-page]").count() !== 8) throw new Error("native app must expose exactly eight page controls");
@@ -403,8 +407,12 @@ jobs:
                   if (await page.locator("#app-download").isVisible()) throw new Error("APK download section must remain website-only");
                   await openCenter("command");
                 } else {
-                  await hubCards.first().waitFor({state:"visible",timeout:5000});
-                  if (await hubCards.count() !== 8) throw new Error("website homepage must expose exactly eight specialist centers");
+                  await page.waitForFunction(() => {
+                    const sections=[...document.querySelectorAll("#hero > section")];
+                    return !document.querySelector("#mmp-terminal-hub") && sections.filter(el => !el.hidden).length >= 16;
+                  }, null, {timeout:5000});
+                  const visibleHomeSections = await page.locator("#hero > section:not([hidden])").count();
+                  if (visibleHomeSections < 16) throw new Error("website homepage must render all main sections inline; found " + visibleHomeSections);
                   await openCenter("command");
                 }
                 if (await page.locator('script[src*="mmp-chart-pro-upgrade.js"]').count() !== 1) throw new Error(viewport.name + " advanced live chart upgrade script is missing");
