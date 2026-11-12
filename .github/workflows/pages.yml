@@ -458,7 +458,7 @@ jobs:
                 await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
                 await openCenter("charts");
                 await page.locator("#chart-section").waitFor({state:"visible",timeout:5000});
-                if (await page.locator("[data-chart-tf]").count() !== 6) throw new Error(viewport.name + " missing chart timeframe controls");
+                if (await page.locator("[data-chart-tf]").count() !== 7) throw new Error(viewport.name + " expected 7 chart timeframe controls");
                 await page.locator("#chart-section").scrollIntoViewIfNeeded();
                 await page.locator("#mmp-candle-canvas canvas").first().waitFor({state:"visible",timeout:20000});
                 await page.locator("#mmp-rsi-canvas canvas").first().waitFor({state:"visible",timeout:10000});
