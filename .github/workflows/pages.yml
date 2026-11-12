@@ -320,14 +320,14 @@ jobs:
                 }
                 const title = await page.title();
                 const bodyText = await page.locator("body").innerText();
-                const layout = await page.evaluate(() => {
-                  const header = document.querySelector("body > header.top");
+                const layout = await page.evaluate((nativeApp) => {
+                  const header = nativeApp ? document.querySelector(".native-appbar") : document.querySelector("body > header.top");
                   const hero = document.querySelector("#mmp-home-hero");
                   if (!header || !hero) return null;
                   const h = header.getBoundingClientRect(), r = hero.getBoundingClientRect();
                   const cs = getComputedStyle(header), bs = getComputedStyle(document.body), hs = getComputedStyle(document.documentElement);
                   return { headerTop: Math.round(h.top), headerBottom: Math.round(h.bottom), heroTop: Math.round(r.top), heroHeight: Math.round(r.height), gap: Math.round(r.top - h.bottom), position:cs.position, top:cs.top, headerMargin:cs.marginTop, bodyMargin:bs.marginTop, bodyPadding:bs.paddingTop, htmlMargin:hs.marginTop, htmlPadding:hs.paddingTop, bodyTransform:bs.transform, scrollY:window.scrollY };
-                });
+                }, viewport.name === "mobile-app");
                 if (!layout) throw new Error(viewport.name + " missing header or first hero card");
                 console.log(viewport.name + " first-screen geometry: " + JSON.stringify(layout));
                 if (Math.abs(layout.headerTop) > 2) throw new Error(viewport.name + " top navigation does not start at page top");
