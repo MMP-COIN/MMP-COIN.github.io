@@ -184,6 +184,19 @@ button.module:focus-visible{outline:2px solid var(--gold-hi);outline-offset:5px}
 .module:hover h3{filter:drop-shadow(0 1px 0 var(--module-low)) drop-shadow(0 4px 0 #090d14) drop-shadow(0 8px 9px #000d);transform:translateZ(22px)}
 @media(max-width:520px){.module h3{font-size:12px;transform:translateZ(13px)}.module small{font-size:7px}.module p{font-size:9px}}
 
+
+/* Requested hierarchy and neutral-white typography */
+.hero .stage{margin-top:8px;margin-bottom:8px}
+.hero h1{color:#f7f9fc;text-shadow:0 2px 0 #333b48,0 7px 20px #000}
+.hero h1 .gold-word{background:linear-gradient(180deg,#fff0bd 0%,#e6c477 48%,#b17b2d 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 2px 0 #5a3d16) drop-shadow(0 0 10px #d9b66d55)}
+.hero p{color:#c5ceda;border-color:#ffffff28}
+.module h3{color:#f1f4f8}
+.module small{color:#b5c0ce}
+.module p{color:#aeb9c8}
+.section-head h2{color:#edf1f6}
+.page-hero h2{color:#f1f4f8}
+.page-hero p,.empty-state{color:#bdc7d4}
+
 </style>
 </head>
 <body>
@@ -194,9 +207,6 @@ button.module:focus-visible{outline:2px solid var(--gold-hi);outline-offset:5px}
 </header>
 <section id="home" class="view active">
   <div class="hero">
-    <div class="eyebrow">THE QUANTUM COMMAND ROOM</div>
-    <h1>بازار را <span class="gold-word">زودتر</span> ببین</h1>
-    <p>مرکز یکپارچه هوش بازار؛ از جریان نقدینگی و ساختار قیمت تا کشف حرکت‌های اولیه.</p>
     <div class="stage" aria-label="نشان سه‌بعدی MMP">
       <div class="platform"></div>
       <div class="float-label one">QUANTUM CORE</div>
@@ -205,6 +215,10 @@ button.module:focus-visible{outline:2px solid var(--gold-hi);outline-offset:5px}
       <div class="coin-scene"><div class="coin-3d"><div class="coin-edge"></div><div class="coin-face"><b>M</b></div></div><div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div></div>
       <i class="orbit-dot"></i><i class="orbit-dot d2"></i><i class="orbit-dot d3"></i>
     </div>
+    <div class="eyebrow">THE QUANTUM COMMAND ROOM</div>
+    <h1>بازار را <span class="gold-word">زودتر</span> ببین</h1>
+    <p>مرکز یکپارچه هوش بازار؛ از جریان نقدینگی و ساختار قیمت تا کشف حرکت‌های اولیه.</p>
+    
   </div>
   <div class="section-head"><h2>سامانه‌های اصلی</h2><span>08 MODULES · SELECT TO ENTER</span></div>
   <div class="modules">
