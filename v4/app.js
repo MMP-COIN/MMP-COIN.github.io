@@ -13,6 +13,42 @@
   finally{clearTimeout(timer);}
  }
  function money(v){const n=Number(v);return Number.isFinite(n)&&n>0?n.toLocaleString("en-US",{maximumFractionDigits:n>100?2:4}):"—";}
+ let currentCurrency="USDT",tetherRate=0,tickerQuotes={};
+ try{const saved=localStorage.getItem("mmp_v4_currency");if(saved==="IRT"||saved==="USDT")currentCurrency=saved;}catch(e){}
+ function renderTicker(){
+  const symbols=["BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT"];
+  $("ticker").innerHTML=symbols.map(s=>{
+   const q=tickerQuotes[s]||{},name=s.replace("USDT"," / USDT");
+   let value="داده در دسترس نیست";
+   if(Number(q.price)>0){
+    if(currentCurrency==="IRT")value=tetherRate>0?money(q.price*tetherRate)+" تومان":"نرخ تتر در دسترس نیست";
+    else value=money(q.price)+" USDT";
+   }
+   return '<div class="ticker-item"><small>'+name+' · '+(q.provider||"بدون منبع")+'</small><b>'+value+'</b></div>';
+  }).join("");
+  document.querySelectorAll("[data-currency]").forEach(button=>{
+   const active=button.dataset.currency===currentCurrency;
+   button.classList.toggle("active",active);button.setAttribute("aria-pressed",active?"true":"false");
+  });
+ }
+ function setCurrency(value){
+  currentCurrency=value==="IRT"?"IRT":"USDT";
+  try{localStorage.setItem("mmp_v4_currency",currentCurrency);}catch(e){}
+  renderTicker();
+ }
+ async function loadTetherRate(){
+  try{
+   const d=await get(MAIN+"/local-market-watch",7000);
+   const p=Number(d.median_toman),sources=Array.isArray(d.sources)?d.sources.filter(x=>x?.fresh===true&&Number(x.price_toman)>0):[];
+   if(p>=1000&&p<=100000000&&sources.length){tetherRate=p;return true;}
+  }catch(e){}
+  try{
+   const d=await get(MAIN+"/market-proxy?source=nobitex-tether",7000);
+   const p=Number(d?.stats?.["usdt-rls"]?.latest)/10;
+   if(p>=1000&&p<=100000000){tetherRate=p;return true;}
+  }catch(e){}
+  return false;
+ }
  async function loadTicker(){
   const symbols=["BTCUSDT","ETHUSDT","BNBUSDT","SOLUSDT"];
   const sources=["binance-tickers","okx-tickers","bybit-tickers","gate-tickers","kucoin-tickers","bitget-tickers","mexc-tickers"];
@@ -44,10 +80,8 @@
    }
   }
   const available=symbols.filter(s=>Number.isFinite(prices[s])&&prices[s]>0);
-  $("ticker").innerHTML=symbols.map(s=>{
-   const name=s.replace("USDT"," / USDT");
-   return '<div class="ticker-item"><small>'+name+' · '+(providers[s]||"بدون منبع")+'</small><b>'+(prices[s]?money(prices[s]):"داده در دسترس نیست")+'</b></div>';
-  }).join("");
+  tickerQuotes={};symbols.forEach(s=>tickerQuotes[s]={price:prices[s],provider:providers[s]||"بدون منبع"});
+  renderTicker();
   if(available.length!==symbols.length)console.warn("MMP ticker incomplete",{available,failures});
  }
  function empty(el,title,detail){el.innerHTML='<div class="empty-state"><b>'+title+'</b><small>'+detail+'</small></div>';}
@@ -101,12 +135,14 @@
  async function refresh(which){
   if(which==="radar")return loadRadar();
   if(which==="hunter")return loadHunter();
-  return Promise.allSettled([loadTicker(),loadRadar(),loadHunter(),loadHealth()]);
+  return Promise.allSettled([loadTicker(),loadTetherRate().then(renderTicker),loadRadar(),loadHunter(),loadHealth()]);
  }
  document.querySelectorAll("[data-refresh]").forEach(b=>b.addEventListener("click",()=>refresh(b.dataset.refresh)));
  $("refreshAll").addEventListener("click",()=>refresh("all"));
+ document.querySelectorAll("[data-currency]").forEach(button=>button.addEventListener("click",()=>setCurrency(button.dataset.currency)));
  $("menuToggle").addEventListener("click",()=>document.querySelector(".desktop-nav").classList.toggle("open"));
  document.querySelectorAll(".desktop-nav a").forEach(a=>a.addEventListener("click",()=>document.querySelector(".desktop-nav").classList.remove("open")));
+ setCurrency(currentCurrency);
  refresh("all");
- setInterval(()=>Promise.allSettled([loadTicker(),loadRadar(),loadHunter(),loadHealth()]),60000);
+ setInterval(()=>Promise.allSettled([loadTicker(),loadTetherRate().then(renderTicker),loadRadar(),loadHunter(),loadHealth()]),60000);
 })();
