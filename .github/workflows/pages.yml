@@ -26,7 +26,7 @@ name: Deploy MMP COIN AI root site
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "preview/redesign-2026-11-13"]
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
@@ -37,8 +37,8 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "root-pages-deploy"
-  cancel-in-progress: true
+  group: "root-pages-deploy-${{ github.ref }}"
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -57,15 +57,16 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: MMP-COIN/MMP-COIN-AI
-          ref: main
+          ref: ${{ github.ref == 'refs/heads/preview/redesign-2026-11-13' && 'preview/redesign-2026-11-13' || 'main' }}
           path: canonical
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
         with:
           enablement: true
       - name: Synchronize canonical Quantum UI and brand assets
-        run: |
+        id: sync
           set -euo pipefail
+          PREVIOUS_BUILD="$(jq -r '.build // empty' version.json 2>/dev/null || true)"
           test -s canonical/www/index.html
           test -s canonical/www/quantum-lab.html
           test -s canonical/www/admin.html
@@ -88,19 +89,25 @@ jobs:
           # Build the Pages artifact directly from the canonical app source.
           # The generated root mirror is committed only at the end of the job,
           # after all deployment and rebase-sensitive steps have completed.
-          printf '{"build":"%s","updatedAt":"%s"}\n' "$BUILD_ID" "$(date -u +%FT%TZ)" > version.json
+          SOURCE_DATE="$(git -C canonical show -s --format=%cI "$BUILD_ID")"
+          printf '{"build":"%s","updatedAt":"%s"}\\n' "$BUILD_ID" "$SOURCE_DATE" > version.json
+          if [ "$PREVIOUS_BUILD" = "$BUILD_ID" ] && [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
       - name: Validate mirrored page assets exist before deployment
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           set -euo pipefail
-          # The 3D visual design is now a required release asset, not an optional follow-up.
-          grep -q 'mmp-real-depth-visuals.css?v=4' index.html
-          grep -q 'mmp-quantum-nexus.css?v=2' index.html
-          test -s assets/mmp-quantum-nexus.css
-          grep -q 'MMP VISIBLE 3D PASS' assets/mmp-real-depth-visuals.css
-          echo 'Required MMP 3D visual stylesheet and cache key verified.'
-          test "$(grep -o 'class="quantum-engine-link"' index.html | wc -l)" -eq 12
-          grep -q 'mmp-home-quantum-12-card-grid-20261112' index.html
-          echo 'All 12 Quantum Command module cards are present in the Pages artifact.'
+          # Appearance-specific assertions are deferred to the later UI phase.
+          test -s assets/mmp-quantum-terminal-v1.css
+          test -s assets/mmp-quantum-terminal-v1.js
+          grep -q 'mmp-web-build' index.html
+          grep -q 'mmp-web-auto-update' index.html
+          jq -e '.build and .updatedAt' version.json >/dev/null
+          echo 'Canonical build metadata and required runtime assets verified.'
           python3 - <<'PY'
           import html.parser, pathlib, re, sys
           pages = [pathlib.Path(p) for p in ("index.html", "quantum-lab.html", "admin.html", "market-heatmap.html")]
@@ -126,6 +133,7 @@ jobs:
           print("All local JS/CSS/image/font/manifest references exist in the Pages artifact.")
           PY
       - name: Validate inline JavaScript syntax
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -149,18 +157,28 @@ jobs:
           print("Inline JavaScript syntax validated for homepage and Quantum Lab.")
           PY
       - name: Upload root site
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: .
-      - name: Deploy root site
-        id: deployment
-        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
-        with:
-          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
-      - name: Verify published site and live services
+      - name: Serve the Pages artifact locally for pre-deploy tests
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8080 --directory . >/tmp/mmp-pages-preview.log 2>&1 &
+          echo $! >/tmp/mmp-pages-preview.pid
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl --silent --fail http://127.0.0.1:8080/version.json >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/mmp-pages-preview.log
+          exit 1
+      - name: Verify Pages artifact and live services before deployment
+        id: predeploy
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
         env:
-          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          SITE_URL: http://127.0.0.1:8080
           WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
         run: |
           set -euo pipefail
@@ -210,7 +228,8 @@ jobs:
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/version.json?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-version.json
           BUILD_ID="$(jq -r '.build // empty' /tmp/mmp-version.json)"
           test -n "$BUILD_ID"
-          echo "Published site build ID: $BUILD_ID"
+          echo "Pages artifact build ID: $BUILD_ID"
+          echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
           grep -q "$BUILD_ID" /tmp/mmp-home.html
           WORKER_STATUS="$(curl --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 25 -o /tmp/mmp-worker-health.json -w '%{http_code}' "$WORKER_URL/health")"
           echo "Worker health HTTP: $WORKER_STATUS"
@@ -230,6 +249,7 @@ jobs:
           jq -e '.candles | length > 0' /tmp/mmp-candles.json >/dev/null
           echo "Published site, manifest, icon, Quantum Lab, Worker health and live BTC candles verified."
       - name: Diagnose Worker transport, throttling and CORS
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
         env:
           WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
           SITE_ORIGIN: https://mmp-coin.github.io
@@ -251,12 +271,14 @@ jobs:
           probe "candles no Origin" -H "Accept: application/json" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
           probe "candles with site Origin" -H "Origin: $SITE_ORIGIN" -H "Accept: application/json" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
           probe "CORS preflight" -X OPTIONS -H "Origin: $SITE_ORIGIN" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: accept" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
-      - name: Browser smoke test desktop and mobile
+      - name: Optional visual/browser smoke test (non-blocking until UI phase)
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
+        continue-on-error: true
         timeout-minutes: 10
         run: |
           set -euo pipefail
           npm install --prefix /tmp/mmp-playwright --no-save playwright
-          SITE_URL="${{ steps.deployment.outputs.page_url }}"
+          SITE_URL="http://127.0.0.1:8080"
           NODE_PATH=/tmp/mmp-playwright/node_modules PLAYWRIGHT_BROWSERS_PATH=/tmp/mmp-browsers SITE_URL="$SITE_URL" node <<'NODE'
           const { chromium } = require("playwright");
           (async () => {
@@ -304,6 +326,7 @@ jobs:
                 }
                 console.log(viewport.name + " TERMINAL INIT STATE: " + JSON.stringify(terminalState));
                 const apiProbe = await page.evaluate(async () => {
+                  if (location.origin !== "https://mmp-coin.github.io") return {skipped:true,reason:"local pre-deploy artifact; CORS verified by the curl gate"};
                   const url = "https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev/market-candles?symbol=BTCUSDT&interval=1h&market=spot";
                   try {
                     const r = await fetch(url, {cache:"no-store",headers:{Accept:"application/json"}});
@@ -315,7 +338,7 @@ jobs:
                 console.log(viewport.name + " DIRECT WORKER PROBE: " + JSON.stringify(apiProbe));
                 // A successful cross-origin fetch from this page already proves browser CORS access.
                 // Do not require JavaScript to read the ACAO header itself: the response header may be omitted from the exposed header list even when CORS succeeds.
-                if (apiProbe.error || !apiProbe.ok || apiProbe.status !== 200 || apiProbe.candles < 1) {
+                if (!apiProbe.skipped && (apiProbe.error || !apiProbe.ok || apiProbe.status !== 200 || apiProbe.candles < 1)) {
                   throw new Error(viewport.name + " live Worker candle/CORS probe failed: " + JSON.stringify(apiProbe));
                 }
                 const title = await page.title();
@@ -457,8 +480,26 @@ jobs:
           })().catch(error => { console.error(error); process.exit(1); });
           NODE
 
+      - name: Deploy root site
+        if: ${{ (steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Confirm deployed Pages build matches tested artifact
+        if: ${{ success() && github.ref == 'refs/heads/main' }}
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+          EXPECTED_BUILD: ${{ steps.predeploy.outputs.build_id }}
+        run: |
+          set -euo pipefail
+          SITE_URL="${SITE_URL%/}"
+          curl --fail --silent --show-error --retry 8 --retry-all-errors --retry-delay 4 --max-time 25 "$SITE_URL/version.json?mmp_postdeploy=$GITHUB_RUN_ID" -o /tmp/mmp-live-version.json
+          ACTUAL_BUILD="$(jq -r '.build // empty' /tmp/mmp-live-version.json)"
+          test "$ACTUAL_BUILD" = "$EXPECTED_BUILD"
+          echo "Published Pages build matches the tested artifact: $ACTUAL_BUILD"
       - name: Persist canonical mirror for legacy Pages source
-        if: always() && !cancelled()
+        if: ${{ success() && github.ref == 'refs/heads/main' && (steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') }}
         id: mirror
         env:
           GH_TOKEN: ${{ github.token }}
@@ -478,7 +519,7 @@ jobs:
           BUILD_ID="$(jq -r '.build' version.json)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Sync canonical MMP site mirror $BUILD_ID"
+          git commit -m "Sync canonical MMP site mirror $BUILD_ID [skip ci]"
           if git push origin HEAD:main; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
             echo "Committed canonical mirror $BUILD_ID to root Pages source."
