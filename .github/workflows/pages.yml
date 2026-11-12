@@ -312,7 +312,7 @@ jobs:
                   sections: document.querySelectorAll("#hero > section").length,
                   visibleSections: [...document.querySelectorAll("#hero > section")].filter(el => !el.hidden).length
                   }));
-                  if (terminalState.ready === "1" && !terminalState.hub && terminalState.visibleSections >= 16 && terminalState.script.length > 0) break;
+                  if (terminalState.ready === "1" && !terminalState.hub && terminalState.visibleSections >= 16 && terminalState.script.some(src => src.includes("mmp-quantum-terminal-v1.js?v=12"))) break;
                   console.log(viewport.name + " stale Pages edge; retrying canonical index, attempt " + (attempt + 1));
                   if (attempt < 6) {
                     // A different query key forces a fresh Pages/CDN edge lookup; reloading the same stale URL can pin one edge response.
