@@ -384,7 +384,15 @@ jobs:
                 });
                 console.log(viewport.name + " MMP 17-section health audit: " + JSON.stringify(sectionAudit));
                 if (sectionAudit.missing.length || sectionAudit.missingMenus.length || sectionAudit.missingBadges.length || sectionAudit.missingReports.length || sectionAudit.reported !== 17) throw new Error(viewport.name + " MMP section menu/health audit is incomplete: " + JSON.stringify(sectionAudit));
-                const localMenu = page.locator("#market-hunter .mmp-section-actions");
+                const menuRootId = await page.evaluate(() => {
+                  const menu = [...document.querySelectorAll(".mmp-section-actions")].find(el => {
+                    const root = el.closest("[data-mmp-section-id]");
+                    return root && root.getClientRects().length > 0 && el.querySelector("nav a");
+                  });
+                  return menu?.closest("[data-mmp-section-id]")?.id || null;
+                });
+                if (!menuRootId) throw new Error(viewport.name + " no visible section action menu was available for interaction");
+                const localMenu = page.locator("#" + menuRootId + " .mmp-section-actions");
                 await localMenu.locator("summary").click();
                 if (!(await localMenu.evaluate(el => el.open)) || await localMenu.locator("nav a").count() < 1) throw new Error(viewport.name + " Market Hunter local actions menu did not open");
                 await localMenu.locator("nav a").first().evaluate(el => el.click());
