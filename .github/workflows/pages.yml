@@ -417,9 +417,9 @@ jobs:
                   if (!(await nexusAccordions.nth(i).evaluate(el => el.open))) throw new Error("NEXUS accordion " + i + " did not open");
                   if (await page.locator("#mmp-autonomous-health-center details.mmp-ah-accordion[open]").count() !== 1) throw new Error("NEXUS must keep only one details panel expanded");
                 }
-                const quantumBoard = page.locator("#quantum-center-entry .quantum-engine-board");
-                if (await quantumBoard.evaluate(el => el.open)) throw new Error("Quantum Command modules must start collapsed");
-                await quantumBoard.locator("summary").click();
+                const quantumAccordion = page.locator("#quantum-center-entry .quantum-engine-board");
+                if (await quantumAccordion.evaluate(el => el.open)) throw new Error("Quantum Command modules must start collapsed");
+                await quantumAccordion.locator("summary").click();
                 if (await page.locator("#quantum-center-entry .quantum-engine-link:visible").count() !== 12) throw new Error("expanded Quantum Command must show all 12 modules");
                 await quantumBoard.locator("summary").click();
                 const cardStyles = await page.locator("#market-snapshot > article.mmp-market-card").evaluateAll(cards =>
