@@ -194,6 +194,8 @@ jobs:
           ! grep -q 'href="https://mmp-coin.github.io/admin.html"' /tmp/mmp-home.html
           grep -q 'var liveUpdateChecking=false' /tmp/mmp-home.html
           grep -q 'html.mmp-native-app header.top{display:none!important}' /tmp/mmp-home.html
+          grep -q 'href="/admin.html"' /tmp/mmp-home.html
+          grep -q 'class="native-admin-link" href="/admin.html"' /tmp/mmp-home.html
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/admin.html?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-admin.html
           grep -q 'مرکز مدیریت' /tmp/mmp-admin.html
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/market-heatmap.html?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-heatmap.html
