@@ -366,6 +366,8 @@ jobs:
                 await page.locator("#quantum-center-entry .quantum-engine-link").first().waitFor({state:"visible",timeout:5000});
                 const visibleQuantumCards = await page.locator("#quantum-center-entry .quantum-engine-link:visible").count();
                 if (visibleQuantumCards !== 12) throw new Error(viewport.name + " expanded Quantum Command accordion must render all 12 cards; found " + visibleQuantumCards);
+                await quantumBoard.locator("summary").click();
+                await page.waitForFunction(() => document.querySelector("#quantum-center-entry .quantum-engine-board")?.open === false, null, {timeout:3000});
                 if (bodyText.trim().length < 200) throw new Error(viewport.name + " homepage rendered almost no content");
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
