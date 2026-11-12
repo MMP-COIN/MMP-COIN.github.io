@@ -26,7 +26,7 @@ name: Deploy MMP COIN AI root site
 
 on:
   push:
-    branches: ["main", "preview/redesign-2026-11-13"]
+    branches: ["main"]
   schedule:
     - cron: "*/15 * * * *"
   workflow_dispatch:
@@ -42,6 +42,7 @@ concurrency:
 
 jobs:
   deploy:
+    if: ${{ github.ref == 'refs/heads/main' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -57,7 +58,7 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: MMP-COIN/MMP-COIN-AI
-          ref: ${{ (github.ref == 'refs/heads/preview/redesign-2026-11-13' || github.head_ref == 'preview/redesign-2026-11-13') && 'preview/redesign-2026-11-13' || 'main' }}
+          ref: main
           path: canonical
       - name: Configure GitHub Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
