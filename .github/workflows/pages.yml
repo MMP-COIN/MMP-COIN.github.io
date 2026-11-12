@@ -165,6 +165,9 @@ jobs:
         with:
           name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: .
+      # GitHub artifact metadata can lag the upload completion event; avoid a deploy lookup race.
+      - name: Wait for Pages artifact metadata
+        run: sleep 8
       - name: Deploy root site
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
@@ -360,6 +363,23 @@ jobs:
                 if (layout.gap > 12 || layout.gap < -2) throw new Error(viewport.name + " unwanted blank gap before first card: " + layout.gap + "px");
                 if (layout.heroHeight > (viewport.name === "desktop" ? 170 : 180)) throw new Error(viewport.name + " first hero card is still too tall: " + layout.heroHeight + "px");
                 if (!title.includes("MMP QUANTUM")) throw new Error(viewport.name + " homepage title is missing");
+                await page.waitForFunction(() => window.mmpSectionHealthReport && window.mmpSectionHealthReport.sections && window.mmpSectionHealthReport.sections.length === 17, null, {timeout:10000});
+                const sectionAudit = await page.evaluate(() => {
+                  const ids = ["mmp-home-hero","market-snapshot","quantum-center-entry","mmp-autonomous-health-center","opportunities","market-hunter","ai-section","boom-hunter","chart-section","market-intelligence","coins-section","trading-tools","exchange-connections","market-hours","app-download","contact-us","radar-signal-page"];
+                  const missing = ids.filter(id => !document.getElementById(id));
+                  const active = ids.filter(id => { const el=document.getElementById(id); return el && !el.hidden && el.getAttribute("aria-hidden") !== "true"; });
+                  const missingMenus = active.filter(id => !document.querySelector("#"+id+" .mmp-section-actions"));
+                  const missingBadges = active.filter(id => !document.querySelector("#"+id+" .mmp-section-health"));
+                  const report = window.mmpSectionHealthReport.sections;
+                  return {total:ids.length,active:active.length,missing,missingMenus,missingBadges,reported:report.length,missingReports:report.filter(x=>x.status==="missing").map(x=>x.id),warnings:report.filter(x=>x.status==="warn").map(x=>({id:x.id,broken:x.broken,duplicates:x.duplicates}))};
+                });
+                console.log(viewport.name + " MMP 17-section health audit: " + JSON.stringify(sectionAudit));
+                if (sectionAudit.missing.length || sectionAudit.missingMenus.length || sectionAudit.missingBadges.length || sectionAudit.missingReports.length || sectionAudit.reported !== 17) throw new Error(viewport.name + " MMP section menu/health audit is incomplete: " + JSON.stringify(sectionAudit));
+                const localMenu = page.locator("#market-hunter .mmp-section-actions");
+                await localMenu.locator("summary").click();
+                if (!(await localMenu.evaluate(el => el.open)) || await localMenu.locator("nav a").count() < 1) throw new Error(viewport.name + " Market Hunter local actions menu did not open");
+                await localMenu.locator("nav a").first().click();
+                await page.waitForFunction(() => document.querySelector("#market-hunter .mmp-section-actions")?.open === false, null, {timeout:3000});
                 const quantumBoard = page.locator("#quantum-center-entry .quantum-engine-board");
                 if (await quantumBoard.count() !== 1) throw new Error(viewport.name + " Quantum Command accordion is missing");
                 if (!(await quantumBoard.evaluate(el => el.open))) await quantumBoard.locator("> summary").click();
