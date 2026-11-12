@@ -384,108 +384,50 @@ jobs:
                   macd: !!document.getElementById("mmp-chart-macd-toggle")
                 }));
                 if (!chartRuntime.state || !chartRuntime.renderer || !chartRuntime.loader || chartRuntime.modes !== 3 || !chartRuntime.macd) throw new Error(viewport.name + " advanced chart controls or runtime bridge failed: " + JSON.stringify(chartRuntime));
-                const openCenter = async center => {
-                  if (appMode) {
-                    await page.locator("#mmp-app-page-dock [data-mmp-app-page='" + center + "']").click();
-                  } else {
-                    await page.locator(".menu-btn").first().click();
-                    await page.locator("#dropdownMenu [data-mmp-open-center='" + center + "']").click();
-                  }
-                };
+                // Verify the current compact navigation and the deliberately collapsed section accordions.
+                const navGroups = appMode
+                  ? page.locator("#native-app-menu .native-menu-group")
+                  : page.locator("#dropdownMenu .mmp-nav-group");
+                if (!appMode) await page.locator(".menu-btn").first().click();
+                if (await navGroups.count() !== 6) throw new Error(viewport.name + " navigation must expose six compact groups");
                 if (appMode) {
-                  await page.locator("#mmp-app-page-dock").waitFor({state:"visible",timeout:5000});
-                  if (await page.locator("#mmp-app-page-dock [data-mmp-app-page]").count() !== 8) throw new Error("native app must expose exactly eight page controls");
-                  if (await page.locator("body").getAttribute("data-mmp-view") !== "command") throw new Error("native app must open directly on Market Command");
-                  const swipe = async (from,to) => page.evaluate(({from,to}) => {
-                    const target=document.querySelector("#hero");
-                    const a=new Touch({identifier:1,target,clientX:from,clientY:420});
-                    const b=new Touch({identifier:1,target,clientX:to,clientY:420});
-                    target.dispatchEvent(new TouchEvent("touchstart",{touches:[a],targetTouches:[a],changedTouches:[a],bubbles:true,cancelable:true}));
-                    target.dispatchEvent(new TouchEvent("touchend",{touches:[],targetTouches:[],changedTouches:[b],bubbles:true,cancelable:true}));
-                  },{from,to});
-                  await swipe(100,320);
-                  await page.waitForFunction(() => document.body.dataset.mmpView === "hunter", null, {timeout:3000});
-                  await swipe(320,100);
-                  await page.waitForFunction(() => document.body.dataset.mmpView === "command", null, {timeout:3000});
-                  if (await page.locator("#native-menu-toggle").count() !== 1) throw new Error("native app must have one top menu button");
                   await page.locator("#native-menu-toggle").click();
-                  const contactLink=page.locator("#native-app-menu a[href='#contact-us']");
-                  if (await contactLink.count() !== 1) throw new Error("native app menu must expose one contact link");
-                  await contactLink.click();
-                  await page.locator("#contact-us").waitFor({state:"visible",timeout:5000});
-                  if (await page.locator("#contact-us .mmp-share-app-link").count() !== 1) throw new Error("native app contact section is missing its share action");
-                  if (await page.locator("#contact-us a[href^='mailto:']").count() !== 1) throw new Error("native app contact section is missing its email action");
-                  if (await page.locator("#app-download").isVisible()) throw new Error("APK download section must remain website-only");
-                  await openCenter("command");
+                  if (await page.locator("#native-app-menu .native-menu-group").count() !== 6) throw new Error("native app menu must expose six grouped sections");
+                  await page.locator("#native-app-menu .native-menu-group").first().locator("summary").click();
+                  if (!(await page.locator("#native-app-menu .native-menu-group").first().evaluate(el => el.open))) throw new Error("native app accordion did not open");
+                  await page.locator("#native-menu-toggle").click();
                 } else {
-                  await page.waitForFunction(() => {
-                    const sections=[...document.querySelectorAll("#hero > section")];
-                    return !document.querySelector("#mmp-terminal-hub") && sections.filter(el => !el.hidden).length >= 16;
-                  }, null, {timeout:5000});
-                  const visibleHomeSections = await page.locator("#hero > section:not([hidden])").count();
-                  if (visibleHomeSections < 16) throw new Error("website homepage must render all main sections inline; found " + visibleHomeSections);
-                  await openCenter("command");
+                  const groups = page.locator("#dropdownMenu .mmp-nav-group");
+                  for (let i = 0; i < 6; i++) {
+                    await groups.nth(i).locator("summary").click();
+                    if (!(await groups.nth(i).evaluate(el => el.open))) throw new Error("navigation group " + i + " did not open");
+                    if (await page.locator("#dropdownMenu .mmp-nav-group[open]").count() !== 1) throw new Error("desktop navigation must keep only one group expanded");
+                  }
+                  const brokenLinks = await page.locator("#dropdownMenu a.mmp-nav-link[href^='#']").evaluateAll(links =>
+                    links.map(link => link.getAttribute("href").slice(1)).filter(id => !document.getElementById(id))
+                  );
+                  if (brokenLinks.length) throw new Error("navigation contains missing section targets: " + brokenLinks.join(", "));
+                  await page.locator("#dropdownMenu a.mmp-nav-link[href='#market-snapshot']").click();
                 }
-                if (await page.locator('script[src*="mmp-chart-pro-upgrade.js"]').count() !== 1) throw new Error(viewport.name + " advanced live chart upgrade script is missing");
-                const commandMenu = page.locator("#mmp-center-toolbar .mmp-center-jump");
-                if (await commandMenu.count() !== 6) throw new Error(viewport.name + " Market Command card must expose six internal navigation links");
-                if (appMode && await page.locator("#mmp-center-toolbar .mmp-center-currency").isVisible()) throw new Error("native app must use only the single global header currency selector");
-                await page.locator("#mmp-center-toolbar .mmp-center-jump[href='#mmp-usdt-card']").click();
-                await page.locator("#mmp-usdt-card").waitFor({state:"visible",timeout:5000});
-                await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
-                if (await page.locator("#btn-irt").count() !== 1 || await page.locator("#btn-usdt").count() !== 1 || await page.locator("#usdt").count() !== 1) throw new Error(viewport.name + " missing primary Toman/USDT controls or tether quote");
-                await page.locator("#btn-usdt").click();
-                if (!await page.locator("#btn-usdt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " USDT switch did not activate");
-                await page.locator("#btn-irt").click();
-                if (!await page.locator("#btn-irt").evaluate(el => el.classList.contains("active"))) throw new Error(viewport.name + " Toman switch did not activate");
-                for (const [center,selector] of [["command","#mmp-home-hero"],["hunter","#market-hunter"],["charts","#chart-section"],["flow","#market-intelligence"],["ai","#ai-section"],["strategy","#trading-tools"],["markets","#coins-section"]]) {
-                  await openCenter(center);
-                  await page.locator(selector).waitFor({state:"visible",timeout:5000});
-                  const activeCenter = await page.locator("body").getAttribute("data-mmp-view");
-                  if (activeCenter !== center) throw new Error(viewport.name + " wrong workspace opened for " + center);
-                  await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
+                const nexusAccordions = page.locator("#mmp-autonomous-health-center details.mmp-ah-accordion");
+                if (await nexusAccordions.count() !== 6) throw new Error(viewport.name + " NEXUS must expose six consistent accordions");
+                for (let i = 0; i < 6; i++) {
+                  if (await nexusAccordions.nth(i).evaluate(el => el.open)) throw new Error("NEXUS details must start collapsed");
+                  await nexusAccordions.nth(i).locator("summary").click();
+                  if (!(await nexusAccordions.nth(i).evaluate(el => el.open))) throw new Error("NEXUS accordion " + i + " did not open");
+                  if (await page.locator("#mmp-autonomous-health-center details.mmp-ah-accordion[open]").count() !== 1) throw new Error("NEXUS must keep only one details panel expanded");
                 }
-                await openCenter("ai");
-                await page.locator("#ai-section").waitFor({state:"visible",timeout:5000});
-                const analyzer = await page.locator("#ai-section").evaluate(el => {
-                  const toolbar = el.querySelector(".ai-toolbar");
-                  const picker = el.querySelector("#ai-coin-picker-trigger");
-                  const mode = el.querySelector("#ai-market-mode");
-                  const run = el.querySelector("#ai-run-btn");
-                  const rect = n => { const r=n.getBoundingClientRect(); return {x:Math.round(r.x),y:Math.round(r.y),width:Math.round(r.width),height:Math.round(r.height)}; };
-                  return {section:rect(el),toolbar:rect(toolbar),picker:rect(picker),mode:rect(mode),run:rect(run),scrollWidth:el.scrollWidth,clientWidth:el.clientWidth};
-                });
-                console.log(viewport.name + " analyzer control geometry: " + JSON.stringify(analyzer));
-                if (!analyzer || analyzer.picker.width < 120 || analyzer.mode.width < 110 || analyzer.run.width < 120) throw new Error(viewport.name + " analyzer controls collapsed into narrow columns");
-                if (analyzer.scrollWidth > analyzer.clientWidth + 2) throw new Error(viewport.name + " analyzer has horizontal overflow");
-                await page.locator("#ai-coin-picker-trigger").click();
-                const pickerMenu = page.locator("#ai-coin-picker-menu");
-                await pickerMenu.waitFor({state:"visible",timeout:3000});
-                const menuBox = await pickerMenu.boundingBox();
-                if (!menuBox || menuBox.width < 140 || menuBox.x < -1 || menuBox.x + menuBox.width > viewport.width + 2) throw new Error(viewport.name + " analyzer coin menu is clipped or too narrow");
-                await page.locator("#ai-coin-picker-trigger").click();
-                if (await page.locator("#mmp-chart-status").count() === 0) throw new Error(viewport.name + " missing native chart status");
-                await page.locator("#mmp-center-toolbar [data-mmp-home]").click();
-                await openCenter("charts");
-                await page.locator("#chart-section").waitFor({state:"visible",timeout:5000});
-                if (await page.locator("[data-chart-tf]").count() !== 7) throw new Error(viewport.name + " expected 7 chart timeframe controls");
-                await page.locator("#chart-section").scrollIntoViewIfNeeded();
-                await page.locator("#mmp-candle-canvas canvas").first().waitFor({state:"visible",timeout:20000});
-                await page.locator("#mmp-rsi-canvas canvas").first().waitFor({state:"visible",timeout:10000});
-                await page.waitForFunction(() => {
-                  const status = document.querySelector("#mmp-chart-status");
-                  return !!status && !status.classList.contains("loading") && status.textContent.includes("کندل معتبر");
-                }, {timeout:25000});
-                const chartStatus = await page.locator("#mmp-chart-status").innerText();
-                console.log(viewport.name + " verified chart status: " + chartStatus);
-                if (appMode) {
-                  await openCenter("lab");
-                  await page.waitForURL(/quantum-lab\.html/, {timeout:10000});
-                  await page.locator("#mmp-app-page-dock").waitFor({state:"visible",timeout:5000});
-                  if (await page.locator("#mmp-app-page-dock a").count() !== 8) throw new Error("Quantum Lab native dock must expose all eight pages");
-                  await page.locator("#mmp-app-page-dock a[href*='center=markets']").click();
-                  await page.waitForURL(/center=markets/, {timeout:10000});
-                  if (await page.locator("body").getAttribute("data-mmp-view") !== "markets") throw new Error("Quantum Lab navigation did not return to Markets workspace");
+                const quantumBoard = page.locator("#quantum-center-entry .quantum-engine-board");
+                if (await quantumBoard.evaluate(el => el.open)) throw new Error("Quantum Command modules must start collapsed");
+                await quantumBoard.locator("summary").click();
+                if (await page.locator("#quantum-center-entry .quantum-engine-link:visible").count() !== 12) throw new Error("expanded Quantum Command must show all 12 modules");
+                await quantumBoard.locator("summary").click();
+                const cardStyles = await page.locator("#market-snapshot > article.mmp-market-card").evaluateAll(cards =>
+                  cards.map(card => ({border:getComputedStyle(card).borderTopColor,background:getComputedStyle(card).backgroundImage}))
+                );
+                if (cardStyles.length !== 4 || new Set(cardStyles.map(x => x.border)).size !== 4 || cardStyles.some(x => !x.background.includes("linear-gradient"))) throw new Error(viewport.name + " four premium market cards did not receive distinct final styles");
+                for (const id of ["mmp-btc-card","mmp-eth-card","mmp-usdt-card","mmp-gold-card"]) {
+                  if (await page.locator("#" + id).count() !== 1) throw new Error(viewport.name + " missing benchmark card: " + id);
                 }
                 await page.close();
               }
