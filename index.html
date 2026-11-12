@@ -405,6 +405,58 @@ body:before{opacity:.07;background-size:72px 72px;mask-image:linear-gradient(#00
  .module h3{font-size:13px}.module p{font-size:9px}
 }
 
+
+/* CINEMATIC COMMAND DECK — richer architectural navigation */
+.hero{padding-top:24px}
+.hero h1{font-size:clamp(30px,5vw,52px);letter-spacing:-1.5px}
+.stage{height:320px;max-width:760px}
+.platform{width:310px;height:310px;border:1px solid #d9b66d88;box-shadow:0 0 0 12px #d9b66d0b,0 0 0 30px #d9b66d08,0 0 75px #d9b66d30}
+.coin-scene{transform:scale(1.08);filter:drop-shadow(0 22px 34px #000)}
+.float-label{padding:9px 14px;border-radius:2px;letter-spacing:2px;background:linear-gradient(120deg,#17140e,#090a0d);border-color:#d7ad5770}
+.section-head{margin:25px 0 15px;padding:12px 16px;border:1px solid #d7ad5744;border-radius:3px;background:linear-gradient(90deg,#17140f,#0b0c10 60%,#17140f);box-shadow:inset 0 1px 0 #fff2,0 9px 25px #0008}
+.section-head:after{content:"";position:absolute;right:0;top:0;bottom:0;width:3px;background:linear-gradient(#f7dda0,#8c652a);box-shadow:0 0 16px #d7ad5777}
+.section-head h2{font-size:15px;color:#f5e7c7}
+.modules{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.module{
+ min-height:142px;padding:22px 76px 20px 48px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+ border:1px solid #c69a4c55;border-radius:3px;
+ background:
+  linear-gradient(115deg,transparent 0 68%,#d7ad5709 68% 69%,transparent 69%),
+  linear-gradient(145deg,#202027 0%,#121318 48%,#090a0e 100%);
+ box-shadow:0 12px 26px #000b,inset 0 1px 0 #ffffff20,inset 0 -16px 25px #0005;
+ transform:perspective(900px) rotateX(2deg);
+ overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.module:before{
+ content:"";position:absolute;right:17px;top:50%;transform:translateY(-50%);
+ width:42px;height:42px;border:1px solid #d7ad5799;border-radius:50%;
+ background:radial-gradient(circle,#e6c77b24 0 22%,transparent 24%),linear-gradient(145deg,#302617,#0b0c10);
+ box-shadow:0 0 0 5px #d7ad570d,0 0 22px #d7ad5722,inset 0 1px 0 #fff4;
+}
+.module:after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#f3d58c,#9d702d,transparent);box-shadow:0 0 14px #d7ad5766}
+.module:hover{transform:perspective(900px) rotateX(0) translateY(-5px);border-color:#f0d18a;box-shadow:0 19px 36px #000c,0 0 28px #d7ad5718,inset 0 1px 0 #fff3}
+.module h3{font-size:14px;line-height:1.8;color:#fff4df;margin:0;text-shadow:0 2px 8px #000}
+.module small{font-size:8px;letter-spacing:2.2px;color:#d2ad64;margin-top:4px}
+.module p{font-size:10px;line-height:1.8;color:#a8a39a;margin-top:7px}
+.module .enter{left:17px;right:auto;top:50%;bottom:auto;transform:translateY(-50%);font-size:20px;color:#e1bd70}
+.module:nth-child(2):before{border-color:#6bcab1;box-shadow:0 0 0 5px #58e0bd0d,0 0 22px #58e0bd22}
+.module:nth-child(3):before{border-color:#8cdb70;box-shadow:0 0 0 5px #8cdb700d,0 0 22px #8cdb7022}
+.module:nth-child(4):before{border-color:#ed7775;box-shadow:0 0 0 5px #ed77750d,0 0 22px #ed777522}
+.module:nth-child(5):before{border-color:#b69aff;box-shadow:0 0 0 5px #b69aff0d,0 0 22px #b69aff22}
+.module:nth-child(6):before{border-color:#f2a15b;box-shadow:0 0 0 5px #f2a15b0d,0 0 22px #f2a15b22}
+.module:nth-child(7):before{border-color:#69baff;box-shadow:0 0 0 5px #69baff0d,0 0 22px #69baff22}
+.module:nth-child(8):before{border-color:#bdc8d6;box-shadow:0 0 0 5px #bdc8d60d,0 0 22px #bdc8d622}
+.footer{margin-top:30px;padding:17px 18px;border:1px solid #d7ad5730;background:linear-gradient(90deg,#17140f88,#090a0e,#17140f88)}
+@media(max-width:820px){.modules{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}}
+@media(max-width:520px){
+ .stage{height:245px}.platform{width:230px;height:230px}.coin-scene{transform:scale(.86)}
+ .modules{grid-template-columns:1fr;gap:10px}
+ .module{min-height:122px;padding:17px 68px 16px 40px}
+ .module h3{font-size:13px}.module p{font-size:9px}
+ .module:before{right:13px;width:36px;height:36px}
+ .module .enter{left:12px}
+}
+
 </style>
 </head>
 <body>
