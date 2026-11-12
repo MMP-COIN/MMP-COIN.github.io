@@ -255,6 +255,18 @@ jobs:
           probe "candles no Origin" -H "Accept: application/json" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
           probe "candles with site Origin" -H "Origin: $SITE_ORIGIN" -H "Accept: application/json" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
           probe "CORS preflight" -X OPTIONS -H "Origin: $SITE_ORIGIN" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: accept" "$WORKER_URL/market-candles?symbol=BTCUSDT&interval=1h&market=spot"
+      - name: Verify independent MMP NEXUS Cron service
+        run: |
+          set -euo pipefail
+          NEXUS_URL="https://mmp-coin-nexus.mehrdadmohammadi1988.workers.dev"
+          status="$(curl --silent --show-error --retry 3 --retry-all-errors --retry-delay 2 --max-time 20 -o /tmp/nexus-health.json -w "%{http_code}" "$NEXUS_URL/health")"
+          echo "Independent NEXUS health HTTP $status"
+          test "$status" = "200"
+          jq -e '.worker == "online" and .database == "ok" and .ai_binding == true and .monitor == "server-cron-5m"' /tmp/nexus-health.json >/dev/null
+          status="$(curl --silent --show-error --retry 2 --retry-delay 2 --max-time 20 -o /tmp/nexus-status.json -w "%{http_code}" "$NEXUS_URL/status")"
+          echo "Independent NEXUS report HTTP $status"
+          test "$status" = "200"
+          jq -e '.status == "ok" or .status == "warming_up"' /tmp/nexus-status.json >/dev/null
       - name: Browser smoke test desktop and mobile
         timeout-minutes: 10
         run: |
