@@ -400,8 +400,8 @@ jobs:
                   const groups = page.locator("#dropdownMenu .mmp-nav-group");
                   for (let i = 0; i < 6; i++) {
                     await groups.nth(i).locator("summary").click();
+                    await page.waitForFunction(() => document.querySelectorAll("#dropdownMenu .mmp-nav-group[open]").length === 1, null, {timeout:3000});
                     if (!(await groups.nth(i).evaluate(el => el.open))) throw new Error("navigation group " + i + " did not open");
-                    if (await page.locator("#dropdownMenu .mmp-nav-group[open]").count() !== 1) throw new Error("desktop navigation must keep only one group expanded");
                   }
                   const brokenLinks = await page.locator("#dropdownMenu a.mmp-nav-link[href^='#']").evaluateAll(links =>
                     links.map(link => link.getAttribute("href").slice(1)).filter(id => !document.getElementById(id))
@@ -414,8 +414,8 @@ jobs:
                 for (let i = 0; i < 6; i++) {
                   if (await nexusAccordions.nth(i).evaluate(el => el.open)) throw new Error("NEXUS details must start collapsed");
                   await nexusAccordions.nth(i).locator("summary").click();
+                  await page.waitForFunction(() => document.querySelectorAll("#mmp-autonomous-health-center details.mmp-ah-accordion[open]").length === 1, null, {timeout:3000});
                   if (!(await nexusAccordions.nth(i).evaluate(el => el.open))) throw new Error("NEXUS accordion " + i + " did not open");
-                  if (await page.locator("#mmp-autonomous-health-center details.mmp-ah-accordion[open]").count() !== 1) throw new Error("NEXUS must keep only one details panel expanded");
                 }
                 const quantumAccordion = page.locator("#quantum-center-entry .quantum-engine-board");
                 if (await quantumAccordion.evaluate(el => el.open)) throw new Error("Quantum Command modules must start collapsed");
