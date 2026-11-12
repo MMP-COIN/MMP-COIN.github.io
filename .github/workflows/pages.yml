@@ -28,6 +28,10 @@ name: Deploy MMP COIN AI root site
 # Publish only by an explicit manual workflow dispatch after the user approves the tested release.
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - "v4/**"
+      - ".github/workflows/pages.yml"
 
 permissions:
   contents: write
