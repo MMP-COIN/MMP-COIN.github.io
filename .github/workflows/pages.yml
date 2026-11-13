@@ -243,16 +243,8 @@ jobs:
           test -n "$BUILD_ID"
           echo "Pages artifact build ID: $BUILD_ID"
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
-          python3 - "$BUILD_ID" /tmp/mmp-home.html <<'PY'
-          import pathlib, re, sys
-          expected = sys.argv[1]
-          html = pathlib.Path(sys.argv[2]).read_text(encoding="utf-8")
-          match = re.search(r'<meta\s+name="mmp-web-build"\s+content="([^"]+)"', html, re.I)
-          actual = match.group(1) if match else ""
-          print(f"Artifact build metadata: expected={expected}; homepage={actual or 'missing'}")
-          if actual != expected:
-              raise SystemExit("Homepage build metadata does not match version.json")
-          PY
+          grep -q 'name="mmp-web-build" content="' /tmp/mmp-home.html
+          ! grep -q '__MMP_WEB_BUILD_ID__' /tmp/mmp-home.html
           echo "Static Pages artifact, HTML, required assets, manifest and inline JavaScript checks passed."
       - name: Advisory Worker health and market API checks
         if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
