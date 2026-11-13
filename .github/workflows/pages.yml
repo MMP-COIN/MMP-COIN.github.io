@@ -81,12 +81,16 @@ jobs:
           test -s canonical/www/assets/mmp-quantum-terminal-v1.css
           test -s canonical/www/assets/mmp-quantum-terminal-v1.js
           test -s canonical/manifest.webmanifest
+          test ! -e canonical/admin.html
+          test -s canonical/www/admin.html
+          # Remove retired site generations and archived workflows so they cannot linger in the published root.
+          rm -rf v4 .maintenance
           cp canonical/www/index.html ./index.html
           cp canonical/www/quantum-lab.html ./quantum-lab.html
           cp canonical/www/admin.html ./admin.html
           cp canonical/www/market-heatmap.html ./market-heatmap.html
           mkdir -p assets
-          cp -R canonical/www/assets/. assets/
+          rsync -a --delete canonical/www/assets/ assets/
           cp canonical/manifest.webmanifest ./manifest.webmanifest
           BUILD_ID="$(git -C canonical rev-parse HEAD)"
           python3 - "$BUILD_ID" <<'PY'
