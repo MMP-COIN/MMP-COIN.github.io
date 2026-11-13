@@ -539,3 +539,5 @@ jobs:
 # Re-run full browser verification after canonical native-app navigation fixes.
 
 # Publish the shared Quantum Nexus visual system across homepage, command center, heatmap and Android webview.
+
+# Trigger a fresh canonical Pages deployment after removing the maintenance lock.
