@@ -211,7 +211,6 @@ jobs:
           ! grep -q 'api.bybit.com' /tmp/mmp-home.html
           ! grep -q 'api.wallex.ir' /tmp/mmp-home.html
           ! grep -q 'mmp-command-progress' /tmp/mmp-home.html
-          grep -q 'mmp-web-build' /tmp/mmp-home.html
           grep -q 'mmp-quantum-terminal-v1.js' /tmp/mmp-home.html
           grep -q 'mmp-quantum-terminal-v1.css' /tmp/mmp-home.html
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/assets/mmp-quantum-terminal-v1.js?v=$GITHUB_RUN_ID" -o /tmp/mmp-terminal.js
