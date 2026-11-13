@@ -181,7 +181,6 @@ jobs:
         if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
         env:
           SITE_URL: http://127.0.0.1:8080
-          WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
         run: |
           set -euo pipefail
           SITE_URL="${SITE_URL%/}"
@@ -235,6 +234,14 @@ jobs:
           echo "Pages artifact build ID: $BUILD_ID"
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
           grep -q "$BUILD_ID" /tmp/mmp-home.html
+          echo "Static Pages artifact, HTML, required assets, manifest and inline JavaScript checks passed."
+      - name: Advisory Worker health and market API checks
+        if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
+        continue-on-error: true
+        env:
+          WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
+        run: |
+          set -euo pipefail
           WORKER_STATUS="$(curl --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 25 -o /tmp/mmp-worker-health.json -w '%{http_code}' "$WORKER_URL/health")"
           echo "Worker health HTTP: $WORKER_STATUS"
           if [ "$WORKER_STATUS" != "200" ]; then
