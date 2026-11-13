@@ -1,4 +1,4 @@
-# Canonical MMP-COIN-AI/main is the only web source; sync, validate and publish the root Pages site.
+# Canonical MMP-COIN-AI/main is the sole website source. Sync, validate and deploy the root Pages mirror.
 name: Deploy MMP COIN AI root site
 # Browser smoke tests use cache-busting URLs and retain full page-error stacks.
 # Republish canonical server-only Radar/Hunter, Worker-backed charts, and multi-exchange failover.
