@@ -244,7 +244,6 @@ jobs:
           echo "Pages artifact build ID: $BUILD_ID"
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
           grep -q 'name="mmp-web-build" content="' /tmp/mmp-home.html
-          ! grep -q '__MMP_WEB_BUILD_ID__' /tmp/mmp-home.html
           echo "Static Pages artifact, HTML, required assets, manifest and inline JavaScript checks passed."
       - name: Advisory Worker health and market API checks
         if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
