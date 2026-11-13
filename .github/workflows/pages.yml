@@ -15,6 +15,7 @@ name: Deploy MMP COIN AI root site
 # Homepage rendering fixes must be committed to canonical/www/index.html; this mirror is regenerated from that source.
 # Publish canonical homepage priority ordering and four benchmark-card redesign from MMP-COIN-AI/main.
 # Publish the single-owner dropdown handler and validate section ordering on desktop and mobile.
+# Keep terminal-generated dropdown items intact; compact redesign must not overwrite them.
 # Republish canonical Market Command visibility fix from MMP-COIN-AI.
 # Keep browser market scanning server-side; publish only the canonical snapshot-driven client.
 # Remove duplicate Hunter polling; the unified snapshot module is the sole automatic reader.
