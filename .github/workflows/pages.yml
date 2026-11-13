@@ -170,6 +170,8 @@ jobs:
                       sys.exit(1)
           print("Inline JavaScript syntax validated for homepage and Quantum Lab.")
           PY
+          node --check assets/mmp-priority-layout-v1.js
+          node --check assets/mmp-quantum-terminal-v1.js
       - name: Upload root site
         if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
