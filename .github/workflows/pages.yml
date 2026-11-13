@@ -92,7 +92,7 @@ jobs:
           build = sys.argv[1]
           path = pathlib.Path("index.html")
           html = path.read_text(encoding="utf-8")
-          html, count = re.subn(r'(<meta\\s+name="mmp-web-build"\\s+content=")[^"]*(">)', lambda m: m.group(1) + build + m.group(2), html, count=1, flags=re.I)
+          html, count = re.subn(r'(<meta\s+name="mmp-web-build"\s+content=")[^"]*(">)', lambda m: m.group(1) + build + m.group(2), html, count=1, flags=re.I)
           if count != 1 or build not in html:
               raise SystemExit("Could not stamp canonical source commit into homepage build metadata")
           path.write_text(html, encoding="utf-8")
@@ -247,7 +247,7 @@ jobs:
           import pathlib, re, sys
           expected = sys.argv[1]
           html = pathlib.Path(sys.argv[2]).read_text(encoding="utf-8")
-          match = re.search(r'<meta\\s+name="mmp-web-build"\\s+content="([^"]+)"', html, re.I)
+          match = re.search(r'<meta\s+name="mmp-web-build"\s+content="([^"]+)"', html, re.I)
           actual = match.group(1) if match else ""
           print(f"Artifact build metadata: expected={expected}; homepage={actual or 'missing'}")
           if actual != expected:
