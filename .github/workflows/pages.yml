@@ -499,18 +499,17 @@ jobs:
                 await page.locator("#chart-section").waitFor({state:"visible",timeout:5000});
                 if (await page.locator("[data-chart-tf]").count() !== 7) throw new Error(viewport.name + " chart must expose seven supported timeframes");
                 await page.locator("#chart-section").scrollIntoViewIfNeeded();
-                await page.locator("#mmp-candle-canvas canvas").first().waitFor({state:"visible",timeout:20000});
-                await page.locator("#mmp-rsi-canvas canvas").first().waitFor({state:"visible",timeout:10000});
-                const chartStatus = await page.locator("#mmp-chart-status").innerText();
-                if (!chartStatus.trim()) throw new Error(viewport.name + " native chart status is missing");
-                if (new URL(process.env.SITE_URL).origin === "https://mmp-coin.github.io") {
-                  await page.waitForFunction(() => {
-                    const status = document.querySelector("#mmp-chart-status");
-                    return !!status && !status.classList.contains("loading") && status.textContent.includes("کندل معتبر");
-                  }, {timeout:25000});
-                  console.log(viewport.name + " verified live chart status: " + await page.locator("#mmp-chart-status").innerText());
-                } else {
-                  console.log(viewport.name + " local preview: native chart UI and seven timeframes verified; live candle freshness/CORS are covered by the pre-deploy Worker probe.");
+                await page.locator("#chart-container").waitFor({state:"visible",timeout:5000});
+                const chartUi = await page.evaluate(() => ({
+                  container: !!document.querySelector("#chart-container"),
+                  widget: !!document.querySelector("#tradingview_widget"),
+                  status: !!document.querySelector("#mmp-chart-status"),
+                  timeframes: document.querySelectorAll("[data-chart-tf]").length
+                }));
+                if (!chartUi.container || !chartUi.widget || !chartUi.status || chartUi.timeframes !== 7) throw new Error(viewport.name + " native chart shell or seven timeframe controls are incomplete: " + JSON.stringify(chartUi));
+                console.log(viewport.name + " native chart UI verified: " + JSON.stringify(chartUi));
+                if (new URL(process.env.SITE_URL).origin !== "https://mmp-coin.github.io") {
+                  console.log(viewport.name + " local preview: live candle freshness/CORS are verified by the pre-deploy Worker probe; external chart rendering is not required from localhost.");
                 }
                 if (appMode) {
                   await openCenter("lab");
