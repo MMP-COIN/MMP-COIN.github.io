@@ -2,7 +2,7 @@ name: MMP COIN AI Site Infrastructure Preview
 
 on:
   push:
-    branches: ["preview/redesign-2026-11-13"]
+    branches: ["main", "preview/redesign-2026-11-13", "fix/restore-live-pages-2026-11-13"]
   pull_request:
     branches: [main]
     paths:
