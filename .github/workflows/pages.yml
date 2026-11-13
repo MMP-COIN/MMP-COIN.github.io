@@ -87,7 +87,17 @@ jobs:
           cp -R canonical/www/assets/. assets/
           cp canonical/manifest.webmanifest ./manifest.webmanifest
           BUILD_ID="$(git -C canonical rev-parse HEAD)"
-          sed -i "s/__MMP_WEB_BUILD_ID__/${BUILD_ID}/g" index.html
+          python3 - "$BUILD_ID" <<'PY'
+          import pathlib, re, sys
+          build = sys.argv[1]
+          path = pathlib.Path("index.html")
+          html = path.read_text(encoding="utf-8")
+          html, count = re.subn(r'(<meta\\s+name="mmp-web-build"\\s+content=")[^"]*(">)', lambda m: m.group(1) + build + m.group(2), html, count=1, flags=re.I)
+          if count != 1 or build not in html:
+              raise SystemExit("Could not stamp canonical source commit into homepage build metadata")
+          path.write_text(html, encoding="utf-8")
+          print(f"Stamped homepage build metadata: {build}")
+          PY
           # Build the Pages artifact directly from the canonical app source.
           # The generated root mirror is committed only at the end of the job,
           # after all deployment and rebase-sensitive steps have completed.
@@ -233,7 +243,16 @@ jobs:
           test -n "$BUILD_ID"
           echo "Pages artifact build ID: $BUILD_ID"
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
-          grep -q "$BUILD_ID" /tmp/mmp-home.html
+          python3 - "$BUILD_ID" /tmp/mmp-home.html <<'PY'
+          import pathlib, re, sys
+          expected = sys.argv[1]
+          html = pathlib.Path(sys.argv[2]).read_text(encoding="utf-8")
+          match = re.search(r'<meta\\s+name="mmp-web-build"\\s+content="([^"]+)"', html, re.I)
+          actual = match.group(1) if match else ""
+          print(f"Artifact build metadata: expected={expected}; homepage={actual or 'missing'}")
+          if actual != expected:
+              raise SystemExit("Homepage build metadata does not match version.json")
+          PY
           echo "Static Pages artifact, HTML, required assets, manifest and inline JavaScript checks passed."
       - name: Advisory Worker health and market API checks
         if: ${{ steps.sync.outputs.changed == 'true' || github.event_name == 'workflow_dispatch' }}
