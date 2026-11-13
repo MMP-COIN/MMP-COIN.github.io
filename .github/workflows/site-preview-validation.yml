@@ -98,7 +98,10 @@ jobs:
           const match=html.match(/<script id="mmp-web-auto-update">([\s\S]*?)<\/script>/);
           if(!match) throw new Error("single version updater script missing");
           new Function(match[1]);
-          if(!match[1].includes("/version.json")) throw new Error("version.json polling missing");
+          if(!match[1].includes('fetch(u.toString()')) throw new Error("live homepage freshness fetch missing");
+if(!match[1].includes("2*60*1000")) throw new Error("two-minute live freshness polling missing");
+if(!match[1].includes("localStorage.getItem(HASH_KEY)")) throw new Error("homepage hash persistence missing");
+if(!match[1].includes("crypto.subtle.digest")) throw new Error("SHA-256 freshness digest missing");
           if(html.includes("checkLivePageUpdate") || html.includes("hashLiveHtml")) throw new Error("legacy HTML-hash polling remains");
           console.log("Single version.json updater syntax and wiring passed.");
           NODE
