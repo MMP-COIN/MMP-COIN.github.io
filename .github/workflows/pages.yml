@@ -1,10 +1,4 @@
-# Sync canonical 12-card Quantum Command modules from MMP-COIN-AI and run full Pages smoke tests.
-# Sync the eight-card homepage with a fresh JS cache key before user review.
-# Publish canonical MMP command-center refresh, responsive navigation and live-candle freshness fixes.
-# Trigger root mirror sync after removing duplicate Quantum Command cards from the homepage hub.
-# Trigger root sync for the merged eight-center visual card design in canonical MMP-COIN-AI.
-# Republish canonical stylesheet cache-key update for the eight-center visual design.
-# Trigger canonical www sync and full Pages smoke tests after 2026-11-11 UI and market-feed repairs.
+# Canonical MMP-COIN-AI/main is the only web source; sync, validate and publish the root Pages site.
 name: Deploy MMP COIN AI root site
 # Browser smoke tests use cache-busting URLs and retain full page-error stacks.
 # Republish canonical server-only Radar/Hunter, Worker-backed charts, and multi-exchange failover.
