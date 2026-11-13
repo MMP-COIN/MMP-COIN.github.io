@@ -95,6 +95,7 @@ jobs:
           html, count = re.subn(r'(<meta\s+name="mmp-web-build"\s+content=")[^"]*(">)', lambda m: m.group(1) + build + m.group(2), html, count=1, flags=re.I)
           if count != 1 or build not in html:
               raise SystemExit("Could not stamp canonical source commit into homepage build metadata")
+          html = html.replace("__MMP_WEB_BUILD_ID__", build)
           path.write_text(html, encoding="utf-8")
           print(f"Stamped homepage build metadata: {build}")
           PY
