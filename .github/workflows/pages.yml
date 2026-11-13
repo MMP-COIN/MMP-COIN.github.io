@@ -85,10 +85,22 @@ jobs:
           # after all deployment and rebase-sensitive steps have completed.
           SOURCE_DATE="$(git -C canonical show -s --format=%cI "$BUILD_ID")"
           printf '{"build":"%s","updatedAt":"%s"}\n' "$BUILD_ID" "$SOURCE_DATE" > version.json
-          if [ "$PREVIOUS_BUILD" = "$BUILD_ID" ] && [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+          LIVE_BUILD=""
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            LIVE_VERSION="$(curl --fail --silent --show-error --connect-timeout 10 --max-time 20 -H "Cache-Control: no-cache" "https://mmp-coin.github.io/version.json?mmp_precheck=$GITHUB_RUN_ID" 2>/dev/null || true)"
+            if [ -n "$LIVE_VERSION" ]; then
+              LIVE_BUILD="$(printf '%s' "$LIVE_VERSION" | jq -r '.build // empty' 2>/dev/null || true)"
+            fi
+            echo "Currently served Pages build: ${LIVE_BUILD:-unavailable}"
+          fi
+          # Skip only when both the mirror and the actual public site already serve
+          # the canonical commit. If Pages is stale or unreachable, redeploy to recover.
+          if [ "$PREVIOUS_BUILD" = "$BUILD_ID" ] && [ "$GITHUB_EVENT_NAME" = "schedule" ] && [ "$LIVE_BUILD" = "$BUILD_ID" ]; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "Canonical source and live Pages build match; no deployment is needed."
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Deployment required: mirror, live Pages, or canonical source is out of sync."
           fi
           echo "build_id=$BUILD_ID" >> "$GITHUB_OUTPUT"
       - name: Validate mirrored page assets exist before deployment
