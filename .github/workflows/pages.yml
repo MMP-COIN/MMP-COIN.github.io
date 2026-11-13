@@ -330,12 +330,12 @@ jobs:
                   view: document.body?.dataset?.mmpView || null,
                   bodyClass: document.body?.className || null,
                   script: [...document.scripts].filter(s => s.src.includes("mmp-quantum-terminal-v1")).map(s => s.src),
-                  hub: !!document.querySelector("#mmp-terminal-hub"),
-                  hubCards: document.querySelectorAll("#mmp-terminal-hub .mmp-hub-card").length,
+                  engineBoard: !!document.querySelector("#quantum-center-entry .quantum-engine-board"),
+                  engineCards: document.querySelectorAll("#quantum-center-entry .quantum-engine-link").length,
                   main: !!document.querySelector("#hero"),
                   sections: document.querySelectorAll("#hero > section").length
                   }));
-                  if (terminalState.ready === "1" && terminalState.hubCards === 8 && terminalState.script.length > 0) break;
+                  if (terminalState.ready === "1" && terminalState.engineBoard && terminalState.engineCards === 12 && terminalState.script.length > 0) break;
                   console.log(viewport.name + " stale Pages edge; retrying canonical index, attempt " + (attempt + 1));
                   if (attempt < 6) {
                     // A different query key forces a fresh Pages/CDN edge lookup; reloading the same stale URL can pin one edge response.
@@ -374,22 +374,49 @@ jobs:
                 });
                 if (!layout) throw new Error(viewport.name + " missing header or first hero card");
                 console.log(viewport.name + " first-screen geometry: " + JSON.stringify(layout));
+                const homepageLayout = await page.evaluate(() => {
+                  const main = document.querySelector("#hero");
+                  const order = ["mmp-home-hero","market-snapshot","quantum-center-entry","opportunities","market-hunter","ai-section","chart-section","market-intelligence","market-heatmap-entry","boom-hunter","mmp-autonomous-health-center","coins-section","trading-tools","exchange-connections","market-hours","app-download","contact-us"];
+                  const positions = order.map(id => { const node = document.getElementById(id); return node && node.parentElement === main ? Array.prototype.indexOf.call(main.children,node) : -1; });
+                  const cards = ["mmp-btc-card","mmp-eth-card","mmp-usdt-card","mmp-gold-card"].map(id => document.getElementById(id));
+                  const colors = cards.map(card => card ? getComputedStyle(card).borderTopColor : "");
+                  return {
+                    ordered: positions.every((value,index) => value >= 0 && (index === 0 || value > positions[index-1])),
+                    positions,
+                    heroAndCardsAdjacent: !!main && main.children[positions[0]+1] === document.getElementById("market-snapshot"),
+                    cardOrder: cards.every((card,index) => !!card && card.parentElement === document.getElementById("market-snapshot") && card === document.getElementById("market-snapshot").children[index]),
+                    distinctCardFrames: new Set(colors).size === 4,
+                    cardColors: colors
+                  };
+                });
+                console.log(viewport.name + " homepage section/card audit: " + JSON.stringify(homepageLayout));
+                if (!homepageLayout.ordered) throw new Error(viewport.name + " homepage sections are missing or out of priority order");
+                if (!homepageLayout.heroAndCardsAdjacent) throw new Error(viewport.name + " four market cards are not directly below the main banner");
+                if (!homepageLayout.cardOrder || !homepageLayout.distinctCardFrames) throw new Error(viewport.name + " four market cards are missing, reordered, or do not have four distinct visual frames");
                 if (Math.abs(layout.headerTop) > 2) throw new Error(viewport.name + " top navigation does not start at page top");
                 if (layout.gap > 12 || layout.gap < -2) throw new Error(viewport.name + " unwanted blank gap before first card: " + layout.gap + "px");
                 if (layout.heroHeight > (viewport.name === "desktop" ? 170 : 180)) throw new Error(viewport.name + " first hero card is still too tall: " + layout.heroHeight + "px");
                 if (!title.includes("MMP QUANTUM")) throw new Error(viewport.name + " homepage title is missing");
+                const engineBoard = page.locator("#quantum-center-entry .quantum-engine-board");
+                if (await engineBoard.count() !== 1 || await page.locator("#quantum-center-entry .quantum-engine-link").count() !== 12) throw new Error(viewport.name + " Quantum Command must contain exactly 12 specialist modules");
+                await engineBoard.locator("summary").click();
                 const visibleQuantumCards = await page.locator("#quantum-center-entry .quantum-engine-link:visible").count();
-                if (visibleQuantumCards !== 12) throw new Error(viewport.name + " homepage must visibly render all 12 Quantum Command cards; found " + visibleQuantumCards);
+                if (visibleQuantumCards !== 12) throw new Error(viewport.name + " expanding Quantum Command must reveal all 12 specialist modules; found " + visibleQuantumCards);
+                await engineBoard.locator("summary").click();
                 if (bodyText.trim().length < 200) throw new Error(viewport.name + " homepage rendered almost no content");
                 for (const id of ["refresh-all-btn","market-refresh-btn","ai-run-btn","chart-fullscreen-btn"]) {
                   if (await page.locator("#" + id).count() === 0) throw new Error(viewport.name + " missing core control: " + id);
                 }
                 const appMode = viewport.name === "mobile-app";
                 const openCenter = async center => {
-                  const selector = appMode ? "#mmp-app-page-dock [data-mmp-app-page='" + center + "']" : "#mmp-terminal-hub [data-mmp-open-center='" + center + "']";
-                  await page.locator(selector).click();
+                  if (appMode) {
+                    await page.locator("#mmp-app-page-dock [data-mmp-app-page='" + center + "']").click();
+                    return;
+                  }
+                  const menu = page.locator("#dropdownMenu");
+                  if (!await menu.evaluate(el => el.classList.contains("show"))) await page.locator(".menu-btn").click();
+                  await page.locator("#dropdownMenu [data-mmp-open-center='" + center + "']").click();
                 };
-                const hubCards = page.locator("#mmp-terminal-hub .mmp-hub-card");
                 if (appMode) {
                   await page.locator("#mmp-app-page-dock").waitFor({state:"visible",timeout:5000});
                   if (await page.locator("#mmp-app-page-dock [data-mmp-app-page]").count() !== 8) throw new Error("native app must expose exactly eight page controls");
@@ -417,8 +444,10 @@ jobs:
                   if (await apkLink.count() && await apkLink.isVisible()) throw new Error("APK download control must remain website-only");
                   await openCenter("command");
                 } else {
-                  await hubCards.first().waitFor({state:"visible",timeout:5000});
-                  if (await hubCards.count() !== 8) throw new Error("website homepage must expose exactly eight specialist centers");
+                  await page.locator(".menu-btn").click();
+                  const websiteCenters = page.locator("#dropdownMenu [data-mmp-open-center]");
+                  await websiteCenters.first().waitFor({state:"visible",timeout:5000});
+                  if (await websiteCenters.count() !== 8) throw new Error("website navigation must expose exactly eight specialist centers");
                   await openCenter("command");
                 }
                 const commandMenu = page.locator("#mmp-center-toolbar .mmp-center-jump");
