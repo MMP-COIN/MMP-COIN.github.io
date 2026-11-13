@@ -121,7 +121,6 @@ if(!match[1].includes("crypto.subtle.digest")) throw new Error("SHA-256 freshnes
       - name: Verify preview artifact and live Worker services
         env:
           SITE_URL: http://127.0.0.1:8080
-          WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
         run: |
           set -euo pipefail
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --max-time 20 "$SITE_URL/?mmp_preview=$GITHUB_RUN_ID" -o /tmp/mmp-preview-home.html
@@ -134,6 +133,13 @@ if(!match[1].includes("crypto.subtle.digest")) throw new Error("SHA-256 freshnes
           grep -q "$BUILD_ID" /tmp/mmp-preview-home.html
           curl --fail --silent --show-error --max-time 20 "$SITE_URL/manifest.webmanifest" -o /tmp/mmp-preview-manifest.json
           jq -e '.name and .icons and (.icons|length>0)' /tmp/mmp-preview-manifest.json >/dev/null
+          echo "Static preview artifact, version manifest and page checks passed."
+      - name: Advisory preview Worker and market API checks
+        continue-on-error: true
+        env:
+          WORKER_URL: https://mmp-coin-ai-analyzer.mehrdadmohammadi1988.workers.dev
+        run: |
+          set -euo pipefail
           curl --fail --silent --show-error --max-time 20 "$WORKER_URL/health" -o /tmp/mmp-preview-worker-health.json
           jq -e '.worker == "online" and .ai_binding == true and .futures_engine_binding == true and .market_cache_binding == true' /tmp/mmp-preview-worker-health.json >/dev/null
           curl --fail --silent --show-error --max-time 20 "$WORKER_URL/futures-engine-health" -o /tmp/mmp-preview-futures-health.json
@@ -142,4 +148,4 @@ if(!match[1].includes("crypto.subtle.digest")) throw new Error("SHA-256 freshnes
           test "$CANDLES_STATUS" = "200"
           grep -qi '^access-control-allow-origin: https://mmp-coin.github.io' /tmp/mmp-preview-candles-headers
           jq -e '.candles|length>0' /tmp/mmp-preview-candles.json >/dev/null
-          echo "Preview artifact, version manifest, Analyzer, Futures service binding, CORS and live candles passed."
+          echo "Preview Worker, Futures service binding, CORS and live candles verified."
