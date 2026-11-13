@@ -443,8 +443,14 @@ jobs:
                   await page.waitForFunction(() => document.body.dataset.mmpView === "command", null, {timeout:3000});
                   if (await page.locator(".menu-btn").count() !== 1) throw new Error("native app must have one top menu button");
                   await page.locator(".menu-btn").click();
+                  const appDropdown = page.locator("#dropdownMenu");
+                  await appDropdown.waitFor({state:"visible",timeout:3000});
                   if (await page.locator("#dropdownMenu [data-mmp-open-center='command']").count() !== 1) throw new Error("native app dropdown repeats the Market Command menu item");
-                  await page.locator("#dropdownMenu [data-mmp-open-center='support']").click();
+                  const supportLink = page.locator("#dropdownMenu [data-mmp-open-center='support']");
+                  await appDropdown.evaluate(el => { el.scrollTop = el.scrollHeight; });
+                  await supportLink.scrollIntoViewIfNeeded();
+                  await supportLink.waitFor({state:"visible",timeout:3000});
+                  await supportLink.click();
                   await page.locator("#app-download").waitFor({state:"visible",timeout:5000});
                   await page.locator("#contact-us").waitFor({state:"visible",timeout:5000});
                   if (await page.locator("#app-download button[onclick*='mmpShareDownloadLink']").count() !== 1) throw new Error("native app combined share/contact page is missing its share action");
