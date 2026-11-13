@@ -18,6 +18,7 @@ name: Deploy MMP COIN AI root site
 # Keep terminal-generated dropdown items intact; compact redesign must not overwrite them.
 # Validate the current seven native chart intervals without expecting localhost to bypass live CORS.
 # Keep chart browser smoke structural; CDN canvas rendering is environment-dependent, while Worker candles are checked separately.
+# Bind the dropdown directly in the terminal app for reliable native-mode navigation.
 # Republish canonical Market Command visibility fix from MMP-COIN-AI.
 # Keep browser market scanning server-side; publish only the canonical snapshot-driven client.
 # Remove duplicate Hunter polling; the unified snapshot module is the sole automatic reader.
