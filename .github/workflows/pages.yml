@@ -379,12 +379,13 @@ jobs:
                   const order = ["mmp-home-hero","market-snapshot","quantum-center-entry","opportunities","market-hunter","ai-section","chart-section","market-intelligence","market-heatmap-entry","boom-hunter","mmp-autonomous-health-center","coins-section","trading-tools","exchange-connections","market-hours","app-download","contact-us"];
                   const positions = order.map(id => { const node = document.getElementById(id); return node && node.parentElement === main ? Array.prototype.indexOf.call(main.children,node) : -1; });
                   const cards = ["mmp-btc-card","mmp-eth-card","mmp-usdt-card","mmp-gold-card"].map(id => document.getElementById(id));
+                  const marketCards = Array.from(document.querySelectorAll("#market-snapshot > .mmp-market-card"));
                   const colors = cards.map(card => card ? getComputedStyle(card).borderTopColor : "");
                   return {
                     ordered: positions.every((value,index) => value >= 0 && (index === 0 || value > positions[index-1])),
                     positions,
                     heroAndCardsAdjacent: !!main && main.children[positions[0]+1] === document.getElementById("market-snapshot"),
-                    cardOrder: cards.every((card,index) => !!card && card.parentElement === document.getElementById("market-snapshot") && card === document.getElementById("market-snapshot").children[index]),
+                    cardOrder: cards.length === 4 && marketCards.length === 4 && cards.every((card,index) => card === marketCards[index]),
                     distinctCardFrames: new Set(colors).size === 4,
                     cardColors: colors
                   };
