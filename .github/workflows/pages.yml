@@ -224,7 +224,7 @@ jobs:
           ! grep -q 'stream.binance.com:9443/ws/!ticker@arr' /tmp/mmp-home.html
           ! grep -q 'QUANTUM HUNTER CORE · UNIFIED ENGINE' /tmp/mmp-home.html
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/admin.html?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-admin.html
-          grep -q 'مرکز مدیریت' /tmp/mmp-admin.html
+          grep -q 'پنل مدیریت فعلاً غیرفعال است' /tmp/mmp-admin.html
           curl --fail --silent --show-error --retry 5 --retry-all-errors --retry-delay 3 --max-time 20 -H "Cache-Control: no-cache" "$SITE_URL/market-heatmap.html?mmp_verify=$GITHUB_RUN_ID" -o /tmp/mmp-heatmap.html
           grep -q 'نقشه حرارتی بازار' /tmp/mmp-heatmap.html
           grep -q 'bybit-tickers' /tmp/mmp-heatmap.html
