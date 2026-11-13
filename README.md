@@ -1,3 +1,5 @@
 # MMP-COIN.github.io
 
-<!-- Root-site mirror: canonical source MMP-COIN/MMP-COIN-AI. Current shared market engine: QIE-4.0.0. -->
+این مخزن آینه انتشار GitHub Pages است؛ منبع مرجع کد در مخزن MMP-COIN/MMP-COIN-AI و مسیرهای www/ و www/assets/ قرار دارد.
+
+همگام‌سازی با مخزن اصلی هنگام تغییرات و هر ۱۵ دقیقه انجام می‌شود. نسخه موتور هوشمند مشترک: QIE-5.0.0.
