@@ -1,32 +1,5 @@
 # Canonical MMP-COIN-AI/main is the sole website source. Sync, validate and deploy the root Pages mirror.
 name: Deploy MMP COIN AI root site
-# Browser smoke tests use cache-busting URLs and retain full page-error stacks.
-# Republish canonical server-only Radar/Hunter, Worker-backed charts, and multi-exchange failover.
-# Repair HTML style order and enforce final zero-gap header geometry.
-# Publish restored original 3D M-coin homepage header.
-# Trigger immediate root-domain deployment of canonical UI build 930de03c48ad713ffadf7ac4122c3f05e31e69d2.
-# Trigger root Pages sync for compact market catalog clarification.
-# Homepage rendering fixes must be committed to canonical/www/index.html; this mirror is regenerated from that source.
-# Publish canonical homepage priority ordering and four benchmark-card redesign from MMP-COIN-AI/main.
-# Publish the single-owner dropdown handler and validate section ordering on desktop and mobile.
-# Keep terminal-generated dropdown items intact; compact redesign must not overwrite them.
-# Validate the current seven native chart intervals without expecting localhost to bypass live CORS.
-# Keep chart browser smoke structural; CDN canvas rendering is environment-dependent, while Worker candles are checked separately.
-# Bind the dropdown directly in the terminal app for reliable native-mode navigation.
-# Keep the native dropdown above the fixed bottom app dock so its final entries remain clickable.
-# Raise the app header stacking context above the fixed dock, not just the dropdown child.
-# Re-sync the latest canonical MMP-COIN-AI/main commit after source-integrity workflow updates.
-# Republish canonical Market Command visibility fix from MMP-COIN-AI.
-# Keep browser market scanning server-side; publish only the canonical snapshot-driven client.
-# Remove duplicate Hunter polling; the unified snapshot module is the sole automatic reader.
-# Keep the unified Hunter module as the only automatic snapshot poller.
-# Keep native refresh aligned with the same server-side snapshots.
-# Reuse one fetched Hunter snapshot for the command progress and engine panels.
-# Re-sync after compact status-only quantum engine cards, accurate readiness labels, and 4+8 layout.
-# Keep root-domain mirror aligned with canonical UI; verify analyzer control widths on desktop and mobile. preserve yesterday's compact M coin hero proportions and keep header in document flow and apply final-cascade top-gap correction.
-# Trigger root mirror sync for the canonical Lightweight Charts 4.2.0 fix (77a30f5).
-# Republish canonical JS/CSS with bumped cache keys after stale-client regression.
-
 on:
   push:
     branches: ["main"]
@@ -596,13 +569,3 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "::warning::Could not update the legacy Pages branch mirror in this run; the Actions deployment remains authoritative."
           fi
-
-# Republish cache-busted Market Command navigation script v3.
-
-# Publish isolated horizontal Toman and USDT selector layout from MMP-COIN-AI.
-
-# Re-run full browser verification after canonical native-app navigation fixes.
-
-# Publish the shared Quantum Nexus visual system across homepage, command center, heatmap and Android webview.
-
-# Trigger a fresh canonical Pages deployment after removing the maintenance lock.
