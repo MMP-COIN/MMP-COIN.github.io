@@ -1,0 +1,58 @@
+name: Publish MMP COIN AI maintenance page
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "maintenance/**"
+      - ".github/workflows/maintenance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "root-pages-maintenance"
+  cancel-in-progress: true
+
+jobs:
+  deploy-maintenance:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout maintenance source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
+        with:
+          enablement: true
+      - name: Build maintenance-only artifact
+        run: |
+          set -euo pipefail
+          test -s maintenance/index.html
+          mkdir -p public
+          cp maintenance/index.html public/index.html
+          printf '{"mode":"maintenance","build":"%s","updatedAt":"%s"}\n' "$GITHUB_SHA" "$(date -u +%FT%TZ)" > public/version.json
+      - name: Upload maintenance artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        with:
+          path: public
+      - name: Deploy maintenance page
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
+      - name: Verify public root is in maintenance
+        env:
+          SITE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          set -euo pipefail
+          SITE_URL="${SITE_URL%/}"
+          curl --fail --silent --show-error --retry 10 --retry-all-errors --retry-delay 5 --max-time 25 "$SITE_URL/?mmp_maintenance_verify=$GITHUB_RUN_ID" -o /tmp/mmp-maintenance.html
+          grep -qi "در حال آماده‌سازی نسخه جدید MMP COIN AI" /tmp/mmp-maintenance.html
+          grep -qi "نسخه قدیمی به‌صورت خودکار دوباره فعال نخواهد شد" /tmp/mmp-maintenance.html
+          ! grep -qi "MMP QUANTUM | مرکز هوشمند رمزارزها" /tmp/mmp-maintenance.html
+          echo "Verified: public Pages serves only the maintenance page."
