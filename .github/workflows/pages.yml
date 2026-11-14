@@ -25,10 +25,6 @@ name: Deploy MMP COIN AI root site
 # Republish canonical JS/CSS with bumped cache keys after stale-client regression.
 
 on:
-  push:
-    branches: ["main"]
-  schedule:
-    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions:
