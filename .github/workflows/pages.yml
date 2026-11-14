@@ -38,18 +38,21 @@ jobs:
           PR_JSON="$(gh api repos/MMP-COIN/MMP-COIN-AI/pulls/47)"
           PR_MERGED="$(printf '%s' "$PR_JSON" | jq -r '.merged')"
           PR_HEAD="$(printf '%s' "$PR_JSON" | jq -r '.head.sha')"
+          CHECKOUT_HEAD="$(git -C canonical rev-parse HEAD)"
+          TESTED_COMMIT="$(git -C canonical rev-parse HEAD^)"
           test "$PR_MERGED" = "true" || { echo "::error::PR #47 is not merged; deployment blocked."; exit 1; }
+          test "$PR_HEAD" = "$CHECKOUT_HEAD" || { echo "::error::Checked-out rebuild branch does not match merged PR head."; exit 1; }
           test -s canonical/.release-ready.json || { echo "::error::Release evidence marker is missing; deployment blocked."; exit 1; }
-          export PR_HEAD
+          export TESTED_COMMIT
           node --input-type=module <<'NODE'
           import fs from "node:fs";
           const marker = JSON.parse(fs.readFileSync("canonical/.release-ready.json", "utf8"));
-          if (marker.pr !== 47 || marker.source_commit !== process.env.PR_HEAD ||
+          if (marker.pr !== 47 || marker.source_commit !== process.env.TESTED_COMMIT ||
               marker.tests_passed !== true || marker.live_workers_verified !== true ||
               marker.pages_and_capacitor_cors_verified !== true) {
-            throw new Error("Release evidence does not match merged PR #47 and all mandatory live checks.");
+            throw new Error("Release evidence does not match the tested parent commit and all mandatory live checks.");
           }
-          console.log("Release evidence matches merged PR #47:", marker.source_commit);
+          console.log("Release evidence matches tested commit:", marker.source_commit);
           NODE
 
       - name: Configure GitHub Pages
