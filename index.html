@@ -3759,11 +3759,15 @@ async function refreshAll(){
   const earlyCoins=orderPrimaryCoins([...earlyById.values()]);
   if(earlyCoins.length){
    cachedCoinsData=earlyCoins;
-   lastMarket.crypto={};
+   // Preserve the last verified benchmark quotes; seed the first render with a timestamped market snapshot.
+   lastMarket.crypto=lastMarket.crypto||{};
+   const benchmarkSnapshotAt=Date.now();
    earlyCoins.forEach(coin=>{
-    const symbol=String(coin.symbol||"").toUpperCase();
-    if(symbol==="BTC")lastMarket.crypto.BTC={usd:Number(coin.current_price),change24h:coin.price_change_percentage_24h};
-    if(symbol==="ETH")lastMarket.crypto.ETH={usd:Number(coin.current_price),change24h:coin.price_change_percentage_24h};
+    const symbol=String(coin.symbol||"").toUpperCase(),usd=Number(coin.current_price);
+    if(!(usd>0))return;
+    const quote={usd,change24h:coin.price_change_percentage_24h,updatedAt:benchmarkSnapshotAt,sources:coin.price_source||marketMetadataSource};
+    if(symbol==="BTC")lastMarket.crypto.BTC=quote;
+    if(symbol==="ETH")lastMarket.crypto.ETH=quote;
    });
    renderHeroCards();
    renderCoinsTables(earlyCoins);
@@ -3905,12 +3909,18 @@ async function refreshAll(){
   cachedCoinsData = data;
   mergeLiveSignalsIntoMainAssetCatalog();
   
-  lastMarket.crypto = {};
-  // CoinLore may use numeric IDs; identify the two benchmark assets by symbol as well.
+  // Never erase a working benchmark quote when exchange consensus is temporarily unavailable.
+  // Replace it only with a timestamped, independently confirmed fresh quote.
+  lastMarket.crypto=lastMarket.crypto||{};
+  const benchmarkNow=Date.now();
   data.forEach(x=>{
    const symbol=String(x?.symbol||"").toUpperCase();
-   if(x.id==='bitcoin'||symbol==='BTC') lastMarket.crypto.BTC = {usd:Number(x.current_price), change24h:x.price_change_percentage_24h};
-   if(x.id==='ethereum'||symbol==='ETH') lastMarket.crypto.ETH = {usd:Number(x.current_price), change24h:x.price_change_percentage_24h};
+   const stamp=Date.parse(x?.price_updated_at||"");
+   const confirmed=x?.price_is_stale!==true&&Number(x?.price_source_count)>=1&&Number(x?.current_price)>0&&Number.isFinite(stamp)&&benchmarkNow-stamp<=120000&&stamp<=benchmarkNow+30000;
+   if(!confirmed)return;
+   const quote={usd:Number(x.current_price),change24h:x.price_change_percentage_24h,updatedAt:stamp,sources:x.price_source||"تأیید صرافی‌ها"};
+   if(x.id==='bitcoin'||symbol==='BTC')lastMarket.crypto.BTC=quote;
+   if(x.id==='ethereum'||symbol==='ETH')lastMarket.crypto.ETH=quote;
   });
 
   renderHeroCards();
@@ -3928,35 +3938,35 @@ async function refreshAll(){
 }
 
 function renderHeroCards() {
-  const now=Date.now();
+  const now=Date.now(),benchmarkFreshMs=5*60*1000;
   const btcCoin=cachedCoinsData.find(x=>x.id==='bitcoin'||String(x?.symbol||"").toUpperCase()==='BTC');
   const ethCoin=cachedCoinsData.find(x=>x.id==='ethereum'||String(x?.symbol||"").toUpperCase()==='ETH');
-  const btcLive=lastMarket.crypto?.BTC&&now-Number(lastMarket.crypto.BTC.updatedAt||0)<=120000;
-  const ethLive=lastMarket.crypto?.ETH&&now-Number(lastMarket.crypto.ETH.updatedAt||0)<=120000;
+  const btcLive=lastMarket.crypto?.BTC&&now-Number(lastMarket.crypto.BTC.updatedAt||0)<=benchmarkFreshMs;
+  const ethLive=lastMarket.crypto?.ETH&&now-Number(lastMarket.crypto.ETH.updatedAt||0)<=benchmarkFreshMs;
   const btcUsd=btcLive?Number(lastMarket.crypto.BTC.usd):0;
   const ethUsd=ethLive?Number(lastMarket.crypto.ETH.usd):0;
   const describe=(usd,change,source)=>{
-    const counterpart=currentCurrency==='IRT'
-      ? money(usd,usd<1?8:4)+' USDT'
-      : (isTetherRateFresh()?toman(usd*currentTetherPrice)+' تومان':'معادل تومانی در دسترس نیست');
+    const counterpart=isTetherRateFresh()
+      ? toman(usd*currentTetherPrice)+' تومان'
+      : 'معادل تومانی فعلاً در دسترس نیست';
     const changeText=Number.isFinite(Number(change))
       ? '۲۴ ساعت: '+(Number(change)>=0?'+':'')+Number(change).toFixed(2)+'%'
       : 'تغییر ۲۴ ساعته ناموجود';
     return [counterpart,changeText,source?'منبع: '+source:''].filter(Boolean).join(' · ');
   };
   if(Number.isFinite(btcUsd)&&btcUsd>0){
-    $('btc').textContent=formatVal(btcUsd);
+    $('btc').textContent=money(btcUsd,4)+' USDT';
     $('btc-sub').textContent=describe(btcUsd,lastMarket.crypto?.BTC?.change24h,lastMarket.crypto?.BTC?.sources||btcCoin?.price_source);
   }else{
     $('btc').textContent='—';
-    $('btc-sub').textContent='داده معتبر BTC هنوز دریافت نشده است';
+    $('btc-sub').textContent='در انتظار قیمت تأییدشده BTC';
   }
   if(Number.isFinite(ethUsd)&&ethUsd>0){
-    $('eth').textContent=formatVal(ethUsd);
+    $('eth').textContent=money(ethUsd,4)+' USDT';
     $('eth-sub').textContent=describe(ethUsd,lastMarket.crypto?.ETH?.change24h,lastMarket.crypto?.ETH?.sources||ethCoin?.price_source);
   }else{
     $('eth').textContent='—';
-    $('eth-sub').textContent='داده معتبر ETH هنوز دریافت نشده است';
+    $('eth-sub').textContent='در انتظار قیمت تأییدشده ETH';
   }
   renderTetherCard();
 }
