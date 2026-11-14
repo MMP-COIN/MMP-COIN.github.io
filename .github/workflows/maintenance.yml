@@ -1,11 +1,6 @@
 name: Publish MMP COIN AI maintenance page
 
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - "maintenance/**"
-      - ".github/workflows/maintenance.yml"
   workflow_dispatch:
 
 permissions:
