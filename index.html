@@ -3241,8 +3241,8 @@ async function refreshLiveQuotes(){
   lastMarket.crypto=lastMarket.crypto||{};
   cachedCoinsData.forEach(c=>{
    const symbol=String(c.symbol||"").toUpperCase();
-   if(symbol==="BTC"&&c.price_is_stale!==true&&Number(c.price_source_count)>=1)lastMarket.crypto.BTC={usd:Number(c.current_price),change24h:c.price_change_percentage_24h,updatedAt:now,sources:c.price_source};
-   if(symbol==="ETH"&&c.price_is_stale!==true&&Number(c.price_source_count)>=1)lastMarket.crypto.ETH={usd:Number(c.current_price),change24h:c.price_change_percentage_24h,updatedAt:now,sources:c.price_source};
+   if(symbol==="BTC"&&c.price_is_stale!==true&&Number(c.price_source_count)>=1&&!(String(lastMarket.crypto.BTC?.sources||"").includes("Binance WebSocket")&&now-Number(lastMarket.crypto.BTC.updatedAt||0)<20000))lastMarket.crypto.BTC={usd:Number(c.current_price),change24h:c.price_change_percentage_24h,updatedAt:now,sources:c.price_source};
+   if(symbol==="ETH"&&c.price_is_stale!==true&&Number(c.price_source_count)>=1&&!(String(lastMarket.crypto.ETH?.sources||"").includes("Binance WebSocket")&&now-Number(lastMarket.crypto.ETH.updatedAt||0)<20000))lastMarket.crypto.ETH={usd:Number(c.current_price),change24h:c.price_change_percentage_24h,updatedAt:now,sources:c.price_source};
   });
   renderCoinsTables(cachedCoinsData);renderHeroCards();
   const stamp=new Date().toLocaleTimeString("fa-IR");
@@ -3780,11 +3780,13 @@ async function refreshAll(){
   const earlyCoins=orderPrimaryCoins([...earlyById.values()]);
   if(earlyCoins.length){
    cachedCoinsData=earlyCoins;
-   lastMarket.crypto={};
+   lastMarket.crypto=lastMarket.crypto||{};
+   const earlySnapshotAt=Date.now();
    earlyCoins.forEach(coin=>{
-    const symbol=String(coin.symbol||"").toUpperCase();
-    if(symbol==="BTC")lastMarket.crypto.BTC={usd:Number(coin.current_price),change24h:coin.price_change_percentage_24h};
-    if(symbol==="ETH")lastMarket.crypto.ETH={usd:Number(coin.current_price),change24h:coin.price_change_percentage_24h};
+    const symbol=String(coin.symbol||"").toUpperCase(),key=symbol==="BTC"?"BTC":symbol==="ETH"?"ETH":"";
+    if(!key||!(Number(coin.current_price)>0))return;
+    const live=lastMarket.crypto[key],liveActive=String(live?.sources||"").includes("Binance WebSocket")&&earlySnapshotAt-Number(live?.updatedAt||0)<20000;
+    if(!liveActive)lastMarket.crypto[key]={usd:Number(coin.current_price),change24h:coin.price_change_percentage_24h,updatedAt:earlySnapshotAt,sources:coin.price_source||"early market snapshot"};
    });
    renderHeroCards();
    renderCoinsTables(earlyCoins);
