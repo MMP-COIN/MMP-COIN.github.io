@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
   pages: write
   id-token: write
 
@@ -100,8 +101,6 @@ jobs:
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
 
       - name: Verify the actual public root deployment
-        env:
-          EXPECTED_BUILD: ${{ steps.build-and-deploy.outputs.build_id }}
         run: |
           set -euo pipefail
           URL="https://mmp-coin.github.io/"
