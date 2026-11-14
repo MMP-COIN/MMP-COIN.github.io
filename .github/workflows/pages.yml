@@ -583,3 +583,5 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "::warning::Could not update the legacy Pages branch mirror in this run; the Actions deployment remains authoritative."
           fi
+
+# Trigger canonical Pages release sync for Quantum Gold CSS cascade correction
