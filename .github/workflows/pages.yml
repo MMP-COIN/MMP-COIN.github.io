@@ -29,6 +29,7 @@ jobs:
           repository: MMP-COIN/MMP-COIN-AI
           ref: rebuild/v4-new-platform
           path: canonical
+          fetch-depth: 2
 
       - name: Require merged PR and signed-off release evidence
         env:
