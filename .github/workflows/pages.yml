@@ -1,7 +1,7 @@
 # Canonical MMP-COIN-AI/main is the sole website source. Sync, validate and deploy the root Pages mirror.
 # Release sync requested after canonical homepage card-frame update; workflow behavior is unchanged.
 # A push to this mirror also forces an immediate sync; the 15-minute cron is a backup, not the only update path.
-# Force canonical source synchronization after live quote coherence release 8931ad75333e24e66bfc35450575ac23dca2a0d4.
+# Force canonical source synchronization after four benchmark card quote fix 15347d80b0793531efb094e8c1c4427ffabe949e.
 name: Deploy MMP COIN AI root site
 on:
   push:
